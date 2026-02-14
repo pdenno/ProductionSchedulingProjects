@@ -1,4 +1,4 @@
-# Surrogate plate-glass Interview – E2E Session Report
+# Plate Glass Production – Project Report
 
 **Project:** sur-plate-glass
 
@@ -41,6 +41,7 @@ E2E test with plate glass surrogate expert, driven entirely by MCP tools and the
 - DPAO 3 (duplicate of DPAO 2): rejected
 - DPAO 4 (multi-order scheduling): pursued and delivered as DPO 2
 
+
 ---
 
 ## Surrogate Instructions
@@ -75,8 +76,6 @@ For example if you were asked to generate/complete a table about process duratio
 ```
 
 ---
-
-## Interview Conversations
 
 ## Q&A 1: Process: Warm Up
 
@@ -161,7 +160,142 @@ A key thing for scheduling: **steps 2–5 are basically one continuous “hot en
 
 ---
 
-## Q&A 5: Unknown DS
+## DPAO 1 (citing process/scheduling-action-types)
+
+- **Type:** minizinc/pedagogical
+- **Purpose:** solution
+
+At this point, having run the 'process/scheduling-action-types' DS, you may have established what sort of 'scheduling action sentences' they expect their scheduling system to issue.
+These sentences might, for example:
+   * sequence work into the production facility (common in flow shops and job shops),
+   * prioritize equipment maintenance work orders,
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
+   * describe which vehicles visits which customers when (common in routing problem),
+ or a variety actions necessary to get their work done.
+Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
+You could use this opportunity to illustrate how their sentence types must be directly derivable from MiniZinc decision variables,
+and how other sentences (those implied by constraints) winnow down the powerset of all decision variable sentences.
+Any sentence set in the powerset that contains a sentence that is logically impossible (e.g. some task ends before it starts) must be removed from consideration.
+Similarly, some contstraints will express domain-specific requirements in the ordering of tasks, for example.
+It is constraints that allow you to invalidate a sentence set (a solution).
+
+You might also use the MiniZinc from this example to illustrate the distinction between the feasible set of solutions and the optimal solution.
+You could describe how the optimality expression 'grades' each member of the feasible set.
+You could describe the winnowing as being from an astronomical large powerset to a huge feasible set to a single sentence set.
+However, you should probably also point out that though 'sentence sets' might be a productive way to think about MiniZinc, the solvers do not work anything like this.
+Finally, it would be especially good if you could explain these concepts without using the term `powerset`!
+
+Now might not be the right time to produce the pedagogical MiniZinc we outlined above; you might not have enough information to pull it off yet.
+If not now, you might be able to revisit the idea of later. You can use the `critique_DPAO` tool to express your thoughts about this idea and postpone it.
+Of course, you might reject it outright if you think the users are too advanced to benefit from seeing it.
+
+**Critiques:**
+- **defer** (Tue Feb 10 18:38:19 EST 2026) Deferring this pedagogical explanation of decision variables and constraints. The concept is valuable but DPAO 2 (residence time model) will naturally demonstrate these concepts through a concrete MiniZinc example. We can revisit this pedagogical framing after the first model is built.
+
+---
+
+## DPAO 2 (citing process/flow-shop)
+
+- **Type:** minizinc/pedagogical
+- **Purpose:** solution
+
+Having finished the :process/flow-shop Discovery Schema, you have been provided an outline of the users' procesess including task names, sequencing, and durations.
+This would be a good place to create pedagogical MiniZinc **from scratch** that would find the minimum time it takes to run one job though their facility (resident time).
+That time, of course, involve starting the first task at time zero and starting the second task as soon as the first one ends.
+So consider using start times as decision variables. Consider using an enum to name tasks. Write task ordering constraints using those enums.
+Keep it simple; this might be the first MiniZinc the users have ever seen!
+Be mindful of situations where there is a broad span of task durations and look for opportunities to consolidate small tasks into larger ones.
+For example, in brewing beer, there are a number of short tasks (milling, mashing, lautering, boiling) that occur before the product reaches the fermentation tank.
+You could consolidate those steps into one task called, for example, 'pre-processing' that runs in a day, roughly speaking (allowing uniform use of days as task units).
+
+
+**Critiques:**
+- **pursue** (Tue Feb 10 18:38:19 EST 2026) Pursuing this. We have 8 subprocesses from the flow-shop ASCR with duration data. Several continuous processes (melting 18-24h, annealing 1.5-3h, float forming 45-90min) dominate, while discrete steps (cutting 2-10min, packing 20-45min) are much shorter. Will consolidate the continuous hot-end processes and create a clean pedagogical model showing residence time minimization.
+
+---
+
+## DPO 1 (pedagogical)
+
+- **Citing DPAO:** 2
+- **Version:** 1.0.0
+- **ASCR refs:** flow-shop
+
+Pedagogical MiniZinc model showing the minimum residence time for a single production lot flowing through the plate glass facility. Consolidates 8 subprocesses into 7 tasks (merging inspection/trimming with cutting). Demonstrates flow-shop sequencing constraints and makespan minimization. Total residence time: ~26.5 hours, dominated by the 21-hour melting/refining step.
+
+**Observations:** The flow-shop ASCR reveals 8 sequential subprocesses. Melting/refining dominates at 18-24 hours (~80% of total time). The continuous hot-end (melting through annealing) accounts for ~96% of residence time. Discrete cold-end steps (cutting, packing) are comparatively trivial in duration. This makes the furnace the clear bottleneck for throughput scheduling.
+
+```minizinc
+% Plate Glass Production - Single Job Residence Time
+% Pedagogical MiniZinc: What is the minimum time for one production lot
+% to flow through the plate glass facility?
+
+% The tasks in plate glass production, in flow-shop order
+enum TASK = {
+  batch_prep,        % Weighing, mixing raw materials, charging furnace
+  melting,           % Float furnace melting and refining
+  conditioning,      % Forehearth temperature conditioning
+  float_forming,     % Tin bath ribbon forming
+  annealing,         % Lehr cooling for stress relief
+  cut_and_inspect,   % Online inspection, trimming, cutting, breakout
+  packing            % Packing, staging, shipping prep
+};
+
+% Task durations in minutes (using representative midpoints)
+array[TASK] of int: duration = [
+  23,     % batch_prep: ~15-30 min
+  1260,   % melting: ~18-24 hours (midpoint ~21h = 1260 min)
+  60,     % conditioning: ~30-90 min
+  68,     % float_forming: ~45-90 min
+  135,    % annealing: ~1.5-3 hours (midpoint ~2.25h = 135 min)
+  13,     % cut_and_inspect: ~5-15 min (consolidated)
+  33      % packing: ~20-45 min
+];
+
+% Decision variables: start time of each task
+array[TASK] of var 0..2000: start;
+
+% Constraints: each task starts after the previous one ends (flow-shop order)
+constraint start[batch_prep] = 0;  % First task starts at time zero
+constraint start[melting]        >= start[batch_prep]    + duration[batch_prep];
+constraint start[conditioning]   >= start[melting]       + duration[melting];
+constraint start[float_forming]  >= start[conditioning]  + duration[conditioning];
+constraint start[annealing]      >= start[float_forming] + duration[float_forming];
+constraint start[cut_and_inspect]>= start[annealing]     + duration[annealing];
+constraint start[packing]        >= start[cut_and_inspect]+ duration[cut_and_inspect];
+
+% The makespan: when the last task finishes
+var int: makespan = start[packing] + duration[packing];
+
+% Minimize total residence time
+solve minimize makespan;
+
+output [
+  "=== Plate Glass Single-Lot Residence Time ===\n"
+] ++
+[ show(t) ++ ": start=" ++ show(start[t]) ++ " dur=" ++ show(duration[t]) ++ " end=" ++ show(start[t] + duration[t]) ++ "\n"
+  | t in TASK
+] ++
+[
+  "Total Makespan: " ++ show(makespan) ++ " minutes (" ++
+  show(makespan div 60) ++ " hours " ++ show(makespan mod 60) ++ " min)\n"
+];
+```
+
+**Solver output:**
+```
+batch_prep: start=0 dur=23 end=23
+melting: start=23 dur=1260 end=1283
+conditioning: start=1283 dur=60 end=1343
+float_forming: start=1343 dur=68 end=1411
+annealing: start=1411 dur=135 end=1546
+cut_and_inspect: start=1546 dur=13 end=1559
+packing: start=1559 dur=33 end=1592
+Total Makespan: 1592 minutes (26 hours 32 min)
+```
+
+---
+
+## Q&A 5: Expert Discussion (DPO 1)
 
 ### Interviewer
 We've been looking at your production line and estimated the minimum time for a single lot to flow through the entire facility — from batch prep through packing. Based on the durations you described, it comes out to roughly 26.5 hours, with melting and refining alone taking about 21 hours. Does that residence time sound about right for a typical lot? And is there anything about how the continuous hot-end processes (melting, conditioning, float forming, annealing) interact that might change that picture — for instance, can lots overlap in the furnace, or is it strictly one batch flowing through at a time?
@@ -460,7 +594,233 @@ Yes—this is our customer order log for sales orders. Internally we usually cal
 
 ---
 
-## Q&A 18: Unknown DS
+## DPAO 3 (citing optimality/warm-up)
+
+- **Type:** minizinc/solution
+- **Purpose:** solution
+
+Having finished the :process/flow-shop Discovery Schema, you have been provided an outline of the users' procesess including task names, sequencing, and durations.
+This would be a good place to create pedagogical MiniZinc **from scratch** that would find the minimum time it takes to run one job though their facility (resident time).
+That time, of course, involve starting the first task at time zero and starting the second task as soon as the first one ends.
+So consider using start times as decision variables. Consider using an enum to name tasks. Write task ordering constraints using those enums.
+Keep it simple; this might be the first MiniZinc the users have ever seen!
+Be mindful of situations where there is a broad span of task durations and look for opportunities to consolidate small tasks into larger ones.
+For example, in brewing beer, there are a number of short tasks (milling, mashing, lautering, boiling) that occur before the product reaches the fermentation tank.
+You could consolidate those steps into one task called, for example, 'pre-processing' that runs in a day, roughly speaking (allowing uniform use of days as task units).
+
+
+**Critiques:**
+- **reject** (Tue Feb 10 18:44:54 EST 2026) This is essentially the same pedagogical residence-time model already built as DPO 1. Rejecting as duplicate — the concept has been delivered.
+
+---
+
+## DPAO 4
+
+- **Type:** minizinc/solution
+- **Purpose:** solution
+
+Build the first true scheduling (multi-order) MiniZinc model that explicitly reflects the confirmed reality that the hot end is continuous and is the dominant bottleneck, and that downstream resources (tempering and laminating) are discrete batch/line operations with changeovers.
+
+Evidence from current project state:
+- You already have DPO 1, a single-lot residence-time flow-shop model based on :process/flow-shop. It is not a scheduling model (no multiple jobs, no sequencing choices, no due dates, no changeovers).
+- You have completed bottleneck/challenge interviews for :resources/challenges on three topics: float line, tempering furnaces, laminating line, and you have stated scheduling goals: OTD, utilization, changeover reduction.
+- The DPO 1 founding-info observes the continuous hot-end (melting through annealing) dominates time and is the throughput bottleneck.
+
+Next development increment (small but materially closer to a real solution):
+1) Model the hot end (float line) as a continuous-capacity resource with a time-indexed or slot-based production plan, rather than as a standard disjunctive machine.
+   - Use a discrete time grid (e.g., 15 or 30 minute buckets) over a short horizon (e.g., 2–3 days) to keep it teachable and solvable.
+   - Decision variable: which “recipe/grade/thickness family” is running on the float line at each time bucket (or which order is assigned to each contiguous run segment).
+   - Add changeover penalties/costs when the product family changes between adjacent buckets/segments (this directly addresses changeover reduction).
+   - Enforce continuity: exactly one family active per bucket/segment; optionally minimum run lengths to prevent excessive switching.
+
+2) Couple downstream discrete operations as optional scheduled tasks fed by the hot end output:
+   - For a first increment, pick ONE downstream bottleneck to connect (tempering OR laminating), not both.
+   - Represent downstream as a single machine (or limited parallel machines if known) using interval variables via start times + no-overlap constraints.
+   - Link flow: an order can only start downstream after enough upstream production has accumulated (simplify initially with “hot-end completion time” per order, derived from the time buckets assigned to it).
+
+3) Add a minimal objective aligned with stated goals:
+   - Primary: minimize total tardiness (OTD) across orders (need due dates; if not yet in ORM data, create a tiny synthetic data instance with 5–10 orders and plausible due dates).
+   - Secondary (weighted): minimize number of hot-end changeovers (or total changeover cost).
+   - Optionally include a utilization proxy (maximize hot-end busy time, or penalize idle buckets).
+
+Why this is the most valuable next step now:
+- It uses new information not yet reflected in any DPO: the bottleneck/challenge ASCRs and the “hot end is continuous” confirmation.
+- It transitions from a pedagogical single-job flow model (DPO 1) to a production-relevant scheduling model with real tradeoffs (OTD vs changeovers) while staying small (short horizon, few orders, one downstream resource).
+- It sets up the right architecture for later: adding more downstream resources (laminating + others), richer changeover matrices, maintenance windows, and feeding from real order data when :data/orm-modeling--customer-order-log completes.
+
+Concrete deliverable for the next DPO (minizinc/solution, purpose=solution):
+- A MiniZinc model file with a small embedded data instance (5–10 orders) demonstrating:
+  (a) continuous hot-end plan (time buckets or run segments),
+  (b) changeover counting/cost,
+  (c) one downstream machine schedule with precedence,
+  (d) objective: weighted tardiness + changeover cost,
+  (e) output: hot-end run plan (family per bucket/segment), downstream schedule, tardiness per order, number of changeovers.
+
+This increment is appropriate now even before full ORM data is finished, because you can start with a tiny hand-rolled dataset and later swap in real customer-order-log fields once the data modeling work completes.
+
+**Critiques:**
+- **pursue** (Tue Feb 10 18:44:54 EST 2026) Pursuing this. We have enough domain knowledge to build a meaningful multi-order model: continuous hot-end with thickness families, tempering as the discrete downstream bottleneck, changeover costs, and due-date-driven OTD. Will use a time-bucket approach for the hot end and synthetic 6-order dataset.
+
+---
+
+## DPO 2 (development)
+
+- **Citing DPAO:** 4
+- **Version:** 1.0.0
+- **ASCR refs:** flow-shop, challenges--float-line-(melting-furnace-+-tin-bath-+-lehr), challenges--tempering-furnaces
+
+Multi-order scheduling model for plate glass production. Sequences 5 orders through the continuous hot-end and discrete tempering bottleneck. Models thickness-family changeovers on both resources, precedence (tempering after hot-end), and due dates. Objective minimizes weighted tardiness plus changeover penalties. Demonstrates the core scheduling tradeoff: grouping by family reduces changeovers but may increase tardiness.
+
+**Observations:** Three severity-8 bottleneck ASCRs confirm: (1) float line thickness transitions take 2-6 hours with 10-40 tons scrap, (2) tempering changeovers take 20-45 min with trial scrap, (3) laminating autoclave cycles 3.5-4.5h. The expert confirmed the hot end is continuous with overlapping lots. Scheduling goals: 95%+ OTD, maximize tempering utilization, reduce changeovers by 2-3/day. This model captures the hot-end sequencing + tempering scheduling with family-dependent changeovers and tardiness minimization.
+
+```minizinc
+% Plate Glass Scheduling - Order Sequencing Model
+% Hot-end: sequence orders (grouped by family to minimize changeovers)
+% Tempering: single machine with changeover-dependent sequencing
+% 5 orders over ~16 hours
+
+include "alldifferent.mzn";
+
+int: n = 5;
+set of int: ORDER = 1..n;
+
+% Families: 1=thin, 2=medium, 3=thick
+array[ORDER] of int: family =     [1, 2, 3, 1, 2];
+array[ORDER] of int: hotend_dur = [180, 240, 300, 180, 180]; % min on hot end
+array[ORDER] of int: temper_dur = [45,  75, 120,  50,  60];  % min tempering
+array[ORDER] of int: due =        [720, 480, 1200, 1080, 960]; % due time (min)
+
+% Changeover times (hot-end transitions between families)
+array[1..3, 1..3] of int: hotend_co = [|
+  0,  60, 120 |
+  60,  0,  90 |
+  120, 90,  0 |];
+
+% Tempering changeover between families
+array[1..3, 1..3] of int: temp_co = [|
+  0,  20, 35 |
+  20,  0, 25 |
+  35, 25,  0 |];
+
+% === Decision Variables ===
+
+% Hot-end sequence position for each order
+array[ORDER] of var 1..n: h_pos;
+constraint alldifferent(h_pos);
+
+% Hot-end start/end times
+array[ORDER] of var 0..3000: h_start;
+array[ORDER] of var 0..3000: h_end;
+
+% Tempering sequence position
+array[ORDER] of var 1..n: t_pos;
+constraint alldifferent(t_pos);
+
+% Tempering start/end times
+array[ORDER] of var 0..3000: t_start;
+array[ORDER] of var 0..3000: t_end;
+
+% Completion and tardiness
+array[ORDER] of var 0..3000: tard;
+
+% === Constraints ===
+
+% Hot-end duration
+constraint forall(o in ORDER)(h_end[o] = h_start[o] + hotend_dur[o]);
+
+% First on hot end starts at 0
+constraint forall(o in ORDER)(h_pos[o] = 1 -> h_start[o] = 0);
+
+% Hot-end sequencing with changeovers
+constraint forall(o1, o2 in ORDER where o1 != o2)(
+  h_pos[o1] + 1 = h_pos[o2] ->
+	h_start[o2] >= h_end[o1] + hotend_co[family[o1], family[o2]]
+);
+
+% Tempering after hot-end
+constraint forall(o in ORDER)(t_start[o] >= h_end[o]);
+
+% Tempering duration
+constraint forall(o in ORDER)(t_end[o] = t_start[o] + temper_dur[o]);
+
+% First on tempering
+constraint forall(o in ORDER)(
+  t_pos[o] = 1 -> t_start[o] >= h_end[o]
+);
+
+% Tempering sequencing with changeovers
+constraint forall(o1, o2 in ORDER where o1 != o2)(
+  t_pos[o1] + 1 = t_pos[o2] ->
+	t_start[o2] >= t_end[o1] + temp_co[family[o1], family[o2]]
+);
+
+% Tardiness
+constraint forall(o in ORDER)(
+  tard[o] >= t_end[o] - due[o]
+);
+constraint forall(o in ORDER)(tard[o] >= 0);
+
+% Count hot-end changeovers (family changes in sequence)
+var 0..n: num_hotend_co;
+constraint num_hotend_co = sum(o1, o2 in ORDER where o1 != o2)(
+  bool2int(h_pos[o1] + 1 = h_pos[o2] /\ family[o1] != family[o2])
+);
+
+% === Objective ===
+var int: total_tard = sum(o in ORDER)(tard[o]);
+var int: obj = total_tard + 100 * num_hotend_co;
+
+solve minimize obj;
+
+output [
+  "=== Plate Glass 5-Order Schedule ===\n",
+  "Hot-end changeovers: ", show(num_hotend_co), "\n",
+  "Total tardiness: ", show(total_tard), " min\n",
+  "Objective (tard + 100*co): ", show(obj), "\n\n",
+  "--- Hot-End Sequence ---\n"
+] ++
+[ "Pos " ++ show(h_pos[o]) ++ ": Order " ++ show(o) ++
+  " (fam=" ++ show(family[o]) ++ ")" ++
+  " " ++ show(h_start[o]) ++ "-" ++ show(h_end[o]) ++ " min\n"
+  | o in ORDER
+] ++
+[ "\n--- Tempering Sequence ---\n" ] ++
+[ "Pos " ++ show(t_pos[o]) ++ ": Order " ++ show(o) ++
+  " (fam=" ++ show(family[o]) ++ ")" ++
+  " " ++ show(t_start[o]) ++ "-" ++ show(t_end[o]) ++
+  " due=" ++ show(due[o]) ++
+  " tard=" ++ show(tard[o]) ++ " min\n"
+  | o in ORDER
+];
+```
+
+**Solver output:**
+```
+Hot-end changeovers: 2
+Total tardiness: 180 min
+Objective (tard + 100*co): 380
+
+Hot-End Sequence:
+Pos 3: Order 1 (fam=1) 480-660 min
+Pos 1: Order 2 (fam=2) 0-240 min
+Pos 5: Order 3 (fam=3) 960-1260 min
+Pos 4: Order 4 (fam=1) 660-840 min
+Pos 2: Order 5 (fam=2) 240-420 min
+
+Tempering Sequence:
+Pos 3: Order 1 (fam=1) 660-705 due=720 tard=0
+Pos 1: Order 2 (fam=2) 240-315 due=480 tard=0
+Pos 5: Order 3 (fam=3) 1260-1380 due=1200 tard=180
+Pos 4: Order 4 (fam=1) 840-890 due=1080 tard=0
+Pos 2: Order 5 (fam=2) 420-480 due=960 tard=0
+
+Solver groups families: [2,2,1,1,3] on hot end (2 changeovers).
+Order 3 (thick glass, fam=3) is late by 180 min - it needs the longest hot-end time and runs last.
+```
+
+---
+
+## Q&A 18: Expert Discussion (DPO 2)
 
 ### Interviewer
 We've built a scheduling model that sequences 5 orders through the hot end and then tempering. It groups orders by thickness family to minimize changeovers — the solver found that running medium-medium-thin-thin-thick gives only 2 changeovers. The tradeoff is that the thick glass order (which needs the most hot-end time) runs last and ends up 3 hours late. A few questions: First, does grouping by thickness family like this match how you'd naturally want to sequence the hot end? Second, in practice, if you had a thick-glass order with a tight due date, would you break the family grouping and accept more changeovers to hit the date? And third, are there other grouping factors beyond thickness — like coatings or tint — that would also drive changeover decisions on the hot end?
@@ -1220,371 +1580,6 @@ Quick check on identifiers you use in practice:
 
 ---
 
-## DPAOs (Development Plan Advice Objects)
-
-### DPAO 1 (citing process/scheduling-action-types)
-
-- **Type:** minizinc/pedagogical
-- **Purpose:** solution
-
-At this point, having run the 'process/scheduling-action-types' DS, you may have established what sort of 'scheduling action sentences' they expect their scheduling system to issue.
-These sentences might, for example:
-   * sequence work into the production facility (common in flow shops and job shops),
-   * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
-   * describe which vehicles visits which customers when (common in routing problem),
- or a variety actions necessary to get their work done.
-Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
-You could use this opportunity to illustrate how their sentence types must be directly derivable from MiniZinc decision variables,
-and how other sentences (those implied by constraints) winnow down the powerset of all decision variable sentences.
-Any sentence set in the powerset that contains a sentence that is logically impossible (e.g. some task ends before it starts) must be removed from consideration.
-Similarly, some contstraints will express domain-specific requirements in the ordering of tasks, for example.
-It is constraints that allow you to invalidate a sentence set (a solution).
-
-You might also use the MiniZinc from this example to illustrate the distinction between the feasible set of solutions and the optimal solution.
-You could describe how the optimality expression 'grades' each member of the feasible set.
-You could describe the winnowing as being from an astronomical large powerset to a huge feasible set to a single sentence set.
-However, you should probably also point out that though 'sentence sets' might be a productive way to think about MiniZinc, the solvers do not work anything like this.
-Finally, it would be especially good if you could explain these concepts without using the term `powerset`!
-
-Now might not be the right time to produce the pedagogical MiniZinc we outlined above; you might not have enough information to pull it off yet.
-If not now, you might be able to revisit the idea of later. You can use the `critique_DPAO` tool to express your thoughts about this idea and postpone it.
-Of course, you might reject it outright if you think the users are too advanced to benefit from seeing it.
-
-**Critiques:**
-- **defer** (Tue Feb 10 18:38:19 EST 2026) Deferring this pedagogical explanation of decision variables and constraints. The concept is valuable but DPAO 2 (residence time model) will naturally demonstrate these concepts through a concrete MiniZinc example. We can revisit this pedagogical framing after the first model is built.
-
----
-
-### DPAO 2 (citing process/flow-shop)
-
-- **Type:** minizinc/pedagogical
-- **Purpose:** solution
-
-Having finished the :process/flow-shop Discovery Schema, you have been provided an outline of the users' procesess including task names, sequencing, and durations.
-This would be a good place to create pedagogical MiniZinc **from scratch** that would find the minimum time it takes to run one job though their facility (resident time).
-That time, of course, involve starting the first task at time zero and starting the second task as soon as the first one ends.
-So consider using start times as decision variables. Consider using an enum to name tasks. Write task ordering constraints using those enums.
-Keep it simple; this might be the first MiniZinc the users have ever seen!
-Be mindful of situations where there is a broad span of task durations and look for opportunities to consolidate small tasks into larger ones.
-For example, in brewing beer, there are a number of short tasks (milling, mashing, lautering, boiling) that occur before the product reaches the fermentation tank.
-You could consolidate those steps into one task called, for example, 'pre-processing' that runs in a day, roughly speaking (allowing uniform use of days as task units).
-
-
-**Critiques:**
-- **pursue** (Tue Feb 10 18:38:19 EST 2026) Pursuing this. We have 8 subprocesses from the flow-shop ASCR with duration data. Several continuous processes (melting 18-24h, annealing 1.5-3h, float forming 45-90min) dominate, while discrete steps (cutting 2-10min, packing 20-45min) are much shorter. Will consolidate the continuous hot-end processes and create a clean pedagogical model showing residence time minimization.
-
----
-
-### DPAO 3 (citing optimality/warm-up)
-
-- **Type:** minizinc/solution
-- **Purpose:** solution
-
-Having finished the :process/flow-shop Discovery Schema, you have been provided an outline of the users' procesess including task names, sequencing, and durations.
-This would be a good place to create pedagogical MiniZinc **from scratch** that would find the minimum time it takes to run one job though their facility (resident time).
-That time, of course, involve starting the first task at time zero and starting the second task as soon as the first one ends.
-So consider using start times as decision variables. Consider using an enum to name tasks. Write task ordering constraints using those enums.
-Keep it simple; this might be the first MiniZinc the users have ever seen!
-Be mindful of situations where there is a broad span of task durations and look for opportunities to consolidate small tasks into larger ones.
-For example, in brewing beer, there are a number of short tasks (milling, mashing, lautering, boiling) that occur before the product reaches the fermentation tank.
-You could consolidate those steps into one task called, for example, 'pre-processing' that runs in a day, roughly speaking (allowing uniform use of days as task units).
-
-
-**Critiques:**
-- **reject** (Tue Feb 10 18:44:54 EST 2026) This is essentially the same pedagogical residence-time model already built as DPO 1. Rejecting as duplicate — the concept has been delivered.
-
----
-
-### DPAO 4
-
-- **Type:** minizinc/solution
-- **Purpose:** solution
-
-Build the first true scheduling (multi-order) MiniZinc model that explicitly reflects the confirmed reality that the hot end is continuous and is the dominant bottleneck, and that downstream resources (tempering and laminating) are discrete batch/line operations with changeovers.
-
-Evidence from current project state:
-- You already have DPO 1, a single-lot residence-time flow-shop model based on :process/flow-shop. It is not a scheduling model (no multiple jobs, no sequencing choices, no due dates, no changeovers).
-- You have completed bottleneck/challenge interviews for :resources/challenges on three topics: float line, tempering furnaces, laminating line, and you have stated scheduling goals: OTD, utilization, changeover reduction.
-- The DPO 1 founding-info observes the continuous hot-end (melting through annealing) dominates time and is the throughput bottleneck.
-
-Next development increment (small but materially closer to a real solution):
-1) Model the hot end (float line) as a continuous-capacity resource with a time-indexed or slot-based production plan, rather than as a standard disjunctive machine.
-   - Use a discrete time grid (e.g., 15 or 30 minute buckets) over a short horizon (e.g., 2–3 days) to keep it teachable and solvable.
-   - Decision variable: which “recipe/grade/thickness family” is running on the float line at each time bucket (or which order is assigned to each contiguous run segment).
-   - Add changeover penalties/costs when the product family changes between adjacent buckets/segments (this directly addresses changeover reduction).
-   - Enforce continuity: exactly one family active per bucket/segment; optionally minimum run lengths to prevent excessive switching.
-
-2) Couple downstream discrete operations as optional scheduled tasks fed by the hot end output:
-   - For a first increment, pick ONE downstream bottleneck to connect (tempering OR laminating), not both.
-   - Represent downstream as a single machine (or limited parallel machines if known) using interval variables via start times + no-overlap constraints.
-   - Link flow: an order can only start downstream after enough upstream production has accumulated (simplify initially with “hot-end completion time” per order, derived from the time buckets assigned to it).
-
-3) Add a minimal objective aligned with stated goals:
-   - Primary: minimize total tardiness (OTD) across orders (need due dates; if not yet in ORM data, create a tiny synthetic data instance with 5–10 orders and plausible due dates).
-   - Secondary (weighted): minimize number of hot-end changeovers (or total changeover cost).
-   - Optionally include a utilization proxy (maximize hot-end busy time, or penalize idle buckets).
-
-Why this is the most valuable next step now:
-- It uses new information not yet reflected in any DPO: the bottleneck/challenge ASCRs and the “hot end is continuous” confirmation.
-- It transitions from a pedagogical single-job flow model (DPO 1) to a production-relevant scheduling model with real tradeoffs (OTD vs changeovers) while staying small (short horizon, few orders, one downstream resource).
-- It sets up the right architecture for later: adding more downstream resources (laminating + others), richer changeover matrices, maintenance windows, and feeding from real order data when :data/orm-modeling--customer-order-log completes.
-
-Concrete deliverable for the next DPO (minizinc/solution, purpose=solution):
-- A MiniZinc model file with a small embedded data instance (5–10 orders) demonstrating:
-  (a) continuous hot-end plan (time buckets or run segments),
-  (b) changeover counting/cost,
-  (c) one downstream machine schedule with precedence,
-  (d) objective: weighted tardiness + changeover cost,
-  (e) output: hot-end run plan (family per bucket/segment), downstream schedule, tardiness per order, number of changeovers.
-
-This increment is appropriate now even before full ORM data is finished, because you can start with a tiny hand-rolled dataset and later swap in real customer-order-log fields once the data modeling work completes.
-
-**Critiques:**
-- **pursue** (Tue Feb 10 18:44:54 EST 2026) Pursuing this. We have enough domain knowledge to build a meaningful multi-order model: continuous hot-end with thickness families, tempering as the discrete downstream bottleneck, changeover costs, and due-date-driven OTD. Will use a time-bucket approach for the hot end and synthetic 6-order dataset.
-
----
-
-## DPOs (Development Plan Objects)
-
-### DPO 1 (pedagogical)
-
-- **Citing DPAO:** 2
-- **Version:** 1.0.0
-- **ASCR refs:** flow-shop
-
-Pedagogical MiniZinc model showing the minimum residence time for a single production lot flowing through the plate glass facility. Consolidates 8 subprocesses into 7 tasks (merging inspection/trimming with cutting). Demonstrates flow-shop sequencing constraints and makespan minimization. Total residence time: ~26.5 hours, dominated by the 21-hour melting/refining step.
-
-**Observations:** The flow-shop ASCR reveals 8 sequential subprocesses. Melting/refining dominates at 18-24 hours (~80% of total time). The continuous hot-end (melting through annealing) accounts for ~96% of residence time. Discrete cold-end steps (cutting, packing) are comparatively trivial in duration. This makes the furnace the clear bottleneck for throughput scheduling.
-
-```minizinc
-% Plate Glass Production - Single Job Residence Time
-% Pedagogical MiniZinc: What is the minimum time for one production lot
-% to flow through the plate glass facility?
-
-% The tasks in plate glass production, in flow-shop order
-enum TASK = {
-  batch_prep,        % Weighing, mixing raw materials, charging furnace
-  melting,           % Float furnace melting and refining
-  conditioning,      % Forehearth temperature conditioning
-  float_forming,     % Tin bath ribbon forming
-  annealing,         % Lehr cooling for stress relief
-  cut_and_inspect,   % Online inspection, trimming, cutting, breakout
-  packing            % Packing, staging, shipping prep
-};
-
-% Task durations in minutes (using representative midpoints)
-array[TASK] of int: duration = [
-  23,     % batch_prep: ~15-30 min
-  1260,   % melting: ~18-24 hours (midpoint ~21h = 1260 min)
-  60,     % conditioning: ~30-90 min
-  68,     % float_forming: ~45-90 min
-  135,    % annealing: ~1.5-3 hours (midpoint ~2.25h = 135 min)
-  13,     % cut_and_inspect: ~5-15 min (consolidated)
-  33      % packing: ~20-45 min
-];
-
-% Decision variables: start time of each task
-array[TASK] of var 0..2000: start;
-
-% Constraints: each task starts after the previous one ends (flow-shop order)
-constraint start[batch_prep] = 0;  % First task starts at time zero
-constraint start[melting]        >= start[batch_prep]    + duration[batch_prep];
-constraint start[conditioning]   >= start[melting]       + duration[melting];
-constraint start[float_forming]  >= start[conditioning]  + duration[conditioning];
-constraint start[annealing]      >= start[float_forming] + duration[float_forming];
-constraint start[cut_and_inspect]>= start[annealing]     + duration[annealing];
-constraint start[packing]        >= start[cut_and_inspect]+ duration[cut_and_inspect];
-
-% The makespan: when the last task finishes
-var int: makespan = start[packing] + duration[packing];
-
-% Minimize total residence time
-solve minimize makespan;
-
-output [
-  "=== Plate Glass Single-Lot Residence Time ===\n"
-] ++
-[ show(t) ++ ": start=" ++ show(start[t]) ++ " dur=" ++ show(duration[t]) ++ " end=" ++ show(start[t] + duration[t]) ++ "\n"
-  | t in TASK
-] ++
-[
-  "Total Makespan: " ++ show(makespan) ++ " minutes (" ++
-  show(makespan div 60) ++ " hours " ++ show(makespan mod 60) ++ " min)\n"
-];
-```
-
-**Solver output:**
-```
-batch_prep: start=0 dur=23 end=23
-melting: start=23 dur=1260 end=1283
-conditioning: start=1283 dur=60 end=1343
-float_forming: start=1343 dur=68 end=1411
-annealing: start=1411 dur=135 end=1546
-cut_and_inspect: start=1546 dur=13 end=1559
-packing: start=1559 dur=33 end=1592
-Total Makespan: 1592 minutes (26 hours 32 min)
-```
-
----
-
-### DPO 2 (development)
-
-- **Citing DPAO:** 4
-- **Version:** 1.0.0
-- **ASCR refs:** flow-shop, challenges--float-line-(melting-furnace-+-tin-bath-+-lehr), challenges--tempering-furnaces
-
-Multi-order scheduling model for plate glass production. Sequences 5 orders through the continuous hot-end and discrete tempering bottleneck. Models thickness-family changeovers on both resources, precedence (tempering after hot-end), and due dates. Objective minimizes weighted tardiness plus changeover penalties. Demonstrates the core scheduling tradeoff: grouping by family reduces changeovers but may increase tardiness.
-
-**Observations:** Three severity-8 bottleneck ASCRs confirm: (1) float line thickness transitions take 2-6 hours with 10-40 tons scrap, (2) tempering changeovers take 20-45 min with trial scrap, (3) laminating autoclave cycles 3.5-4.5h. The expert confirmed the hot end is continuous with overlapping lots. Scheduling goals: 95%+ OTD, maximize tempering utilization, reduce changeovers by 2-3/day. This model captures the hot-end sequencing + tempering scheduling with family-dependent changeovers and tardiness minimization.
-
-```minizinc
-% Plate Glass Scheduling - Order Sequencing Model
-% Hot-end: sequence orders (grouped by family to minimize changeovers)
-% Tempering: single machine with changeover-dependent sequencing
-% 5 orders over ~16 hours
-
-include "alldifferent.mzn";
-
-int: n = 5;
-set of int: ORDER = 1..n;
-
-% Families: 1=thin, 2=medium, 3=thick
-array[ORDER] of int: family =     [1, 2, 3, 1, 2];
-array[ORDER] of int: hotend_dur = [180, 240, 300, 180, 180]; % min on hot end
-array[ORDER] of int: temper_dur = [45,  75, 120,  50,  60];  % min tempering
-array[ORDER] of int: due =        [720, 480, 1200, 1080, 960]; % due time (min)
-
-% Changeover times (hot-end transitions between families)
-array[1..3, 1..3] of int: hotend_co = [|
-  0,  60, 120 |
-  60,  0,  90 |
-  120, 90,  0 |];
-
-% Tempering changeover between families
-array[1..3, 1..3] of int: temp_co = [|
-  0,  20, 35 |
-  20,  0, 25 |
-  35, 25,  0 |];
-
-% === Decision Variables ===
-
-% Hot-end sequence position for each order
-array[ORDER] of var 1..n: h_pos;
-constraint alldifferent(h_pos);
-
-% Hot-end start/end times
-array[ORDER] of var 0..3000: h_start;
-array[ORDER] of var 0..3000: h_end;
-
-% Tempering sequence position
-array[ORDER] of var 1..n: t_pos;
-constraint alldifferent(t_pos);
-
-% Tempering start/end times
-array[ORDER] of var 0..3000: t_start;
-array[ORDER] of var 0..3000: t_end;
-
-% Completion and tardiness
-array[ORDER] of var 0..3000: tard;
-
-% === Constraints ===
-
-% Hot-end duration
-constraint forall(o in ORDER)(h_end[o] = h_start[o] + hotend_dur[o]);
-
-% First on hot end starts at 0
-constraint forall(o in ORDER)(h_pos[o] = 1 -> h_start[o] = 0);
-
-% Hot-end sequencing with changeovers
-constraint forall(o1, o2 in ORDER where o1 != o2)(
-  h_pos[o1] + 1 = h_pos[o2] ->
-	h_start[o2] >= h_end[o1] + hotend_co[family[o1], family[o2]]
-);
-
-% Tempering after hot-end
-constraint forall(o in ORDER)(t_start[o] >= h_end[o]);
-
-% Tempering duration
-constraint forall(o in ORDER)(t_end[o] = t_start[o] + temper_dur[o]);
-
-% First on tempering
-constraint forall(o in ORDER)(
-  t_pos[o] = 1 -> t_start[o] >= h_end[o]
-);
-
-% Tempering sequencing with changeovers
-constraint forall(o1, o2 in ORDER where o1 != o2)(
-  t_pos[o1] + 1 = t_pos[o2] ->
-	t_start[o2] >= t_end[o1] + temp_co[family[o1], family[o2]]
-);
-
-% Tardiness
-constraint forall(o in ORDER)(
-  tard[o] >= t_end[o] - due[o]
-);
-constraint forall(o in ORDER)(tard[o] >= 0);
-
-% Count hot-end changeovers (family changes in sequence)
-var 0..n: num_hotend_co;
-constraint num_hotend_co = sum(o1, o2 in ORDER where o1 != o2)(
-  bool2int(h_pos[o1] + 1 = h_pos[o2] /\ family[o1] != family[o2])
-);
-
-% === Objective ===
-var int: total_tard = sum(o in ORDER)(tard[o]);
-var int: obj = total_tard + 100 * num_hotend_co;
-
-solve minimize obj;
-
-output [
-  "=== Plate Glass 5-Order Schedule ===\n",
-  "Hot-end changeovers: ", show(num_hotend_co), "\n",
-  "Total tardiness: ", show(total_tard), " min\n",
-  "Objective (tard + 100*co): ", show(obj), "\n\n",
-  "--- Hot-End Sequence ---\n"
-] ++
-[ "Pos " ++ show(h_pos[o]) ++ ": Order " ++ show(o) ++
-  " (fam=" ++ show(family[o]) ++ ")" ++
-  " " ++ show(h_start[o]) ++ "-" ++ show(h_end[o]) ++ " min\n"
-  | o in ORDER
-] ++
-[ "\n--- Tempering Sequence ---\n" ] ++
-[ "Pos " ++ show(t_pos[o]) ++ ": Order " ++ show(o) ++
-  " (fam=" ++ show(family[o]) ++ ")" ++
-  " " ++ show(t_start[o]) ++ "-" ++ show(t_end[o]) ++
-  " due=" ++ show(due[o]) ++
-  " tard=" ++ show(tard[o]) ++ " min\n"
-  | o in ORDER
-];
-```
-
-**Solver output:**
-```
-Hot-end changeovers: 2
-Total tardiness: 180 min
-Objective (tard + 100*co): 380
-
-Hot-End Sequence:
-Pos 3: Order 1 (fam=1) 480-660 min
-Pos 1: Order 2 (fam=2) 0-240 min
-Pos 5: Order 3 (fam=3) 960-1260 min
-Pos 4: Order 4 (fam=1) 660-840 min
-Pos 2: Order 5 (fam=2) 240-420 min
-
-Tempering Sequence:
-Pos 3: Order 1 (fam=1) 660-705 due=720 tard=0
-Pos 1: Order 2 (fam=2) 240-315 due=480 tard=0
-Pos 5: Order 3 (fam=3) 1260-1380 due=1200 tard=180
-Pos 4: Order 4 (fam=1) 840-890 due=1080 tard=0
-Pos 2: Order 5 (fam=2) 420-480 due=960 tard=0
-
-Solver groups families: [2,2,1,1,3] on hot end (2 changeovers).
-Order 3 (thick glass, fam=3) is late by 180 min - it needs the longest hot-end time and runs last.
-```
-
----
-
 ## Steps Timeline
 
 | # | Action | Status | Timestamp | Data |
@@ -1596,7 +1591,7 @@ Order 3 (thick glass, fam=3) is late by 180 min - it needs the longest hot-end t
 | 5 | ds-interview | completed | Tue Feb 10 18:37:21 EST 2026 | ds-id: :process/flow-shop |
 | 6 | create-DPAO |  | Tue Feb 10 18:38:01 EST 2026 | DPAO_id: 2 |
 | 7 | edit-DPO |  | Tue Feb 10 18:39:04 EST 2026 | operation: create, id: 1 |
-| 8 | discuss-solution |  | Tue Feb 10 18:39:26 EST 2026 | question: We've been looking at your production line and estimated the minimum time for a single lot to flow t, DPO-id: 1 |
+| 8 | discuss-solution |  | Tue Feb 10 18:39:26 EST 2026 | question: We've been looking at your production line and estimated the minimum time for a ..., DPO-id: 1 |
 | 9 | ds-interview | completed | Tue Feb 10 18:39:35 EST 2026 | ds-id: :resources/warm-up |
 | 10 | ds-interview | completed | Tue Feb 10 18:40:01 EST 2026 | ds-id: :data/warm-up |
 | 11 | ds-interview | completed | Tue Feb 10 18:40:27 EST 2026 | ds-id: :resources/challenges, question-topic: float-line-(melting-furnace-+-tin-bath-+-lehr) |
@@ -1607,7 +1602,7 @@ Order 3 (thick glass, fam=3) is late by 180 min - it needs the longest hot-end t
 | 16 | ds-interview | completed | Tue Feb 10 18:43:09 EST 2026 | ds-id: :data/orm-modeling, question-topic: customer-order-log |
 | 17 | second-opinion |  | Tue Feb 10 18:44:39 EST 2026 | created-DPAO: 4 |
 | 18 | edit-DPO |  | Tue Feb 10 18:48:43 EST 2026 | operation: create, id: 2 |
-| 19 | discuss-solution |  | Tue Feb 10 18:49:09 EST 2026 | question: We've built a scheduling model that sequences 5 orders through the hot end and then tempering. It gr, DPO-id: 2 |
+| 19 | discuss-solution |  | Tue Feb 10 18:49:09 EST 2026 | question: We've built a scheduling model that sequences 5 orders through the hot end and t..., DPO-id: 2 |
 | 20 | ds-interview | completed | Tue Feb 10 18:49:21 EST 2026 | ds-id: :resources/availability-and-maintenance, question-topic: float-line-(melting-furnace-+-tin-bath-+-lehr) |
 | 21 | ds-interview | completed | Tue Feb 10 18:49:59 EST 2026 | ds-id: :resources/availability-and-maintenance, question-topic: tempering-furnaces |
 | 22 | ds-interview | completed | Tue Feb 10 18:50:35 EST 2026 | ds-id: :resources/availability-and-maintenance, question-topic: laminating-line-(layup-room-+-autoclave) |

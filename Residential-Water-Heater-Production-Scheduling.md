@@ -74,27 +74,27 @@ To classify your scheduling problem, could you briefly describe:
 5) whether you repeat a similar schedule cycle (e.g., same weekly pattern)?
 
 ### Expert
-1) **Typical “job”**  
+1) **Typical “job”**
 A job is usually a **customer order for a batch of residential water heaters**. A common job size for us is **50–200 units of the same model** (e.g., 40-gallon electric or 50-gallon gas), tied to a promised ship date.
 
-2) **Main steps + whether all jobs follow same route**  
-Most jobs follow the same overall order, but there are **branch points by product type (electric vs. gas) and tank size**. Typical step flow is:  
-- **Tank fabrication** (cut/roll/weld)  
-- **Leak test** (hydro/air)  
-- **Surface prep + lining/enamel** (depends on model/finish)  
-- **Cure/oven time** (if lined)  
-- **Final assembly** (heating elements/thermostats for electric; burner/valve/vent parts for gas)  
-- **Final test** (electrical checks or gas/combustion safety checks)  
-- **Pack + palletize + staging for shipping**  
+2) **Main steps + whether all jobs follow same route**
+Most jobs follow the same overall order, but there are **branch points by product type (electric vs. gas) and tank size**. Typical step flow is:
+- **Tank fabrication** (cut/roll/weld)
+- **Leak test** (hydro/air)
+- **Surface prep + lining/enamel** (depends on model/finish)
+- **Cure/oven time** (if lined)
+- **Final assembly** (heating elements/thermostats for electric; burner/valve/vent parts for gas)
+- **Final test** (electrical checks or gas/combustion safety checks)
+- **Pack + palletize + staging for shipping**
 Electric units skip the gas-train assembly and gas safety testing; gas units add those steps, so the “middle” of the route varies.
 
-3) **What it’s most like (timetabling vs. sequencing vs. project)**  
+3) **What it’s most like (timetabling vs. sequencing vs. project)**
 It’s mostly **sequencing batches through a few key shared resources** (weld/fab capacity, the lining/oven area, final assembly lines, and test stations). We also have some **people assignment** issues (specialists for welding, gas testing), but it’s not like booking classrooms; it’s more like “which batch runs next on which station.”
 
-4) **Continuous flow or discrete batches**  
+4) **Continuous flow or discrete batches**
 It’s **discrete batches**. We build in **lots/batches**, move them between areas, and hold them in staging/queues between steps.
 
-5) **Repeat schedule cycle**  
+5) **Repeat schedule cycle**
 Yes—there’s a repeating cycle. We generally build to a **weekly production plan**, with scheduling done **day-by-day** (what runs on each line each day). Customer demand changes week to week, but the rhythm is usually **a similar Monday–Friday pattern**, with occasional overtime or a Saturday shift when we’re behind.
 
 ---
@@ -109,7 +109,7 @@ Please answer by giving 1–2 imperative sentence templates the scheduling syste
 - “Schedule $APPOINTMENT$ in $SLOT$ with $STAFF$ in $ROOM$”
 
 ### Expert
-- “Start production for $WORK_ORDER$ (e.g., 200 units of Model $SKU$) at $START_TIME$ on $LINE$.”  
+- “Start production for $WORK_ORDER$ (e.g., 200 units of Model $SKU$) at $START_TIME$ on $LINE$.”
 - “Run $WORK_ORDER$ on $LINE$ from $START_TIME$ to $END_TIME$ so it ships on $SHIP_DATE$ (don’t start unless $CRITICAL_PARTS$ are available).”
 
 ---
@@ -122,20 +122,20 @@ To start mapping your flow-shop at a high level: what product (or family of prod
 ### Expert
 We make residential tank-style water heaters, mainly two families:
 
-1) **Gas-fired** (natural gas/propane): 40, 50, 75 gallon  
+1) **Gas-fired** (natural gas/propane): 40, 50, 75 gallon
 2) **Electric**: 40 and 50 gallon
 
 Major end-to-end production stages (high level, in order):
 
-1) **Inbound receiving & inspection** (steel coils/sheets, burners/gas valves, heating elements, thermostats, anode rods, insulation, cartons/pallets)  
-2) **Tank fabrication** (cut/form shell, seam weld, attach top/bottom heads, weld fittings/ports)  
-3) **Leak test (pre-finish)** (pressure test tanks)  
-4) **Internal lining / coating** (apply glass/enamel lining and cure/fire)  
-5) **Outer jacket fabrication** (form outer shell/jacket and panels)  
-6) **Foam insulation** (assemble tank + jacket, inject foam, cure)  
-7) **Final assembly** (install anode, dip tube, drain valve; then gas train/burner or electric elements/thermostats; fit covers and labels)  
-8) **Final test & safety checks** (functional test, pressure/leak re-check; for gas, ignition/combustion checks)  
-9) **Packaging** (bagging, corner protectors, carton, palletize, stretch wrap)  
+1) **Inbound receiving & inspection** (steel coils/sheets, burners/gas valves, heating elements, thermostats, anode rods, insulation, cartons/pallets)
+2) **Tank fabrication** (cut/form shell, seam weld, attach top/bottom heads, weld fittings/ports)
+3) **Leak test (pre-finish)** (pressure test tanks)
+4) **Internal lining / coating** (apply glass/enamel lining and cure/fire)
+5) **Outer jacket fabrication** (form outer shell/jacket and panels)
+6) **Foam insulation** (assemble tank + jacket, inject foam, cure)
+7) **Final assembly** (install anode, dip tube, drain valve; then gas train/burner or electric elements/thermostats; fit covers and labels)
+8) **Final test & safety checks** (functional test, pressure/leak re-check; for gas, ignition/combustion checks)
+9) **Packaging** (bagging, corner protectors, carton, palletize, stretch wrap)
 10) **Finished goods staging & shipping** (dock schedule, load trailers, ship to distributors/retailers)
 
 ---
@@ -225,7 +225,7 @@ At this point, having run the 'process/scheduling-action-types' DS, you may have
 These sentences might, for example:
    * sequence work into the production facility (common in flow shops and job shops),
    * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or 
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
    * describe which vehicles visits which customers when (common in routing problem),
  or a variety actions necessary to get their work done.
 Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
@@ -274,7 +274,7 @@ First pedagogical MiniZinc demonstrating minimum residence time for one water he
 
 % The 7 main production tasks in sequence
 enum Task = {tankFab, leakTest, lining, foamInsulation,
-             finalAssembly, finalTest, packaging};
+			 finalAssembly, finalTest, packaging};
 
 % Duration of each task in minutes (midpoint of reported ranges)
 % tankFab=35, leakTest=12, lining(spray+cure)=61, foam(inject+cure)=21
@@ -302,9 +302,9 @@ var int: makespan = start[packaging] + duration[packaging];
 solve minimize makespan;
 
 output ["Water heater production schedule (one unit):\n"] ++
-       [show(t) ++ ": start=" ++ show(start[t]) ++
-        " min, end=" ++ show(start[t] + duration[t]) ++ " min\n" | t in Task] ++
-       ["\nMinimum residence time: " ++ show(makespan) ++ " minutes\n"];
+	   [show(t) ++ ": start=" ++ show(start[t]) ++
+		" min, end=" ++ show(start[t] + duration[t]) ++ " min\n" | t in Task] ++
+	   ["\nMinimum residence time: " ++ show(makespan) ++ " minutes\n"];
 ```
 
 **Solver output:**
@@ -589,16 +589,16 @@ var int: totalTardiness = sum(j in JOBS)(tardiness[j]);
 solve minimize totalTardiness;
 
 output ["Water Heater Schedule (", show(nJobs), " jobs, ",
-        show(nTestStands), " test stands)\n"] ++
-       ["Job | Type    | Due  | Done | Late\n"] ++
-       [show_int(3, j) ++ "  | " ++
-        if jobType[j] = 1 then "Electric" else "Gas    " endif ++
-        " | " ++ show_int(4, dueDate[j]) ++
-        " | " ++ show_int(4, fix(completion[j])) ++
-        " | " ++ show_int(4, fix(tardiness[j])) ++ "\n" | j in JOBS] ++
-       ["\nTotal tardiness: " ++ show(totalTardiness) ++ " minutes\n" ++
-        "On-time jobs: " ++ show(sum(j in JOBS)(bool2int(tardiness[j] = 0))) ++
-        "/" ++ show(nJobs) ++ "\n"];
+		show(nTestStands), " test stands)\n"] ++
+	   ["Job | Type    | Due  | Done | Late\n"] ++
+	   [show_int(3, j) ++ "  | " ++
+		if jobType[j] = 1 then "Electric" else "Gas    " endif ++
+		" | " ++ show_int(4, dueDate[j]) ++
+		" | " ++ show_int(4, fix(completion[j])) ++
+		" | " ++ show_int(4, fix(tardiness[j])) ++ "\n" | j in JOBS] ++
+	   ["\nTotal tardiness: " ++ show(totalTardiness) ++ " minutes\n" ++
+		"On-time jobs: " ++ show(sum(j in JOBS)(bool2int(tardiness[j] = 0))) ++
+		"/" ++ show(nJobs) ++ "\n"];
 ```
 
 **Solver output:**
@@ -695,21 +695,21 @@ On-time jobs: 10/10
   {:subprocesses [],
    :inputs
    [{:item-id "insulated tank+jacket assemblies",
-     :from "foam-insulation"}
-    "anode rods"
-    "dip tubes"
-    "drain valves"
-    "gas train components (burner/gas valve)"
-    "electric heating elements"
-    "electric thermostats"
-    "covers"
-    "labels"],
+	 :from "foam-insulation"}
+	"anode rods"
+	"dip tubes"
+	"drain valves"
+	"gas train components (burner/gas valve)"
+	"electric heating elements"
+	"electric thermostats"
+	"covers"
+	"labels"],
    :outputs ["assembled water heaters"],
    :resources ["assembly stations/tools"],
    :process-id "final-assembly",
    :duration
    {:value-string "Electric 18–30 per unit; Gas 28–45 per unit",
-    :units "minutes"}}
+	:units "minutes"}}
   {:subprocesses [],
    :inputs ["steel coils/sheets"],
    :outputs ["outer jackets/panels"],
@@ -724,35 +724,35 @@ On-time jobs: 10/10
    :process-id "final-test-and-safety-checks",
    :duration
    {:value-string "Electric 8–12 per unit; Gas 12–20 per unit",
-    :units "minutes"}}
+	:units "minutes"}}
   {:subprocesses [],
    :inputs
    ["steel coils/sheets"
-    "burners"
-    "gas valves"
-    "heating elements"
-    "thermostats"
-    "anode rods"
-    "insulation materials"
-    "cartons"
-    "pallets"],
+	"burners"
+	"gas valves"
+	"heating elements"
+	"thermostats"
+	"anode rods"
+	"insulation materials"
+	"cartons"
+	"pallets"],
    :outputs ["inspected materials/components"],
    :process-id "inbound-receiving-and-inspection"}
   {:subprocesses [],
    :inputs
    [{:item-id "tested/approved water heaters",
-     :from "final-test-and-safety-checks"}
-    "bags"
-    "corner protectors"
-    "cartons"
-    "pallets"
-    "stretch wrap"],
+	 :from "final-test-and-safety-checks"}
+	"bags"
+	"corner protectors"
+	"cartons"
+	"pallets"
+	"stretch wrap"],
    :outputs ["packaged water heaters"],
    :resources ["packaging line equipment"],
    :process-id "packaging",
    :duration
    {:value-string "6–12 per unit (special/mixed pallets +3–5)",
-    :units "minutes"}}
+	:units "minutes"}}
   {:subprocesses [],
    :inputs [{:item-id "packaged water heaters", :from "packaging"}],
    :outputs ["shipped water heaters"],
@@ -760,32 +760,32 @@ On-time jobs: 10/10
    :process-id "finished-goods-staging-and-shipping",
    :duration
    {:value-string "varies by dock schedule/trailer availability",
-    :units "varies"}}
+	:units "varies"}}
   {:subprocesses [],
    :inputs
    [{:item-id "lined tanks (cured/fired)",
-     :from "internal-lining-coating"}
-    {:item-id "outer jackets/panels", :from "outer-jacket-fabrication"}
-    "foam chemicals"],
+	 :from "internal-lining-coating"}
+	{:item-id "outer jackets/panels", :from "outer-jacket-fabrication"}
+	"foam chemicals"],
    :outputs ["insulated tank+jacket assemblies"],
    :resources ["foam injection equipment"],
    :process-id "foam-insulation",
    :duration
    {:value-string
-    "Injection 4–7 per unit; in-fixture cure 12–18 per unit",
-    :units "minutes"}}
+	"Injection 4–7 per unit; in-fixture cure 12–18 per unit",
+	:units "minutes"}}
   {:subprocesses [],
    :inputs
    ["pressure-tested tanks (pre-finish)"
-    "glass/enamel lining materials"],
+	"glass/enamel lining materials"],
    :outputs ["lined tanks (cured/fired)"],
    :resources
    ["coating application equipment" "curing/firing oven or furnace"],
    :process-id "internal-lining-coating",
    :duration
    {:value-string
-    "Spray/coat 10–15 per tank; oven/fire cure 35–60 per batch (12–20 tanks/run)",
-    :units "minutes"}}
+	"Spray/coat 10–15 per tank; oven/fire cure 35–60 per batch (12–20 tanks/run)",
+	:units "minutes"}}
   {:subprocesses [],
    :inputs ["fabricated tank shells with fittings/ports"],
    :outputs ["pressure-tested tanks (pre-finish)"],
@@ -793,7 +793,7 @@ On-time jobs: 10/10
    :process-id "leak-test-pre-finish",
    :duration
    {:value-string "8–15 per tank (rework +20–60 if fail)",
-    :units "minutes"}}],
+	:units "minutes"}}],
  :inputs
  ["steel coils/sheets"
   "burners"
