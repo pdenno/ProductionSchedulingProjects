@@ -104,29 +104,29 @@ To classify your scheduling problem: can you briefly describe the main productio
 ### Expert
 Main steps for our fiberglass insulation line, in order, look like this:
 
-1) **Raw materials handling & batching**: we bring in glass cullet/sand (depending on the recipe) and binder chemicals; we batch them into a mixed feed.  
-2) **Melting furnace**: continuous melt, basically 24/7.  
-3) **Fiberizing (forming fibers)**: the molten glass goes through spinners/bushings to make fibers; binder gets applied.  
-4) **Forming hood / collection conveyor**: fibers are collected into a mat (this is where thickness/weight starts getting controlled).  
-5) **Curing oven**: sets the binder; oven settings depend on product density/thickness.  
-6) **Cooling section**  
-7) **Trim / edge cut / thickness control**  
-8) **Cut-to-length & packaging**: cut into batts/rolls/boards, stack, bag/wrap, label.  
-9) **Palletizing & stretch wrap**  
+1) **Raw materials handling & batching**: we bring in glass cullet/sand (depending on the recipe) and binder chemicals; we batch them into a mixed feed.
+2) **Melting furnace**: continuous melt, basically 24/7.
+3) **Fiberizing (forming fibers)**: the molten glass goes through spinners/bushings to make fibers; binder gets applied.
+4) **Forming hood / collection conveyor**: fibers are collected into a mat (this is where thickness/weight starts getting controlled).
+5) **Curing oven**: sets the binder; oven settings depend on product density/thickness.
+6) **Cooling section**
+7) **Trim / edge cut / thickness control**
+8) **Cut-to-length & packaging**: cut into batts/rolls/boards, stack, bag/wrap, label.
+9) **Palletizing & stretch wrap**
 10) **Warehouse staging & shipping**
 
-**Routes / different products:**  
-- The **front end (melt → fiberize → form → cure → cool → trim)** is the same route for almost everything. It’s essentially one main line.  
-- The **back end differs** by product type: **batts vs rolls vs boards** use different cutting patterns, packaging materials, and sometimes different downstream equipment setups (e.g., different baggers/wrappers, label rules, pallet patterns).  
+**Routes / different products:**
+- The **front end (melt → fiberize → form → cure → cool → trim)** is the same route for almost everything. It’s essentially one main line.
+- The **back end differs** by product type: **batts vs rolls vs boards** use different cutting patterns, packaging materials, and sometimes different downstream equipment setups (e.g., different baggers/wrappers, label rules, pallet patterns).
 - Also, products differ by **thickness, width, density (R-value)**, which drives **oven recipe, line speed, and changeover time**, even if the machine path is the same.
 
-**Continuous vs discrete:**  
-- The process is **continuous flow** through the hot end (furnace through curing/cooling/trim).  
+**Continuous vs discrete:**
+- The process is **continuous flow** through the hot end (furnace through curing/cooling/trim).
 - We treat production as **discrete “runs”/lots** for scheduling purposes: a run is typically a few hours to a shift of the same SKU/spec before we change settings and packaging.
 
-**Schedule cycle / repetition:**  
-- We generally run a **weekly cycle**: we build a weekly plan (Mon–Sun) and then adjust daily based on orders, inventory, and downtime.  
-- It’s not identical every week, but there are **repeat patterns** (same top 20 SKUs show up most weeks, and we try to group by similar thickness/density to reduce changeovers).  
+**Schedule cycle / repetition:**
+- We generally run a **weekly cycle**: we build a weekly plan (Mon–Sun) and then adjust daily based on orders, inventory, and downtime.
+- It’s not identical every week, but there are **repeat patterns** (same top 20 SKUs show up most weeks, and we try to group by similar thickness/density to reduce changeovers).
 - Month-end tends to be heavier on shipping, so the last week of the month often has more “must-run” items and less flexibility.
 
 ---
@@ -373,13 +373,13 @@ Your 30–60 minute cross-family changeovers are in the right ballpark for us *o
 
 What typically drives the time for us (roughly biggest to smallest):
 
-- **Facing / product type (kraft vs FSK vs unfaced):**  
-  - Kraft → FSK (or FSK → kraft) is usually the longest because the SKU presentation, labeling, and QA checks are different. **60 minutes** is realistic for that kind of “commercial vs residential” swap.  
-- **Bag film / bag length / print change + label roll swap:**  
-  - If it’s a new bag size or different printed film, we’re swapping film rolls and dialing in sealing. That’s usually **20–40 minutes** by itself if everything is staged.  
-- **Compression / thickness / pack count changes:**  
-  - Adjusting compression gates, bundle height, and sometimes pusher timing. If it’s just thickness and count changes within the same general packaging format, that’s more like **10–25 minutes**.  
-- **Code date / printer setup + verification:**  
+- **Facing / product type (kraft vs FSK vs unfaced):**
+  - Kraft → FSK (or FSK → kraft) is usually the longest because the SKU presentation, labeling, and QA checks are different. **60 minutes** is realistic for that kind of “commercial vs residential” swap.
+- **Bag film / bag length / print change + label roll swap:**
+  - If it’s a new bag size or different printed film, we’re swapping film rolls and dialing in sealing. That’s usually **20–40 minutes** by itself if everything is staged.
+- **Compression / thickness / pack count changes:**
+  - Adjusting compression gates, bundle height, and sometimes pusher timing. If it’s just thickness and count changes within the same general packaging format, that’s more like **10–25 minutes**.
+- **Code date / printer setup + verification:**
   - Usually **5–10 minutes**, but if there’s a misread or we have to clean the print head it can balloon.
 
 So your examples:
@@ -394,15 +394,15 @@ Also, the “same-family = 0” assumption is mostly OK *if* it’s truly the sa
 
 It’s not purely due date. We usually follow a simple priority stack like this:
 
-1. **Customer ship time / trailer appointment (hard deadline)**  
+1. **Customer ship time / trailer appointment (hard deadline)**
    - If we have a 2:00 pm pickup, that order goes first even if another order has an earlier internal due date but no appointment.
-2. **Avoid starving either production line (WIP pressure)**  
+2. **Avoid starving either production line (WIP pressure)**
    - If Line 1 has 6 bunks staged and Line 2 has 1 bunk staged, we’ll often package Line 1 first to prevent the melt/forming side from getting blocked and slowing down upstream.
-3. **Changeover minimization (run the “like” items together)**  
+3. **Changeover minimization (run the “like” items together)**
    - If two orders are both due today, we’ll pick the one that lets us stay in the same family/format longer.
-4. **Material/packaging availability**  
+4. **Material/packaging availability**
    - If the right bag film or label roll isn’t on the floor yet, we’ll run what we can without waiting.
-5. **Risk / rework history**  
+5. **Risk / rework history**
    - If a certain FSK SKU has been touchy, we’ll schedule it when the most experienced crew is on shift (day shift), even if it’s not the earliest due.
 
 Concrete example from our day-to-day: if at 7:00 am both lines have product staged, and we have (a) an FSK commercial order shipping at 1:00 pm and (b) an R-13 unfaced order shipping end-of-day, we’ll usually run the **FSK first** even if it causes a longer changeover later—because missing that appointment is a bigger penalty than an extra 30 minutes of changeover.
@@ -429,8 +429,8 @@ The curing oven is the bottleneck for us because almost everything has to pass t
 
 - **Changeovers between products**
   - The big one is **binder/resin system changes** (or significant basis-weight/thickness shifts). Those usually require:
-    - **30–45 minutes** to flush/transition and dial in settings if it’s a “close” change.
-    - **60–120 minutes** if it’s a major jump (e.g., very different thickness or binder), because we’ll generate off-spec material while tuning.
+	- **30–45 minutes** to flush/transition and dial in settings if it’s a “close” change.
+	- **60–120 minutes** if it’s a major jump (e.g., very different thickness or binder), because we’ll generate off-spec material while tuning.
   - In practice we try to **sequence similar SKUs back-to-back** and group orders by product family for a **half-day or full-day campaign**.
 
 - **Quality constraints tied to cure**
@@ -439,8 +439,8 @@ The curing oven is the bottleneck for us because almost everything has to pass t
 
 - **Maintenance / downtime**
   - We do planned maintenance on a regular cadence:
-    - **Weekly**: short checks/cleaning, typically **1–2 hours**, often scheduled on a low-demand window.
-    - **Monthly**: deeper PM, typically **4–8 hours**.
+	- **Weekly**: short checks/cleaning, typically **1–2 hours**, often scheduled on a low-demand window.
+	- **Monthly**: deeper PM, typically **4–8 hours**.
   - Unplanned issues (burner trips, fan/VFD faults, sensor failures) happen roughly **1–2 times per month**, and downtime can be **30 minutes to 6 hours** depending on what failed and if parts are on hand.
 
 - **Shift and staffing limits**
@@ -481,17 +481,17 @@ For the customer-order list you work from, what information do you track for eac
 ### Expert
 For each customer order, we track a pretty standard set of fields in a spreadsheet:
 
-- **Sales order number** (our internal SO#, e.g., “SO-241893”) and **line number** if it has multiple products  
-- **Customer name** and **ship-to location** (sometimes different from billing)  
-- **Product**: insulation type (batts/rolls/loose-fill), **R-value/grade**, **thickness**, **width/length**, and **facing** (kraft/foil/unfaced)  
-- **Packaging**: bundle count per pallet, pallet type, and any labeling requirements (customer-specific labels)  
-- **Ordered quantity**: usually in **pallets** and **units/bundles**, and we also note the **estimated weight** for the truck  
-- **Due date / promise date** and the **requested ship date** (if they specify it separately)  
-- **Shipping method**: customer pickup vs our carrier, and **lane** (destination state/city), plus any **delivery appointment** requirement  
-- **Priority/status**: “new / scheduled / in production / on hold / complete / shipped”  
-- **Inventory allocation**: whether we’re pulling from finished goods or it must be made, and any **partial-ship allowed** note  
-- **Production notes**: special run notes (e.g., “same lot,” “no substitutions,” “tight wrap,” etc.)  
-- **Planner’s dates**: date we scheduled it, planned production day, and planned ship day  
+- **Sales order number** (our internal SO#, e.g., “SO-241893”) and **line number** if it has multiple products
+- **Customer name** and **ship-to location** (sometimes different from billing)
+- **Product**: insulation type (batts/rolls/loose-fill), **R-value/grade**, **thickness**, **width/length**, and **facing** (kraft/foil/unfaced)
+- **Packaging**: bundle count per pallet, pallet type, and any labeling requirements (customer-specific labels)
+- **Ordered quantity**: usually in **pallets** and **units/bundles**, and we also note the **estimated weight** for the truck
+- **Due date / promise date** and the **requested ship date** (if they specify it separately)
+- **Shipping method**: customer pickup vs our carrier, and **lane** (destination state/city), plus any **delivery appointment** requirement
+- **Priority/status**: “new / scheduled / in production / on hold / complete / shipped”
+- **Inventory allocation**: whether we’re pulling from finished goods or it must be made, and any **partial-ship allowed** note
+- **Production notes**: special run notes (e.g., “same lot,” “no substitutions,” “tight wrap,” etc.)
+- **Planner’s dates**: date we scheduled it, planned production day, and planned ship day
 - **Actuals once done**: actual produced quantity, ship date, **BOL number**, and tracking/pro number if applicable
 
 The big ones we use day-to-day to schedule are product specs, quantity (pallets), promise date, ship-to/delivery requirements, and whether it can ship partial or must be complete.
@@ -663,25 +663,25 @@ Overall: the choices you described sound like what we’d do manually given thos
  [{:subprocesses [],
    :duration
    {:value-string
-    "30–60 per inbound truck unload + check-in; line-side staging ~10–20 per batch",
-    :units "minutes"},
+	"30–60 per inbound truck unload + check-in; line-side staging ~10–20 per batch",
+	:units "minutes"},
    :inputs
    ["glass batch/cullet"
-    "binder chemicals"
-    "packaging materials"
-    "pallets"],
+	"binder chemicals"
+	"packaging materials"
+	"pallets"],
    :outputs ["materials available at line-side storage"],
    :resources
    ["receiving dock"
-    "forklifts"
-    "raw material silos/hoppers"
-    "binder tank farm"],
+	"forklifts"
+	"raw material silos/hoppers"
+	"binder tank farm"],
    :process-id "receive-and-stage-raw-materials"}
   {:subprocesses [],
    :duration
    {:value-string
-    "10–15 to switch/verify a batch recipe (feeding is continuous)",
-    :units "minutes"},
+	"10–15 to switch/verify a batch recipe (feeding is continuous)",
+	:units "minutes"},
    :inputs ["glass batch/cullet" "additives" "energy (gas/electric)"],
    :outputs ["consistent feed into furnace"],
    :resources ["weigh feeders" "conveyors" "hoppers" "batch house"],
@@ -689,7 +689,7 @@ Overall: the choices you described sound like what we’d do manually given thos
   {:subprocesses [],
    :duration
    {:value-string "continuous once hot; cold start-up 8–16 hours",
-    :units "hours"},
+	:units "hours"},
    :inputs ["batch feed" "fuel/energy" "combustion air"],
    :outputs ["molten glass stream"],
    :resources ["melting furnace" "forehearth"],
@@ -697,8 +697,8 @@ Overall: the choices you described sound like what we’d do manually given thos
   {:subprocesses [],
    :duration
    {:value-string
-    "continuous; product changeover stabilization ~15–30",
-    :units "minutes"},
+	"continuous; product changeover stabilization ~15–30",
+	:units "minutes"},
    :inputs
    [{:item-id "molten glass stream", :from "melt-glass-furnace"}],
    :outputs ["glass fibers"],
@@ -707,26 +707,26 @@ Overall: the choices you described sound like what we’d do manually given thos
   {:subprocesses [],
    :duration
    {:value-string
-    "continuous; binder recipe changeover/flush typically 20–40",
-    :units "minutes"},
+	"continuous; binder recipe changeover/flush typically 20–40",
+	:units "minutes"},
    :inputs
    [{:item-id "glass fibers", :from "fiberize"}
-    "binder mix (resin/water/additives)"],
+	"binder mix (resin/water/additives)"],
    :outputs ["wet fiber mat with binder distributed"],
    :resources
    ["binder kitchen (mix tanks)"
-    "pumps"
-    "spray nozzles/manifolds"
-    "forming section"],
+	"pumps"
+	"spray nozzles/manifolds"
+	"forming section"],
    :process-id "apply-binder"}
   {:subprocesses [],
    :duration
    {:value-string
-    "continuous; width/thickness changeover adjustments ~10–20",
-    :units "minutes"},
+	"continuous; width/thickness changeover adjustments ~10–20",
+	:units "minutes"},
    :inputs
    [{:item-id "wet fiber mat with binder distributed",
-     :from "apply-binder"}],
+	 :from "apply-binder"}],
    :outputs
    ["uncured mat at target basis weight and thickness (pre-oven)"],
    :resources
@@ -735,12 +735,12 @@ Overall: the choices you described sound like what we’d do manually given thos
   {:subprocesses [],
    :duration
    {:value-string
-    "2–5 minutes dwell; thermal stabilization on product change 30–60",
-    :units "minutes"},
+	"2–5 minutes dwell; thermal stabilization on product change 30–60",
+	:units "minutes"},
    :inputs
    [{:item-id
-     "uncured mat at target basis weight and thickness (pre-oven)",
-     :from "form-mat-and-pre-compress"}],
+	 "uncured mat at target basis weight and thickness (pre-oven)",
+	 :from "form-mat-and-pre-compress"}],
    :outputs ["cured fiberglass blanket/board"],
    :resources
    ["curing oven (multi-zone)" "oven conveyor" "exhaust/air handling"],
@@ -755,27 +755,27 @@ Overall: the choices you described sound like what we’d do manually given thos
   {:subprocesses [],
    :duration
    {:value-string
-    "continuous; size changeover (knife/saw setup) ~10–25",
-    :units "minutes"},
+	"continuous; size changeover (knife/saw setup) ~10–25",
+	:units "minutes"},
    :inputs
    [{:item-id "cooled mat ready to cut/pack", :from "cool-down"}],
    :outputs
    ["cut insulation to final dimensions (roll/batt/board lengths)"
-    "trim waste"],
+	"trim waste"],
    :resources
    ["edge trimmers" "slitter" "flying saw/knife" "scrap collection"],
    :process-id "trim-and-cut-to-length"}
   {:subprocesses [],
    :duration
    {:value-string "continuous; facing roll/thread changeover ~15–30",
-    :units "minutes"},
+	:units "minutes"},
    :optional? true,
    :inputs
    [{:item-id
-     "cut insulation to final dimensions (roll/batt/board lengths)",
-     :from "trim-and-cut-to-length"}
-    "facing rolls (kraft-foil-scrim/kraft paper)"
-    "adhesive (if used)"],
+	 "cut insulation to final dimensions (roll/batt/board lengths)",
+	 :from "trim-and-cut-to-length"}
+	"facing rolls (kraft-foil-scrim/kraft paper)"
+	"adhesive (if used)"],
    :outputs ["faced insulation"],
    :resources
    ["facer unwind stands" "laminator/press rolls" "glue system"],
@@ -783,44 +783,44 @@ Overall: the choices you described sound like what we’d do manually given thos
   {:subprocesses [],
    :duration
    {:value-string "30–90 per package; film/label changeover ~5–15",
-    :units "seconds"},
+	:units "seconds"},
    :inputs
    [{:item-id
-     "cut insulation to final dimensions (roll/batt/board lengths)",
-     :from "trim-and-cut-to-length"}
-    "film/bags"
-    "labels"],
+	 "cut insulation to final dimensions (roll/batt/board lengths)",
+	 :from "trim-and-cut-to-length"}
+	"film/bags"
+	"labels"],
    :outputs ["packaged rolls or bundles"],
    :resources
    ["compression section"
-    "roll-up/bundler"
-    "bagger/wrapper"
-    "labeler"
-    "checkweigher"],
+	"roll-up/bundler"
+	"bagger/wrapper"
+	"labeler"
+	"checkweigher"],
    :process-id "compress-roll-bundle-and-bag-wrap"}
   {:subprocesses [],
    :duration {:value-string "3–8 per pallet", :units "minutes"},
    :inputs
    [{:item-id "packaged rolls or bundles",
-     :from "compress-roll-bundle-and-bag-wrap"}
-    "pallets"
-    "stretch film"
-    "corner boards (if used)"],
+	 :from "compress-roll-bundle-and-bag-wrap"}
+	"pallets"
+	"stretch film"
+	"corner boards (if used)"],
    :outputs ["finished pallets ready to ship"],
    :resources
    ["palletizer (auto or manual)"
-    "stretch wrapper"
-    "pallet staging lanes"],
+	"stretch wrapper"
+	"pallet staging lanes"],
    :process-id "palletize-and-stretch-wrap"}
   {:subprocesses [],
    :duration
    {:value-string
-    "15–30 per lot for measurements + paperwork (some lab tests longer)",
-    :units "minutes"},
+	"15–30 per lot for measurements + paperwork (some lab tests longer)",
+	:units "minutes"},
    :inputs
    [{:item-id "finished pallets ready to ship",
-     :from "palletize-and-stretch-wrap"}
-    "QC sampling plan"],
+	 :from "palletize-and-stretch-wrap"}
+	"QC sampling plan"],
    :outputs ["released inventory or hold/rework"],
    :resources ["QC lab" "quarantine area"],
    :process-id "finished-goods-qc-and-release"}
@@ -828,9 +828,9 @@ Overall: the choices you described sound like what we’d do manually given thos
    :duration {:value-string "45–90 per truck load", :units "minutes"},
    :inputs
    [{:item-id "released inventory or hold/rework",
-     :from "finished-goods-qc-and-release"}
-    "customer orders"
-    "trailers"],
+	 :from "finished-goods-qc-and-release"}
+	"customer orders"
+	"trailers"],
    :outputs ["shipped product" "shipping documents"],
    :resources ["finished goods warehouse" "forklifts" "dock doors"],
    :process-id "warehouse-staging-and-shipping"}],
@@ -1128,7 +1128,7 @@ At this point, having run the 'process/scheduling-action-types' DS, you may have
 These sentences might, for example:
    * sequence work into the production facility (common in flow shops and job shops),
    * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or 
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
    * describe which vehicles visits which customers when (common in routing problem),
  or a variety actions necessary to get their work done.
 Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
@@ -1248,15 +1248,15 @@ Concrete MiniZinc changes to make (keep scope tight to packaging only; do NOT ad
 
 2) Truck appointment windows as the primary due constraint:
    - Add per-order fields:
-     - bool: has_appt[j]
-     - int: appt_earliest[j], appt_latest[j] (minutes)
-     - int: promise_due[j] (fallback)
+	 - bool: has_appt[j]
+	 - int: appt_earliest[j], appt_latest[j] (minutes)
+	 - int: promise_due[j] (fallback)
    - Add constraints:
-     - if has_appt[j] then end_time[j] <= appt_latest[j] (hard) and optionally end_time[j] >= appt_earliest[j] if finishing too early is problematic; otherwise end_time[j] <= promise_due[j] as a soft or secondary objective.
+	 - if has_appt[j] then end_time[j] <= appt_latest[j] (hard) and optionally end_time[j] >= appt_earliest[j] if finishing too early is problematic; otherwise end_time[j] <= promise_due[j] as a soft or secondary objective.
    - Objective update:
-     - Primary: minimize number of appointment misses (should be 0 if feasible) by making appt_latest hard; if infeasible, minimize lateness beyond appt_latest with a very large weight.
-     - Secondary: minimize total changeover time.
-     - Tertiary (optional): minimize promise-date tardiness for non-appointment orders.
+	 - Primary: minimize number of appointment misses (should be 0 if feasible) by making appt_latest hard; if infeasible, minimize lateness beyond appt_latest with a very large weight.
+	 - Secondary: minimize total changeover time.
+	 - Tertiary (optional): minimize promise-date tardiness for non-appointment orders.
    - Output: explicitly print which orders are appointment-bound, their windows, and whether they meet them.
 
 3) Data alignment with the ORM ASCR (minimal mapping, still embedded example data):
@@ -1342,10 +1342,10 @@ var int: makespan = start[warehouseShip] + duration[warehouseShip];
 solve minimize makespan;
 
 output ["Fiberglass insulation - one order residence time:\n"] ++
-       [show(t) ++ ": start=" ++ show(start[t]) ++
-        " min, end=" ++ show(start[t] + duration[t]) ++ " min\n" | t in Task] ++
-       ["\nMinimum residence time: " ++ show(makespan) ++ " minutes (" ++
-        show(makespan div 60) ++ "h " ++ show(makespan mod 60) ++ "m)\n"];
+	   [show(t) ++ ": start=" ++ show(start[t]) ++
+		" min, end=" ++ show(start[t] + duration[t]) ++ " min\n" | t in Task] ++
+	   ["\nMinimum residence time: " ++ show(makespan) ++ " minutes (" ++
+		show(makespan div 60) ++ "h " ++ show(makespan mod 60) ++ "m)\n"];
 ```
 
 **Solver output:**
@@ -1452,18 +1452,18 @@ var int: makespan = end_time[sequence[n_orders]];
 solve minimize 100 * total_tardiness + total_changeover;
 
 output ["Packaging Line Schedule:\n"] ++
-       ["Pos " ++ show(p) ++ ": Order " ++ show(fix(sequence[p])) ++
-        " (fam " ++ show(family[fix(sequence[p])]) ++ ")" ++
-        " start=" ++ show(start[fix(sequence[p])]) ++
-        " end=" ++ show(end_time[fix(sequence[p])]) ++
-        " due=" ++ show(due[fix(sequence[p])]) ++
-        " tardiness=" ++ show(tardiness[fix(sequence[p])]) ++ "\n"
-        | p in POSITIONS] ++
-       ["\nKPIs:\n",
-        "Makespan: " ++ show(makespan) ++ " min\n",
-        "On-time: " ++ show(n_orders - n_late) ++ "/" ++ show(n_orders) ++ "\n",
-        "Total tardiness: " ++ show(total_tardiness) ++ " min\n",
-        "Changeovers: " ++ show(n_changeovers) ++ " (" ++ show(total_changeover) ++ " min)\n"];
+	   ["Pos " ++ show(p) ++ ": Order " ++ show(fix(sequence[p])) ++
+		" (fam " ++ show(family[fix(sequence[p])]) ++ ")" ++
+		" start=" ++ show(start[fix(sequence[p])]) ++
+		" end=" ++ show(end_time[fix(sequence[p])]) ++
+		" due=" ++ show(due[fix(sequence[p])]) ++
+		" tardiness=" ++ show(tardiness[fix(sequence[p])]) ++ "\n"
+		| p in POSITIONS] ++
+	   ["\nKPIs:\n",
+		"Makespan: " ++ show(makespan) ++ " min\n",
+		"On-time: " ++ show(n_orders - n_late) ++ "/" ++ show(n_orders) ++ "\n",
+		"Total tardiness: " ++ show(total_tardiness) ++ " min\n",
+		"Changeovers: " ++ show(n_changeovers) ++ " (" ++ show(total_changeover) ++ " min)\n"];
 ```
 
 **Solver output:**
@@ -1587,29 +1587,29 @@ var int: makespan = end_time[sequence[n_orders]];
 solve minimize 1000 * total_tardiness + total_changeover;
 
 output ["Packaging Line Schedule v3 (max " ++ show(max_tardiness) ++ " min late):\n\n"] ++
-       ["Pos " ++ show(p) ++ ": " ++ so_number[fix(sequence[p])] ++
-        " L" ++ show(line_num[fix(sequence[p])]) ++
-        " (fam " ++ show(family[fix(sequence[p])]) ++ ")" ++
-        " proc=" ++ show(proc_time[fix(sequence[p])]) ++
-        " start=" ++ show(start[fix(sequence[p])]) ++
-        " end=" ++ show(end_time[fix(sequence[p])]) ++
-        if has_appt[fix(sequence[p])] then
-          " APPT<=" ++ show(appt_latest[fix(sequence[p])])
-        else
-          " due=" ++ show(promise_due[fix(sequence[p])])
-        endif ++
-        " tard=" ++ show(tardiness[fix(sequence[p])]) ++
-        if p < n_orders then " setup=" ++ show(fix(setup[p])) else "" endif ++
-        "\n"
-        | p in POSITIONS] ++
-       ["\nKPIs:\n",
-        "Makespan: " ++ show(makespan) ++ " min\n",
-        "On-time (0 tardiness): " ++ show(n_orders - n_late) ++ "/" ++ show(n_orders) ++ "\n",
-        "All within " ++ show(max_tardiness) ++ " min tolerance: " ++ 
-        if forall(j in ORDERS)(fix(tardiness[j]) <= max_tardiness) then "YES" else "NO" endif ++ "\n",
-        "Total tardiness: " ++ show(total_tardiness) ++ " min\n",
-        "Cross-family changeovers: " ++ show(n_cross_family) ++
-        " (total setup: " ++ show(total_changeover) ++ " min)\n"];
+	   ["Pos " ++ show(p) ++ ": " ++ so_number[fix(sequence[p])] ++
+		" L" ++ show(line_num[fix(sequence[p])]) ++
+		" (fam " ++ show(family[fix(sequence[p])]) ++ ")" ++
+		" proc=" ++ show(proc_time[fix(sequence[p])]) ++
+		" start=" ++ show(start[fix(sequence[p])]) ++
+		" end=" ++ show(end_time[fix(sequence[p])]) ++
+		if has_appt[fix(sequence[p])] then
+		  " APPT<=" ++ show(appt_latest[fix(sequence[p])])
+		else
+		  " due=" ++ show(promise_due[fix(sequence[p])])
+		endif ++
+		" tard=" ++ show(tardiness[fix(sequence[p])]) ++
+		if p < n_orders then " setup=" ++ show(fix(setup[p])) else "" endif ++
+		"\n"
+		| p in POSITIONS] ++
+	   ["\nKPIs:\n",
+		"Makespan: " ++ show(makespan) ++ " min\n",
+		"On-time (0 tardiness): " ++ show(n_orders - n_late) ++ "/" ++ show(n_orders) ++ "\n",
+		"All within " ++ show(max_tardiness) ++ " min tolerance: " ++
+		if forall(j in ORDERS)(fix(tardiness[j]) <= max_tardiness) then "YES" else "NO" endif ++ "\n",
+		"Total tardiness: " ++ show(total_tardiness) ++ " min\n",
+		"Cross-family changeovers: " ++ show(n_cross_family) ++
+		" (total setup: " ++ show(total_changeover) ++ " min)\n"];
 ```
 
 **Solver output:**

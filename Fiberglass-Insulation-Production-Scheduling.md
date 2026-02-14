@@ -6,7 +6,42 @@
 
 ## Summary
 
-Test regeneration with timeline interleaving, table fixes, and DPO discussion labels.
+## Project Complete: Fiberglass Insulation Scheduling
+
+The surrogate expert accepted the packaging line scheduler (DPO 3, v3) for production trial.
+
+### Interviews Completed (10 DS)
+
+| DS | Key Findings |
+|---|---|
+| process/warm-up | Fiberglass insulation (batts/rolls), 2 lines feed shared downstream |
+| process/scheduling-problem-type | Flow-shop principal, single-machine component |
+| process/scheduling-action-types | POs sequenced to minimize changeovers |
+| process/flow-shop | 14 subprocesses, furnace through warehouse-shipping |
+| resources/warm-up | 17 resource types |
+| resources/challenges--packaging-lines | Severity 8/10, 30-90 min changeovers, bottleneck |
+| resources/challenges--curing-oven | Severity 8/10, capacity/throughput |
+| data/warm-up | 9 data areas |
+| data/orm-modeling--customer-order-list | 22 objects, 7 fact types |
+| optimality/warm-up | OTIF >=95%, minimize changeovers, stable runs |
+
+### Solutions Developed (3 DPOs)
+
+1. **DPO 1** (pedagogical): Single-order residence time through 7 consolidated tasks - 205 min makespan
+2. **DPO 2**: Packaging bottleneck scheduler v1 - 8 orders, 100% OTIF, 3 changeovers
+3. **DPO 3** (accepted for production): Packaging scheduler v3 - 10 orders, 4 families, 3 truck appointments, hard 30-min lateness cap, 10/10 on-time, 5 cross-family changeovers over 2 shifts
+
+### Key Design Decisions (from expert feedback across 3 iterations)
+
+- Same-family micro-changeover = 10 min (not 0)
+- Unfaced-to-kraft-rolls = 55 min
+- Truck appointments are hard deadlines; promise dates allow up to 30 min slack
+- Priority: urgency > changeover avoidance > line bias
+- Solver breaks family groups to protect due dates when needed
+
+### Expert Acceptance
+
+The expert confirmed: *We would like to try this solution in production.* They validated that the sequencing logic matches how they would run the line manually, and the 2-3 cross-family changeovers per shift is acceptable for a busy mixed-order day.
 
 ---
 
