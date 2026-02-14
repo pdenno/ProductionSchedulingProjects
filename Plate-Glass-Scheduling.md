@@ -2,6 +2,18 @@
 
 **Project:** sur-plate-glass
 
+| | |
+|---|---|
+| **Project** | Fiberglass Insulation Production Scheduling |
+| **Project ID** | sur-fiberglass-insulation |
+| **Session** | Fri Feb 13 18:51:30 EST 2026 — Fri Feb 13 19:08:56 EST 2026 |
+| **Messages** | 34 |
+| **Steps** | 22 |
+| **Agent LLM** | gpt-5.2 (openai) |
+| **MCP orchestrator** | Likely Opus 4.6  |
+| **MCP SDK** | io.modelcontextprotocol.sdk 0.17.2 |
+| **Agent framework** | LangChain4j 1.10.0 |
+
 ---
 
 ## Summary

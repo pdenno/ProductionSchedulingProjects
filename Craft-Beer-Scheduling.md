@@ -2,6 +2,18 @@
 
 **Project:** sur-craft-beer
 
+| | |
+|---|---|
+| **Project** | Fiberglass Insulation Production Scheduling |
+| **Project ID** | sur-fiberglass-insulation |
+| **Session** | Fri Feb 13 18:51:30 EST 2026 — Fri Feb 13 19:08:56 EST 2026 |
+| **Messages** | 34 |
+| **Steps** | 22 |
+| **Agent LLM** | gpt-5.2 (openai) |
+| **MCP orchestrator** | Likely Opus 4.6  |
+| **MCP SDK** | io.modelcontextprotocol.sdk 0.17.2 |
+| **Agent framework** | LangChain4j 1.10.0 |
+
 ---
 
 ## Summary
@@ -64,22 +76,22 @@ Can you walk me through your typical beer production workflow (major steps and t
 Our typical workflow is pretty standard, and most of our beers follow the same overall sequence; what changes is the fermentation/lagering time, whether it’s dry-hopped, and whether it gets filtered.
 
 Major steps (in order) for a “normal” ale:
-1) **Raw materials prep** (grain pulled, hops/adjuncts staged)  
-2) **Brew day**: mill → mash → lauter/sparge → boil (hop additions) → whirlpool  
-3) **Knockout to fermenter** (cool through heat exchanger and transfer) + **pitch yeast**  
-4) **Fermentation** (usually 7–10 days for our ales)  
-5) **Dry hop** (only for certain beers; commonly day 3–6, contact ~2–4 days)  
-6) **Crash cool / conditioning** (typically 1–3 days)  
-7) **Carbonation** (either in brite tank or via spunding in the fermenter, depending on the beer)  
-8) **Transfer to brite tank** (if not already there)  
-9) **Packaging** (cans most often; sometimes kegs)  
+1) **Raw materials prep** (grain pulled, hops/adjuncts staged)
+2) **Brew day**: mill → mash → lauter/sparge → boil (hop additions) → whirlpool
+3) **Knockout to fermenter** (cool through heat exchanger and transfer) + **pitch yeast**
+4) **Fermentation** (usually 7–10 days for our ales)
+5) **Dry hop** (only for certain beers; commonly day 3–6, contact ~2–4 days)
+6) **Crash cool / conditioning** (typically 1–3 days)
+7) **Carbonation** (either in brite tank or via spunding in the fermenter, depending on the beer)
+8) **Transfer to brite tank** (if not already there)
+9) **Packaging** (cans most often; sometimes kegs)
 10) **Cold storage** → **shipping/pickup**
 
 For lagers it’s the same flow, but the middle is longer:
 - **Fermentation** more like **10–14 days**, then **lagering/conditioning** can be **3–6 weeks** depending on the brand.
 
 On cadence vs ad-hoc:
-- We’re **not strictly “make the same lineup every week”**. We have a few core brands we try to keep available, but the schedule is **mostly driven by orders and tank availability**.  
+- We’re **not strictly “make the same lineup every week”**. We have a few core brands we try to keep available, but the schedule is **mostly driven by orders and tank availability**.
 - In practice it ends up being a **rolling weekly plan**: we usually aim to brew **2–4 days per week** (depending on how many tanks are turning over), and we adjust week-to-week based on what’s low in finished goods and what fermenters/brite tanks are opening up. Packaging is typically **1–2 days per week**.
 
 Batching vs continuous flow:
@@ -142,7 +154,7 @@ At this point, having run the 'process/scheduling-action-types' DS, you may have
 These sentences might, for example:
    * sequence work into the production facility (common in flow shops and job shops),
    * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or 
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
    * describe which vehicles visits which customers when (common in routing problem),
  or a variety actions necessary to get their work done.
 Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
@@ -526,8 +538,8 @@ Let’s pin down the main relationships you track. For a customer order: (1) doe
 1) Yes — every order is tied to exactly one customer account (e.g., a distributor, a bar/restaurant, or our taproom). Even if it’s a one-off cash sale, we still enter it under a “Taproom Walk-in” customer so it has a customer.
 
 2) Yes — one order can have multiple line items. A typical distributor order might be like:
-- 40 × 1/2 bbl keg of IPA  
-- 20 × 1/6 bbl keg of Pilsner  
+- 40 × 1/2 bbl keg of IPA
+- 20 × 1/6 bbl keg of Pilsner
 - 60 cases of 12oz cans (24-pack) of Hazy IPA
 
 3) We *try* to have a requested delivery/pickup date on every order, but the time window is not always known at order entry. Roughly:
@@ -545,9 +557,9 @@ On the sales-forecast side: do you record forecast volume per (week, SKU)? And d
 ### Expert
 Yes—we keep a weekly forecast by SKU in a spreadsheet tab. It’s one line per **(ISO week, SKU)** with volume in **cases**, and we roll that up to bbl for production planning (e.g., 1 case = 24x16oz; we convert to bbl using total ounces).
 
-We do tag each **(week, SKU)** with two numbers rather than a label:  
-- **Committed** = what we already have as signed POs / distro depletion commitments (usually 2–6 weeks out).  
-- **Expected** = additional “likely” sales based on history and what sales is telling us (new placements, seasonal lift).  
+We do tag each **(week, SKU)** with two numbers rather than a label:
+- **Committed** = what we already have as signed POs / distro depletion commitments (usually 2–6 weeks out).
+- **Expected** = additional “likely” sales based on history and what sales is telling us (new placements, seasonal lift).
 
 For big events, we add them as separate lines on an “Events” tab and link them to a **date range that maps to a week number**, plus the **SKU(s)** impacted and an **incremental quantity**. Example: if a festival runs **Fri–Sun**, we assign it to that ISO week and add “extra cases” for those SKUs on top of baseline expected (we don’t overwrite the base forecast; we add an increment). Typically those event adds are **20–200 cases** per SKU depending on the event size.
 
@@ -643,13 +655,13 @@ About the target dates you write (crash date, transfer-to-brite date/time, packa
 ### Expert
 Yes—we track all three for each batch, but not all of them are equally “hard requirements,” and they can change.
 
-- **Crash date (start cooling in the fermenter):**  
+- **Crash date (start cooling in the fermenter):**
   We record a *planned* crash **date/time** per batch in a spreadsheet. It’s usually **single-valued at any given time** (one current target), but it commonly gets revised **1–3 times** if fermentation is running slow/fast. We don’t keep multiple active crash targets; we overwrite and sometimes leave a note like “moved from Tue to Thu due to diacetyl still high.”
 
-- **Transfer-to-brite date/time:**  
+- **Transfer-to-brite date/time:**
   We track this for every batch that’s going to be filtered/served/packaged from brite (which is basically all of them). It’s **required** because it drives tank availability. It’s normally **one scheduled transfer window** (e.g., “Wed 10:00–12:00”), but it’s the most likely to move because it depends on (1) crash actually happening, (2) brite tank being clean/empty, and (3) whether packaging runs long. We typically adjust this **same-week**, sometimes **day-of**.
 
-- **Package date (canning/kegging):**  
+- **Package date (canning/kegging):**
   We always assign a package date for anything that’s sold (cans or kegs). It’s **required** for planning labor, materials (cans, labels, carriers, CO₂), and cold room space. We treat it as **one primary package date per batch**, but in reality it can split into **multiple package events** if we can’t finish the whole lot in one run—e.g., “half pallet of cans on Fri, remaining on Mon” or “keg some on Thursday, can the rest next week.” When that happens, we’ll track it as notes or as separate lines in the spreadsheet, not as a clean one-to-many structure.
 
 Overall: each batch has **one current target** for crash and brite transfer, but those targets can shift; packaging is planned as **one date** but sometimes ends up being **2+ actual packaging sessions** when we’re tight on time, people, or packaging materials.
@@ -757,21 +769,21 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
    :duration {:value-string "1–3 hours per delivery", :units "hours"},
    :inputs
    ["malt (25 kg sacks)"
-    "specialty grains"
-    "hops (5–20 kg boxes, cold)"
-    "yeast (pitch bags)"
-    "brewing salts/chemicals"
-    "CO2"
-    "cans + lids"
-    "case trays"
-    "labels"],
+	"specialty grains"
+	"hops (5–20 kg boxes, cold)"
+	"yeast (pitch bags)"
+	"brewing salts/chemicals"
+	"CO2"
+	"cans + lids"
+	"case trays"
+	"labels"],
    :outputs
    ["ingredients and packaging in inventory; hops cold-stored; grains staged"],
    :resources
    ["forklift/pallet jack"
-    "dry storage"
-    "hop cooler (2–4°C)"
-    "chemical cabinet"],
+	"dry storage"
+	"hop cooler (2–4°C)"
+	"chemical cabinet"],
    :process-id "receive-and-store-ingredients-and-packaging"}
   {:subprocesses [],
    :duration {:value-string "45–75", :units "minutes"},
@@ -782,7 +794,7 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
   {:subprocesses [],
    :duration
    {:value-string "~75 (60 rest + ~15 transfer/setup)",
-    :units "minutes"},
+	:units "minutes"},
    :inputs ["milled grain" "treated hot liquor (water)" "mash salts"],
    :outputs ["mashed wort in mash/lauter tun ready to run off"],
    :resources
@@ -798,7 +810,7 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
   {:subprocesses [],
    :duration
    {:value-string "~75 (60 boil + ~15 heat-up varies)",
-    :units "minutes"},
+	:units "minutes"},
    :inputs
    ["sweet wort" "hops (bittering + late)" "kettle finings (if used)"],
    :outputs ["boiled wort"],
@@ -807,7 +819,7 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
   {:subprocesses [],
    :duration
    {:value-string "35–50 (20 whirlpool + 15–30 settle)",
-    :units "minutes"},
+	:units "minutes"},
    :inputs ["boiled wort" "whirlpool hops (some brands)"],
    :outputs ["trub cone; clarified hot wort ready to chill"],
    :resources ["whirlpool function/vessel" "pump"],
@@ -818,10 +830,10 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
    :outputs ["cold wort in fermenter at pitch temp"],
    :resources
    ["plate heat exchanger"
-    "inline O2 stone"
-    "hoses"
-    "sanitary pump"
-    "20 hL fermenters"],
+	"inline O2 stone"
+	"hoses"
+	"sanitary pump"
+	"20 hL fermenters"],
    :process-id "chill-and-transfer-to-fermenter-oxygenate-and-pitch"}
   {:subprocesses [],
    :duration {:value-string "ales 5–7; lagers 10–14", :units "days"},
@@ -836,7 +848,7 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
    :optional? true,
    :inputs
    ["fermenting/fermented beer"
-    "pellet hops (10–25 kg per 20 hL batch)"],
+	"pellet hops (10–25 kg per 20 hL batch)"],
    :outputs ["dry-hopped beer"],
    :resources ["FV dry-hop port" "CO2 purge" "1–2 people"],
    :process-id "dry-hop-optional"}
@@ -849,7 +861,7 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
   {:subprocesses [],
    :duration
    {:value-string "1.5–3 transfer + 12–24 settle/carb",
-    :units "hours"},
+	:units "hours"},
    :inputs ["cold beer" "CO2"],
    :outputs ["bright beer in brite at target carbonation"],
    :resources ["brite tanks (20 hL)" "CO2 stone" "hoses"],
@@ -866,33 +878,33 @@ So if your 11-day model looks like something like: **Brew day (1) + ferment (~6)
    :duration {:value-string "6–8 for ~40–60 hL", :units "hours"},
    :inputs
    [{:item-id "bright beer", :from "transfer-to-brite-and-carbonate"}
-    "cans + lids"
-    "CO2"
-    "labels"
-    "trays/cases"],
+	"cans + lids"
+	"CO2"
+	"labels"
+	"trays/cases"],
    :outputs ["finished packaged beer (355 mL cans in 24-can cases)"],
    :resources
    ["canning line (1- or 2-head)"
-    "seamer"
-    "labeler"
-    "coder/date printer"
-    "3–5 people"],
+	"seamer"
+	"labeler"
+	"coder/date printer"
+	"3–5 people"],
    :process-id "package-cans-date-and-label"}
   {:subprocesses [],
    :duration
    {:value-string "~1–2 hours/day + 30–60 min per truck",
-    :units "hours"},
+	:units "hours"},
    :inputs ["finished packaged cases" "sales orders"],
    :outputs ["pallets staged and loaded for delivery"],
    :resources
    ["cold room (0–4°C)"
-    "forklift/pallet jack"
-    "delivery van/3PL pickup"],
+	"forklift/pallet jack"
+	"delivery van/3PL pickup"],
    :process-id "cold-store-and-ship"}
   {:subprocesses [],
    :duration
    {:value-string "FV CIP 2–3; brite 1.5–2; packaging line 1–1.5",
-    :units "hours"},
+	:units "hours"},
    :inputs ["caustic" "acid" "sanitizer" "hot water"],
    :outputs ["sanitary tanks/lines ready for next use"],
    :resources ["CIP cart" "spray balls" "hoses" "drains" "1 person"],

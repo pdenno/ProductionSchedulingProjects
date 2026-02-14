@@ -1,1 +1,2 @@
  * <2026-02-14 Sat 08:14> Start this log.
+ * <2026-02-14 Sat 08:58> Running Opus 4.6 for MCP LLM and OpenAI GPT-5.2 for agents.
