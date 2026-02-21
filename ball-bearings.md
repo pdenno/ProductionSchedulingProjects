@@ -23,6 +23,24 @@
 
 Ball bearing production scheduling project with a surrogate expert. Iterative MiniZinc model development through 11 DPOs, progressing from pedagogical single-job models to a pilot-ready production scheduler. Key features of the approved DPO 11: 8 jobs across 6 CNC grinders and 2 hardening furnaces, sequence-dependent changeover times, 2-shift/3-shift grinder calendars with explicit 2x30-min maintenance blocks per shift, furnace batching with recipe compatibility and 80%% fill rules, TIMEOUT dispatch with per-job audit trail, and weighted tardiness OTIF objective. Expert approved for pilot after 11 iterations.
 
+### DPO Evolution:
+  1. DPO 1: Single-job pedagogical flow
+  2. DPO 2: Multi-job with grinder/furnace contention (approved)
+  3. DPO 3-4: Due dates, priorities, changeovers
+  4. DPO 5-6: Production-realistic (8 jobs), furnace fill rules
+  5. DPO 7: Reason codes (FULL/EXPEDITE/TIMEOUT) + grinder lost capacity
+  6. DPO 8-9: Shift calendars, explicit maintenance blocks
+  7. DPO 10: Corrected calendar semantics (t=0 = Monday 00:00)
+  8. DPO 11: 2x30-min blocks per shift + TIMEOUT audit trail - APPROVED
+
+###  Key DPO 11 Features:
+  - 100% OTIF across all 8 jobs
+  - 30-minute time ticks for block granularity
+  - Fixed DRESS/QA blocks at predictable daily times (13h free window)
+  - TIMEOUT batches show per-job wait time, slack, and trigger identification
+  - 134h makespan, 3 furnace batches, solved in 22s
+
+
 ---
 
 ## Surrogate Instructions
