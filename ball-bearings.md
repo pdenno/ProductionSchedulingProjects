@@ -21,7 +21,7 @@
 
 ## Summary
 
-Ball bearing production scheduling project with surrogate expert. Progressed through 4 DPO iterations: (1) pedagogical single-lot baseline, (2) multi-lot with furnace batching and grinder changeovers, (3) due-date-driven with weighted tardiness, (4) pilot-ready model with QC day-shift gate, calibrated changeovers, parameterized grinder calendars with planned downtime, material release gates, and Saturday overtime toggle. Expert approved DPO 4 for production pilot on stressed 8-lot scenario achieving 5/8 on-time delivery with intelligent expedite prioritization.
+Ball bearing production scheduling - report regenerated to test updated DPO formatting.
 
 ---
 
@@ -98,18 +98,18 @@ If there are 1–3 other truly core scheduling commands (not detailed execution 
 ### Expert
 Main command (what we do over and over):
 
-- **“Schedule $LOT_ID (part number $PN, quantity $QTY) for $OPERATION on $WORKCENTER/$MACHINE at $START_TIME for $DURATION.”**
+- **“Schedule $LOT_ID (part number $PN, quantity $QTY) for $OPERATION on $WORKCENTER/$MACHINE at $START_TIME for $DURATION.”**  
   Example we actually write in the planner sheet: “Schedule Lot 24-017 (6205, 10,000 pcs) for Heat Treat on Furnace #2 at 2026-02-24 06:00 for 8:00.”
 
 Other truly core scheduling commands we use a lot:
 
-- **“Reserve/Book $MACHINE at $START_TIME for $DURATION for $CHANGEOVER (from $PN_A to $PN_B).”**
+- **“Reserve/Book $MACHINE at $START_TIME for $DURATION for $CHANGEOVER (from $PN_A to $PN_B).”**  
   (We do this when we switch sizes/grease type and need a setup window.)
 
-- **“Schedule $LOT_ID for $INSPECTION_STEP on $QC_STATION at $START_TIME for $DURATION.”**
+- **“Schedule $LOT_ID for $INSPECTION_STEP on $QC_STATION at $START_TIME for $DURATION.”**  
   (Mainly final inspection and occasional in-process checks that can block shipment.)
 
-- **“Release $LOT_ID to Production on $DATE_TIME (materials available: $YES/NO).”**
+- **“Release $LOT_ID to Production on $DATE_TIME (materials available: $YES/NO).”**  
   (This is our go/no-go trigger tied to rings/balls/cages availability; if materials aren’t in, the schedule line is tentative.)
 
 ---
@@ -256,7 +256,7 @@ At this point, having run the 'process/scheduling-action-types' DS, you may have
 These sentences might, for example:
    * sequence work into the production facility (common in flow shops and job shops),
    * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or 
    * describe which vehicles visits which customers when (common in routing problem),
  or a variety actions necessary to get their work done.
 Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
@@ -284,12 +284,12 @@ Of course, you might reject it outright if you think the users are too advanced 
 ## DPO 1 (pedagogical)
 
 - **Citing DPAO:** 2
-- **Version:** 1.0.0
 - **ASCR refs:** flow-shop, warm-up
 
 Pedagogical MiniZinc showing minimum residence time for one lot of ~1,000 ball bearing rings through the production flow. Consolidates 13+ detailed steps into 8 major stages. Uses start-time decision variables and precedence constraints. No resource contention — assumes infinite capacity. Shows that heat treatment (10h) and grinding (8h) dominate the 44-hour total.
 
 **Observations:** The flow-shop interview reveals a 13+ step serial process with durations ranging from 1 to 10 hours per lot. Heat treatment (8-12h) and raceway grinding (6-10h) are identified as the main bottlenecks. Balls are typically bought-in and cages stamped in parallel, so the critical path runs through ring processing. Consolidating small steps yields 8 major stages totaling 44 hours.
+### Solution 1 — v1.0.0
 
 ```minizinc
 % Ball Bearing Production - Pedagogical MiniZinc
@@ -302,7 +302,7 @@ Pedagogical MiniZinc showing minimum residence time for one lot of ~1,000 ball b
 
 % The 8 major production stages (in required order)
 enum Stage = {BlankPrep, Forming, HeatTreat, Grinding, Superfinish,
-			  Washing, Assembly, FinalQC_Pack};
+              Washing, Assembly, FinalQC_Pack};
 
 % Duration of each stage in hours (representative values from interview)
 %   BlankPrep:     cutting + deburr (~1 hr)
@@ -338,12 +338,12 @@ solve minimize makespan;
 
 % Output the schedule
 output ["Ball Bearing Production Schedule (one lot of ~1,000 rings)\n",
-		"==========================================================\n"] ++
-	   [show(s) ++ ": start=hour " ++ show(start[s]) ++
-		", end=hour " ++ show(start[s] + duration[s]) ++
-		" (" ++ show(duration[s]) ++ "h)\n" | s in Stage] ++
-	   ["\nMinimum residence time: " ++ show(makespan) ++ " hours (" ++
-		show(makespan div 8) ++ " 8-hour shifts)\n"];
+        "==========================================================\n"] ++
+       [show(s) ++ ": start=hour " ++ show(start[s]) ++
+        ", end=hour " ++ show(start[s] + duration[s]) ++
+        " (" ++ show(duration[s]) ++ "h)\n" | s in Stage] ++
+       ["\nMinimum residence time: " ++ show(makespan) ++ " hours (" ++
+        show(makespan div 8) ++ " 8-hour shifts)\n"];
 ```
 
 **Solver output:**
@@ -522,13 +522,13 @@ It has some value, but more as an explanation/benchmark tool than as an actual s
 
 - **Value:** Yes—showing a theoretical “fastest possible” end-to-end timeline for one lot is useful. If it’s telling us “best case is ~44 hours and most of that is heat treat + grinding,” that matches what we feel on the floor. It helps us explain to sales/customer service why a “2-day rush” is basically impossible unless we pre-position material and already have furnace/grinders open.
 
-- **Who would use it:**
-  1) **Me (production manager)** to set a realistic *minimum* promise date on new/rush requests and to justify why HT/grinding are the drivers.
-  2) **Customer service / sales** as a talking point with customers (“even with perfect flow, this is the hard minimum because of furnace cycles and grinding hours”).
+- **Who would use it:**  
+  1) **Me (production manager)** to set a realistic *minimum* promise date on new/rush requests and to justify why HT/grinding are the drivers.  
+  2) **Customer service / sales** as a talking point with customers (“even with perfect flow, this is the hard minimum because of furnace cycles and grinding hours”).  
   3) **New supervisors / planners** for training—so they understand which steps dominate lead time.
 
 - **What decisions it supports (today):** mostly “policy” and communication decisions, like:
-  - “Is a 48-hour turnaround even physically possible for this bearing family?”
+  - “Is a 48-hour turnaround even physically possible for this bearing family?”  
   - “If we want to cut lead time, which process areas should we invest in first (furnace capacity vs more grinding hours)?”
 
 - **What it does *not* help with (our daily needs):** it can’t tell us “put Lot 247 on Furnace #2 at 06:00 Monday” or “sequence these 6 lots on Grinder Cell B to minimize changeovers while meeting Wednesday due dates.” That’s the gap for shop scheduling.
@@ -776,12 +776,12 @@ Deliverable: a new MiniZinc ‘solution’ model (not just pedagogical) that pro
 ## DPO 2 (development)
 
 - **Citing DPAO:** 3
-- **Version:** 1.0.0
 - **ASCR refs:** flow-shop, challenges--grinding-machines, challenges--heat-treat-furnaces
 
 First shop-relevant MiniZinc model: schedules 4 lots through 2 bottleneck operations — batch heat treatment (1 furnace, 10hr cycle, max 3 lots/batch) and grinding (2 grinders with sequence-dependent changeovers: 20min same-family, 75min cross-family). Uses 2 bearing families (DeepGroove, AngularContact). Demonstrates furnace batching vs grinder changeover tradeoffs. Makespan: 26 hours.
 
 **Observations:** Resources/challenges ASCRs reveal heat-treat furnaces (severity 8/10) and grinding machines (severity 8/10) as dual bottlenecks. Furnace runs are 8-12 hrs with batch capacity constraints. Grinding changeovers are 45-90 min and sequence-dependent on bearing family. Grouping similar sizes reduces changeover waste. The reviewer on DPO 1 recommended exactly this increment.
+### Solution 2 — v1.0.0
 
 ```minizinc
 % Ball Bearing Production - Multi-Lot Bottleneck Scheduling
@@ -823,13 +823,13 @@ array[FBATCH] of var 0..horizon: batchStart;
 
 % Furnace capacity: at most maxLotsPerBatch lots per batch
 constraint forall(b in FBATCH)(
-	sum(j in LOT)(bool2int(lotBatch[j] = b)) <= maxLotsPerBatch
+    sum(j in LOT)(bool2int(lotBatch[j] = b)) <= maxLotsPerBatch
 );
 
 % Furnace batches don't overlap (single furnace)
 constraint forall(b1 in FBATCH, b2 in FBATCH where b1 < b2)(
-	batchStart[b1] + htCycleTime <= batchStart[b2] \/
-	batchStart[b2] + htCycleTime <= batchStart[b1]
+    batchStart[b1] + htCycleTime <= batchStart[b2] \/
+    batchStart[b2] + htCycleTime <= batchStart[b1]
 );
 
 % --- Grinding (2 grinders, sequence-dependent changeovers) ---
@@ -839,7 +839,7 @@ array[LOT] of int: grindTime = [360, 480, 420, 360];  % 6-8 hrs per lot
 % Sequence-dependent changeover matrix (minutes)
 % Same family = 20 min (wheel dress only), different family = 75 min (full changeover)
 array[Family, Family] of int: changeover = [| 20, 75
-											 | 75, 20 |];
+                                             | 75, 20 |];
 
 % Each lot assigned to a grinder
 array[LOT] of var GRINDER: lotGrinder;
@@ -849,14 +849,14 @@ array[LOT] of var 0..horizon: grindStart;
 
 % Grinding can't start until lot's furnace batch is done
 constraint forall(j in LOT)(
-	grindStart[j] >= batchStart[lotBatch[j]] + htCycleTime
+    grindStart[j] >= batchStart[lotBatch[j]] + htCycleTime
 );
 
 % Non-overlap on each grinder with sequence-dependent changeovers
 constraint forall(i in LOT, j in LOT where i < j)(
-	lotGrinder[i] != lotGrinder[j] \/
-	grindStart[i] + grindTime[i] + changeover[lotFamily[i], lotFamily[j]] <= grindStart[j] \/
-	grindStart[j] + grindTime[j] + changeover[lotFamily[j], lotFamily[i]] <= grindStart[i]
+    lotGrinder[i] != lotGrinder[j] \/
+    grindStart[i] + grindTime[i] + changeover[lotFamily[i], lotFamily[j]] <= grindStart[j] \/
+    grindStart[j] + grindTime[j] + changeover[lotFamily[j], lotFamily[i]] <= grindStart[i]
 );
 
 % --- Objective: minimize makespan ---
@@ -865,23 +865,23 @@ solve minimize makespan;
 
 % --- Output matching their scheduling sentence templates ---
 output ["Ball Bearing Multi-Lot Schedule (4 lots, 1 furnace, 2 grinders)\n",
-		"================================================================\n\n"] ++
+        "================================================================\n\n"] ++
 
-	   ["HEAT TREATMENT (batch furnace, " ++ show(htCycleTime) ++ " min cycle):\n"] ++
-	   ["  FurnaceBatch " ++ show(b) ++ ": start=min " ++ show(fix(batchStart[b])) ++
-		" (" ++ show(fix(batchStart[b]) div 60) ++ "h), lots=[" ++
-		concat([show(j) ++ " " | j in LOT where fix(lotBatch[j]) = b]) ++ "]\n"
-		| b in FBATCH] ++
+       ["HEAT TREATMENT (batch furnace, " ++ show(htCycleTime) ++ " min cycle):\n"] ++
+       ["  FurnaceBatch " ++ show(b) ++ ": start=min " ++ show(fix(batchStart[b])) ++
+        " (" ++ show(fix(batchStart[b]) div 60) ++ "h), lots=[" ++
+        concat([show(j) ++ " " | j in LOT where fix(lotBatch[j]) = b]) ++ "]\n"
+        | b in FBATCH] ++
 
-	   ["\nGRINDING (sequence-dependent changeovers):\n"] ++
-	   ["  Schedule Lot " ++ show(j) ++ " (" ++ show(lotFamily[j]) ++
-		", " ++ show(lotSize[j]) ++ " rings) on Grinder " ++
-		show(fix(lotGrinder[j])) ++ " at min " ++ show(fix(grindStart[j])) ++
-		" (" ++ show(fix(grindStart[j]) div 60) ++ "h) for " ++
-		show(grindTime[j]) ++ " min\n" | j in LOT] ++
+       ["\nGRINDING (sequence-dependent changeovers):\n"] ++
+       ["  Schedule Lot " ++ show(j) ++ " (" ++ show(lotFamily[j]) ++
+        ", " ++ show(lotSize[j]) ++ " rings) on Grinder " ++
+        show(fix(lotGrinder[j])) ++ " at min " ++ show(fix(grindStart[j])) ++
+        " (" ++ show(fix(grindStart[j]) div 60) ++ "h) for " ++
+        show(grindTime[j]) ++ " min\n" | j in LOT] ++
 
-	   ["\nMakespan: " ++ show(makespan) ++ " min (" ++
-		show(makespan div 60) ++ "h " ++ show(makespan mod 60) ++ "m)\n"];
+       ["\nMakespan: " ++ show(makespan) ++ " min (" ++
+        show(makespan div 60) ++ "h " ++ show(makespan mod 60) ++ "m)\n"];
 ```
 
 **Solver output:**
@@ -1089,7 +1089,7 @@ So: with those three core pieces plus **basic due date/priority and grinder shif
 ## Q&A 23: Expert Discussion
 
 ### Interviewer
-To make sure we interpret that correctly: for the next increment, we should (1) display explicit grinder changeover blocks, (2) enforce a released/earliest-start gate before heat treat, (3) add a QC step after heat treat with a Mon–Fri 07:00–15:30 calendar and ~20 min/lot default duration, (4) put grinder processing inside realistic shift windows (Mon–Fri 06:00–14:30 and 14:30–23:00; limited Sat 07:00–15:00; essentially no Sun), and (5) add simple due dates/expedite priority rules.
+To make sure we interpret that correctly: for the next increment, we should (1) display explicit grinder changeover blocks, (2) enforce a released/earliest-start gate before heat treat, (3) add a QC step after heat treat with a Mon–Fri 07:00–15:30 calendar and ~20 min/lot default duration, (4) put grinder processing inside realistic shift windows (Mon–Fri 06:00–14:30 and 14:30–23:00; limited Sat 07:00–15:00; essentially no Sun), and (5) add simple due dates/expedite priority rules. 
 
 Two clarifications: A) Is QC the only day-shift-only gate, or are there any other signoffs (engineering, lab) that commonly block release to grind? B) On the furnace: do you ever have restrictions on what can be batched together beyond ‘up to 3 lots’ (e.g., same alloy/spec, same heat treat recipe, max weight, or “don’t mix these families” rules) that we should model soon?
 
@@ -1171,7 +1171,7 @@ What I’d want added next for it to feel “shop real”:
 - **Shift calendars** on the constrained resources so the plan doesn’t schedule work in hours we don’t staff (or at least makes that an explicit choice).
 - **Basic furnace batching rules** explicitly enforced: same recipe/family in a batch, and **max batch weight** (and ideally a minimum/target fill rule later, but max weight + same recipe is the must-have).
 
-Fundamental issues / reasons I’d stop?
+Fundamental issues / reasons I’d stop?  
 No fundamental red flags. The approach (batching + sequencing with changeovers) matches how our bottlenecks behave. The only “stop and rethink” trigger would be if, after adding release/QC/shift constraints, the model can’t still produce a schedule in reasonable time or starts generating schedules that are constantly infeasible in practice. But from what I’ve seen, it’s the right backbone.
 
 So: **We would like to pilot this solution in a production setting** once the explicit changeover blocks and the release/QC/shift gates are included, because then the output will read like a real planner schedule and we can actually trust what it’s telling us to do.
@@ -1225,12 +1225,12 @@ Stretch only if still small: add a simple WIP-control proxy by penalizing early 
 ## DPO 3 (development)
 
 - **Citing DPAO:** 5
-- **Version:** 1.0.0
 - **ASCR refs:** orm-modeling--customer-orders, warm-up, flow-shop, challenges--grinding-machines, challenges--heat-treat-furnaces
 
 Due-date-driven multi-lot scheduling model. Extends DPO 2 with per-lot due dates, expedite flags, material release gates, and on-time delivery KPIs. Objective: minimize weighted tardiness (expedite lots penalized 5x) + changeover penalty. 6 lots, 1 furnace (3 batches), 2 grinders with sequence-dependent changeovers. Achieves 100% on-time delivery with zero tardiness on this instance.
 
 **Observations:** Optimality ASCR states primary goal is 95%+ on-time delivery with fewer expedites. Customer-orders ORM reveals requested-ship-date per line item and penalty/priority notes. DPO 2 reviewer feedback requested material release gates and explicit changeover output. Combined these into a weighted-tardiness objective that balances due-date compliance against changeover efficiency.
+### Solution 3 — v1.0.0
 
 ```minizinc
 % Ball Bearing Production - Due-Date Driven Multi-Lot Scheduling
@@ -1254,7 +1254,7 @@ set of int: FBATCH = 1..nFurnaceBatches;
 % Bearing families
 enum Family = {DeepGroove, AngularContact};
 array[LOT] of Family: lotFamily = [DeepGroove, AngularContact, DeepGroove,
-									DeepGroove, AngularContact, DeepGroove];
+                                    DeepGroove, AngularContact, DeepGroove];
 
 % Lot sizes (rings)
 array[LOT] of int: lotSize = [2000, 1500, 1000, 3000, 1000, 2000];
@@ -1278,20 +1278,20 @@ array[FBATCH] of var 0..horizon: batchStart;
 
 % Furnace capacity: at most maxLotsPerBatch lots per batch
 constraint forall(b in FBATCH)(
-	sum(j in LOT)(bool2int(lotBatch[j] = b)) <= maxLotsPerBatch
+    sum(j in LOT)(bool2int(lotBatch[j] = b)) <= maxLotsPerBatch
 );
 
 % Furnace batches don't overlap (single furnace)
 constraint forall(b1 in FBATCH, b2 in FBATCH where b1 < b2)(
-	batchStart[b1] + htCycleTime <= batchStart[b2] \/
-	batchStart[b2] + htCycleTime <= batchStart[b1]
+    batchStart[b1] + htCycleTime <= batchStart[b2] \/
+    batchStart[b2] + htCycleTime <= batchStart[b1]
 );
 
 % Furnace batch can't start before all its lots are released
 constraint forall(b in FBATCH)(
-	forall(j in LOT)(
-		lotBatch[j] != b \/ batchStart[b] >= releaseTime[j]
-	)
+    forall(j in LOT)(
+        lotBatch[j] != b \/ batchStart[b] >= releaseTime[j]
+    )
 );
 
 % --- Grinding (2 grinders, sequence-dependent changeovers) ---
@@ -1299,21 +1299,21 @@ array[LOT] of int: grindTime = [480, 420, 360, 540, 360, 480];
 
 % Changeover: same family = 20 min (wheel dress), different = 75 min (full setup)
 array[Family, Family] of int: changeover = [| 20, 75
-											 | 75, 20 |];
+                                             | 75, 20 |];
 
 array[LOT] of var GRINDER: lotGrinder;
 array[LOT] of var 0..horizon: grindStart;
 
 % Grinding starts after furnace batch completes
 constraint forall(j in LOT)(
-	grindStart[j] >= batchStart[lotBatch[j]] + htCycleTime
+    grindStart[j] >= batchStart[lotBatch[j]] + htCycleTime
 );
 
 % Non-overlap with sequence-dependent changeovers
 constraint forall(i in LOT, j in LOT where i < j)(
-	lotGrinder[i] != lotGrinder[j] \/
-	grindStart[i] + grindTime[i] + changeover[lotFamily[i], lotFamily[j]] <= grindStart[j] \/
-	grindStart[j] + grindTime[j] + changeover[lotFamily[j], lotFamily[i]] <= grindStart[i]
+    lotGrinder[i] != lotGrinder[j] \/
+    grindStart[i] + grindTime[i] + changeover[lotFamily[i], lotFamily[j]] <= grindStart[j] \/
+    grindStart[j] + grindTime[j] + changeover[lotFamily[j], lotFamily[i]] <= grindStart[i]
 );
 
 % --- Due Date / On-Time Delivery ---
@@ -1322,10 +1322,10 @@ array[LOT] of var 0..horizon: tardiness;
 array[LOT] of var 0..1: late;
 
 constraint forall(j in LOT)(
-	tardiness[j] = max(0, grindEnd[j] - due[j])
+    tardiness[j] = max(0, grindEnd[j] - due[j])
 );
 constraint forall(j in LOT)(
-	late[j] = bool2int(grindEnd[j] > due[j])
+    late[j] = bool2int(grindEnd[j] > due[j])
 );
 
 var int: totalLate = sum(late);
@@ -1339,7 +1339,7 @@ var int: weightedTardiness = sum(j in LOT)(tardiness[j] * tardWeight[j]);
 
 % Total changeover time (secondary objective)
 var int: totalChangeover = sum(i in LOT, j in LOT where i < j)(
-	bool2int(lotGrinder[i] = lotGrinder[j]) * changeover[lotFamily[i], lotFamily[j]]
+    bool2int(lotGrinder[i] = lotGrinder[j]) * changeover[lotFamily[i], lotFamily[j]]
 );
 
 % Objective: minimize weighted tardiness (primary) + changeover penalty (secondary)
@@ -1347,31 +1347,31 @@ solve minimize weightedTardiness * 100 + totalChangeover;
 
 % --- Output ---
 output ["Ball Bearing Schedule - Due-Date Driven (6 lots)\n",
-		"==================================================\n\n"] ++
+        "==================================================\n\n"] ++
 
-	   ["HEAT TREATMENT:\n"] ++
-	   ["  Batch " ++ show(b) ++ ": start=min " ++ show(fix(batchStart[b])) ++
-		" (" ++ show(fix(batchStart[b]) div 60) ++ "h" ++
-		show(fix(batchStart[b]) mod 60) ++ "m), lots=[" ++
-		concat([show(j) ++ " " | j in LOT where fix(lotBatch[j]) = b]) ++ "]\n"
-		| b in FBATCH] ++
+       ["HEAT TREATMENT:\n"] ++
+       ["  Batch " ++ show(b) ++ ": start=min " ++ show(fix(batchStart[b])) ++
+        " (" ++ show(fix(batchStart[b]) div 60) ++ "h" ++
+        show(fix(batchStart[b]) mod 60) ++ "m), lots=[" ++
+        concat([show(j) ++ " " | j in LOT where fix(lotBatch[j]) = b]) ++ "]\n"
+        | b in FBATCH] ++
 
-	   ["\nGRINDING SCHEDULE:\n"] ++
-	   ["  Schedule Lot " ++ show(j) ++ " (" ++ show(lotFamily[j]) ++
-		", " ++ show(lotSize[j]) ++ " pcs" ++
-		if expedite[j] = 1 then " **EXPEDITE**" else "" endif ++
-		") on Grinder " ++ show(fix(lotGrinder[j])) ++
-		" at min " ++ show(fix(grindStart[j])) ++
-		" for " ++ show(grindTime[j]) ++ " min" ++
-		" | due=" ++ show(due[j]) ++ " end=" ++ show(fix(grindEnd[j])) ++
-		if fix(tardiness[j]) > 0 then " LATE by " ++ show(fix(tardiness[j])) ++ " min"
-		else " ON-TIME" endif ++ "\n" | j in LOT] ++
+       ["\nGRINDING SCHEDULE:\n"] ++
+       ["  Schedule Lot " ++ show(j) ++ " (" ++ show(lotFamily[j]) ++
+        ", " ++ show(lotSize[j]) ++ " pcs" ++
+        if expedite[j] = 1 then " **EXPEDITE**" else "" endif ++
+        ") on Grinder " ++ show(fix(lotGrinder[j])) ++
+        " at min " ++ show(fix(grindStart[j])) ++
+        " for " ++ show(grindTime[j]) ++ " min" ++
+        " | due=" ++ show(due[j]) ++ " end=" ++ show(fix(grindEnd[j])) ++
+        if fix(tardiness[j]) > 0 then " LATE by " ++ show(fix(tardiness[j])) ++ " min"
+        else " ON-TIME" endif ++ "\n" | j in LOT] ++
 
-	   ["\nKPI SUMMARY:\n",
-		"  On-time: " ++ show(nLots - fix(totalLate)) ++ "/" ++ show(nLots) ++
-		" (" ++ show(fix(onTimePct)) ++ "%)\n",
-		"  Total weighted tardiness: " ++ show(fix(weightedTardiness)) ++ " min\n",
-		"  Total changeover time: " ++ show(fix(totalChangeover)) ++ " min\n"];
+       ["\nKPI SUMMARY:\n",
+        "  On-time: " ++ show(nLots - fix(totalLate)) ++ "/" ++ show(nLots) ++
+        " (" ++ show(fix(onTimePct)) ++ "%)\n",
+        "  Total weighted tardiness: " ++ show(fix(weightedTardiness)) ++ " min\n",
+        "  Total changeover time: " ++ show(fix(totalChangeover)) ++ " min\n"];
 ```
 
 **Solver output:**
@@ -1508,29 +1508,29 @@ For your grinding machines used in ball-bearing production: when are they availa
 ### Expert
 We run grinding on a 3‑shift pattern Monday–Friday, with a reduced weekend crew if we’re behind.
 
-- **Normal availability (all grinding machines)**
-  - **Mon–Fri:** 06:00–14:00, 14:00–22:00, 22:00–06:00 (24h)
-  - **Sat:** 06:00–14:00 only (optional; we schedule it when backlog is high)
+- **Normal availability (all grinding machines)**  
+  - **Mon–Fri:** 06:00–14:00, 14:00–22:00, 22:00–06:00 (24h)  
+  - **Sat:** 06:00–14:00 only (optional; we schedule it when backlog is high)  
   - **Sun:** normally off (only emergency work)
 
 - **Planned downtime / routine maintenance**
-  1. **Shift change / housekeeping (daily)**
-	 - **Trigger:** every shift handover
-	 - **Duration:** ~15 minutes per machine (clean swarf, coolant check, quick inspection)
-	 - **Typical time:** 13:45–14:00, 21:45–22:00, 05:45–06:00
-  2. **Wheel dressing + in-process checks (per batch / per wheel life)**
-	 - **Trigger:** typically **every batch change** and also when surface finish starts drifting
-	 - **Duration:** **8–12 minutes** per occurrence
-	 - **Frequency:** usually **2–4 times per 8‑hour shift** depending on part size/material
-  3. **Coolant system service (weekly)**
-	 - **Trigger:** every **Friday**
-	 - **Duration:** **45–60 minutes** per machine (skim, top-up, filter check; sometimes filter swap)
-  4. **Preventive maintenance (monthly)**
-	 - **Trigger:** **first Monday of the month** (we try to do this on day shift)
-	 - **Duration:** **2 hours** per machine (guards, lubrication, spindle checks, alignment quick check)
-  5. **Major service / calibration (quarterly)**
-	 - **Trigger:** **once every 3 months**, planned on a Saturday
-	 - **Duration:** **6–8 hours** per machine (more detailed spindle/vibration checks, geometry verification)
+  1. **Shift change / housekeeping (daily)**  
+     - **Trigger:** every shift handover  
+     - **Duration:** ~15 minutes per machine (clean swarf, coolant check, quick inspection)  
+     - **Typical time:** 13:45–14:00, 21:45–22:00, 05:45–06:00
+  2. **Wheel dressing + in-process checks (per batch / per wheel life)**  
+     - **Trigger:** typically **every batch change** and also when surface finish starts drifting  
+     - **Duration:** **8–12 minutes** per occurrence  
+     - **Frequency:** usually **2–4 times per 8‑hour shift** depending on part size/material
+  3. **Coolant system service (weekly)**  
+     - **Trigger:** every **Friday**  
+     - **Duration:** **45–60 minutes** per machine (skim, top-up, filter check; sometimes filter swap)
+  4. **Preventive maintenance (monthly)**  
+     - **Trigger:** **first Monday of the month** (we try to do this on day shift)  
+     - **Duration:** **2 hours** per machine (guards, lubrication, spindle checks, alignment quick check)
+  5. **Major service / calibration (quarterly)**  
+     - **Trigger:** **once every 3 months**, planned on a Saturday  
+     - **Duration:** **6–8 hours** per machine (more detailed spindle/vibration checks, geometry verification)
 
 In practice, the biggest scheduling headaches are the **wheel dressing events** (they’re frequent and not perfectly predictable) and the **monthly PM**, because we have to line it up with order priorities and operator availability.
 
@@ -1640,9 +1640,9 @@ Concrete implementation guidance (keep increment tight and testable):
 
 5) Add the stressed scenario dataset (focus item #3):
    - Create a new test instance (e.g., 8 lots) with:
-	 (a) at least 2 lots having late releaseTime (e.g., 8–16 hours) so furnace batching is forced to wait or reshuffle loads,
-	 (b) at least 2 lots with due dates that are infeasible to meet simultaneously without sacrificing changeover efficiency,
-	 (c) at least 1 expedite lot with tight due date.
+     (a) at least 2 lots having late releaseTime (e.g., 8–16 hours) so furnace batching is forced to wait or reshuffle loads,
+     (b) at least 2 lots with due dates that are infeasible to meet simultaneously without sacrificing changeover efficiency,
+     (c) at least 1 expedite lot with tight due date.
    - Ensure the instance produces some tardiness so the model visibly trades off: (i) meeting due dates vs (ii) grouping families to reduce changeover and (iii) waiting for QC day shift.
    - Output KPIs already present (on-time %, weighted tardiness, total changeover) plus new QC wait times (qcStart - htEnd) to show the QC gate impact.
 
@@ -1656,12 +1656,12 @@ Deliverable: a DPO 3 “v1.1” MiniZinc model where the schedule printout inclu
 ## DPO 4 (development)
 
 - **Citing DPAO:** 6
-- **Version:** 1.0.3
 - **ASCR refs:** orm-modeling--customer-orders, warm-up, flow-shop, challenges--grinding-machines, challenges--heat-treat-furnaces
 
 Pilot-ready model with parameterized calendars and calibrated changeovers. HT(24/7) -> QC(day-shift 07:00-15:30) -> Grind(06:30-22:30 Mon-Fri after daily startup/cleanup, optional Sat). Calibrated changeovers (15min same-family, 45min different). Weekly grinder maintenance blocks (2h each, staggered). Same-family furnace batching, release gates, weighted tardiness. 8-lot stressed: 5/8 on-time, expedite lot separated into own batch.
 
 **Observations:** Expert verdict on DPO 3 was needs-work with 3 requirements for pilot approval: (1) QC day-shift gate after HT, (2) explicit changeover blocks in output, (3) stressed scenario where tradeoffs are visible. Added all three. Same-family batching constraint added per expert Q&A (don't mix steel grades). 5 furnace batches allow solver to separate expedite lot 7 from delayed lot 4, demonstrating intelligent prioritization.
+### Solution 4 — v1.0.3
 
 ```minizinc
 % Ball Bearing DPO 4 - Pilot-Ready with Parameterized Calendars
@@ -1679,8 +1679,8 @@ set of int: FBATCH = 1..nFurnaceBatches;
 
 enum Family = {DeepGroove, AngularContact, Tapered};
 array[LOT] of Family: lotFamily = [DeepGroove, AngularContact, DeepGroove,
-									Tapered, AngularContact, DeepGroove,
-									Tapered, DeepGroove];
+                                    Tapered, AngularContact, DeepGroove,
+                                    Tapered, DeepGroove];
 array[LOT] of int: due = [2880, 1800, 3600, 2400, 1920, 4320, 2100, 3000];
 array[LOT] of int: expedite = [0, 0, 0, 0, 0, 0, 1, 0];
 array[LOT] of int: releaseTime = [0, 0, 0, 2040, 0, 3360, 0, 0];
@@ -1694,14 +1694,14 @@ array[LOT] of var FBATCH: lotBatch;
 array[FBATCH] of var 0..horizon: batchStart;
 
 constraint forall(i in LOT, j in LOT where i < j)(
-	lotBatch[i] != lotBatch[j] \/ lotFamily[i] = lotFamily[j]);
+    lotBatch[i] != lotBatch[j] \/ lotFamily[i] = lotFamily[j]);
 constraint forall(b in FBATCH)(
-	sum(j in LOT)(bool2int(lotBatch[j] = b)) <= maxLotsPerBatch);
+    sum(j in LOT)(bool2int(lotBatch[j] = b)) <= maxLotsPerBatch);
 constraint forall(b1 in FBATCH, b2 in FBATCH where b1 < b2)(
-	batchStart[b1] + htCycleTime <= batchStart[b2] \/
-	batchStart[b2] + htCycleTime <= batchStart[b1]);
+    batchStart[b1] + htCycleTime <= batchStart[b2] \/
+    batchStart[b2] + htCycleTime <= batchStart[b1]);
 constraint forall(b in FBATCH)(
-	forall(j in LOT)(lotBatch[j] != b \/ batchStart[b] >= releaseTime[j]));
+    forall(j in LOT)(lotBatch[j] != b \/ batchStart[b] >= releaseTime[j]));
 
 % === QC (Mon-Fri 07:00-15:30, single station) ===
 int: qcDur = 30;
@@ -1709,11 +1709,11 @@ int: dayLen = 1440;
 array[LOT] of var 0..horizon: qcStart;
 constraint forall(j in LOT)(qcStart[j] >= batchStart[lotBatch[j]] + htCycleTime);
 constraint forall(j in LOT)(
-	let { var 0..5: d = qcStart[j] div dayLen;
-		  var int: tod = qcStart[j] - d * dayLen }
-	in d <= 4 /\ tod >= 420 /\ tod + qcDur <= 930);
+    let { var 0..5: d = qcStart[j] div dayLen;
+          var int: tod = qcStart[j] - d * dayLen }
+    in d <= 4 /\ tod >= 420 /\ tod + qcDur <= 930);
 constraint forall(i in LOT, j in LOT where i < j)(
-	qcStart[i] + qcDur <= qcStart[j] \/ qcStart[j] + qcDur <= qcStart[i]);
+    qcStart[i] + qcDur <= qcStart[j] \/ qcStart[j] + qcDur <= qcStart[i]);
 
 % === GRINDING: calibrated changeovers + planned downtime ===
 array[LOT] of int: grindTime = [480, 420, 360, 540, 300, 540, 360, 420];
@@ -1735,14 +1735,14 @@ int: grindWindowEnd = 1350;
 int: satWindowEnd = 810;
 
 constraint forall(j in LOT)(
-	let { var 0..5: d = grindStart[j] div dayLen;
-		  var int: tod = grindStart[j] - d * dayLen }
-	in if saturdayOvertime then
-		 (d <= 4 /\ tod >= grindWindowStart /\ tod + grindTime[j] <= grindWindowEnd) \/
-		 (d = 5 /\ tod >= grindWindowStart /\ tod + grindTime[j] <= satWindowEnd)
-	   else
-		 d <= 4 /\ tod >= grindWindowStart /\ tod + grindTime[j] <= grindWindowEnd
-	   endif);
+    let { var 0..5: d = grindStart[j] div dayLen;
+          var int: tod = grindStart[j] - d * dayLen }
+    in if saturdayOvertime then
+         (d <= 4 /\ tod >= grindWindowStart /\ tod + grindTime[j] <= grindWindowEnd) \/
+         (d = 5 /\ tod >= grindWindowStart /\ tod + grindTime[j] <= satWindowEnd)
+       else
+         d <= 4 /\ tod >= grindWindowStart /\ tod + grindTime[j] <= grindWindowEnd
+       endif);
 
 % Weekly planned maintenance (staggered):
 % G1: Fri 14:30-16:30, G2: Fri 06:30-08:30
@@ -1751,15 +1751,15 @@ array[GRINDER] of int: maintStart = [friStart + 870, friStart + 390];
 array[GRINDER] of int: maintEnd   = [friStart + 990, friStart + 510];
 
 constraint forall(j in LOT, g in GRINDER)(
-	lotGrinder[j] != g \/
-	grindStart[j] + grindTime[j] <= maintStart[g] \/
-	grindStart[j] >= maintEnd[g]);
+    lotGrinder[j] != g \/
+    grindStart[j] + grindTime[j] <= maintStart[g] \/
+    grindStart[j] >= maintEnd[g]);
 
 % Non-overlap with changeovers
 constraint forall(i in LOT, j in LOT where i < j)(
-	lotGrinder[i] != lotGrinder[j] \/
-	grindStart[i] + grindTime[i] + changeover[lotFamily[i], lotFamily[j]] <= grindStart[j] \/
-	grindStart[j] + grindTime[j] + changeover[lotFamily[j], lotFamily[i]] <= grindStart[i]);
+    lotGrinder[i] != lotGrinder[j] \/
+    grindStart[i] + grindTime[i] + changeover[lotFamily[i], lotFamily[j]] <= grindStart[j] \/
+    grindStart[j] + grindTime[j] + changeover[lotFamily[j], lotFamily[i]] <= grindStart[i]);
 
 % === KPIs ===
 array[LOT] of var int: grindEnd = [grindStart[j] + grindTime[j] | j in LOT];
@@ -1833,25 +1833,25 @@ QC Inspection (Mon-Fri 07:00-15:30, 30min/lot, single station):
 
 Grinding (06:30-22:30 Mon-Fri, daily startup/cleanup accounted):
   G1 Schedule:
-	Lot 2 AC           Mon 08:30-Mon 15:30  due=Tue 06:00 ON-TIME
-	>> Book Changeover G1: AC->AC Mon 15:30-Mon 15:45 (15min same-family)
-	Lot 5 AC           Mon 15:45-Mon 20:45  due=Tue 08:00 ON-TIME
-	>> Book Changeover G1: AC->DG Mon 20:45-Mon 21:30 (45min cross-family)
-	[Daily cleanup 22:30 | Idle overnight -> Tue 06:30 startup]
-	Lot 1 DG           Tue 08:00-Tue 16:00  due=Wed 00:00 ON-TIME
-	>> Book Changeover G1: DG->DG Tue 16:00-Tue 16:15 (15min same-family)
-	Lot 3 DG           Tue 16:15-Tue 22:15  due=Wed 12:00 ON-TIME
-	>> Book Changeover G1: DG->Tap Tue 22:15-Tue 23:00 (45min cross-family)
-	[Daily cleanup 22:30 | Idle overnight]
-	Lot 4 Tap          Wed 07:30-Wed 16:30  due=Mon 16:00 LATE+24.5h
-	>> Book Changeover G1: Tap->DG Wed 16:30-Wed 17:15 (45min cross-family)
-	[Idle overnight]
-	Lot 6 DG           Thu 07:30-Thu 16:30  due=Wed 00:00 LATE+16.5h
+    Lot 2 AC           Mon 08:30-Mon 15:30  due=Tue 06:00 ON-TIME
+    >> Book Changeover G1: AC->AC Mon 15:30-Mon 15:45 (15min same-family)
+    Lot 5 AC           Mon 15:45-Mon 20:45  due=Tue 08:00 ON-TIME
+    >> Book Changeover G1: AC->DG Mon 20:45-Mon 21:30 (45min cross-family)
+    [Daily cleanup 22:30 | Idle overnight -> Tue 06:30 startup]
+    Lot 1 DG           Tue 08:00-Tue 16:00  due=Wed 00:00 ON-TIME
+    >> Book Changeover G1: DG->DG Tue 16:00-Tue 16:15 (15min same-family)
+    Lot 3 DG           Tue 16:15-Tue 22:15  due=Wed 12:00 ON-TIME
+    >> Book Changeover G1: DG->Tap Tue 22:15-Tue 23:00 (45min cross-family)
+    [Daily cleanup 22:30 | Idle overnight]
+    Lot 4 Tap          Wed 07:30-Wed 16:30  due=Mon 16:00 LATE+24.5h
+    >> Book Changeover G1: Tap->DG Wed 16:30-Wed 17:15 (45min cross-family)
+    [Idle overnight]
+    Lot 6 DG           Thu 07:30-Thu 16:30  due=Wed 00:00 LATE+16.5h
 
   G2 Schedule:
-	Lot 7 Tap **EXP**  Tue 07:30-Tue 13:30  due=Mon 11:00 LATE+2.5h
-	>> Book Changeover G2: Tap->DG Tue 13:30-Tue 14:15 (45min cross-family)
-	Lot 8 DG           Tue 16:15-Tue 22:15  due=Wed 02:00 ON-TIME
+    Lot 7 Tap **EXP**  Tue 07:30-Tue 13:30  due=Mon 11:00 LATE+2.5h
+    >> Book Changeover G2: Tap->DG Tue 13:30-Tue 14:15 (45min cross-family)
+    Lot 8 DG           Tue 16:15-Tue 22:15  due=Wed 02:00 ON-TIME
 
 Planned Downtime (hard constraints):
   G1: Fri 14:30-16:30 (weekly 2h maintenance)
@@ -1951,26 +1951,26 @@ If we ran this as a daily plan, the outputs I’d need to trust it are:
 1) **Per-resource timeline (the thing supervisors actually run from)**
    - One page per resource: **each furnace**, **QC station**, and **each grinder**.
    - Show blocks like:
-	 - “Run Lot L17 on Furnace F2 from 06:00–11:30 (Family 62xx)”
-	 - “QC inspect Lot L17 from 11:45–12:15 (day shift)”
-	 - “Changeover on Grinder G1 from 12:15–13:00 (6204→6205)”
-	 - “Grind Lot L17 on G1 from 13:00–15:20”
+     - “Run Lot L17 on Furnace F2 from 06:00–11:30 (Family 62xx)”
+     - “QC inspect Lot L17 from 11:45–12:15 (day shift)”
+     - “Changeover on Grinder G1 from 12:15–13:00 (6204→6205)”
+     - “Grind Lot L17 on G1 from 13:00–15:20”
    - I need **real timestamps** (e.g., 06:00, 14:30), not just ordering.
 
 2) **A prioritized dispatch list (what the lead hands use hour-to-hour)**
    - For each area (HT / QC / Grinding), a “next 10 moves” list with:
-	 - Lot ID, part/family, quantity (e.g., **Lot L17, 6204 family, 2,000 pcs**)
-	 - Earliest start / release time (so they don’t chase unavailable work)
-	 - Due date and a simple priority tag (e.g., **EXPEDITE / CUSTOMER COMMIT / STOCK**)
-	 - The **specific machine** it’s planned for (we do assign by machine a lot of the time).
+     - Lot ID, part/family, quantity (e.g., **Lot L17, 6204 family, 2,000 pcs**)
+     - Earliest start / release time (so they don’t chase unavailable work)
+     - Due date and a simple priority tag (e.g., **EXPEDITE / CUSTOMER COMMIT / STOCK**)
+     - The **specific machine** it’s planned for (we do assign by machine a lot of the time).
 
 3) **Explicit action lines we can read out in the morning meeting**
    - This is key for communication. I’d want the plan exportable as the “commands” you listed, like:
-	 - “Release Lot L17 at 06:00”
-	 - “Schedule Lot L17 for HT on F2 at 06:00 for 5h30”
-	 - “Schedule Lot L17 for QC on QC1 at 11:45 for 0h30”
-	 - “Reserve G1 for changeover 6204→6205 at 12:15 for 0h45”
-	 - “Schedule Lot L17 for Grinding on G1 at 13:00 for 2h20”
+     - “Release Lot L17 at 06:00”
+     - “Schedule Lot L17 for HT on F2 at 06:00 for 5h30”
+     - “Schedule Lot L17 for QC on QC1 at 11:45 for 0h30”
+     - “Reserve G1 for changeover 6204→6205 at 12:15 for 0h45”
+     - “Schedule Lot L17 for Grinding on G1 at 13:00 for 2h20”
 
 4) **Exception flags**
    - Anything **tardy**, anything that **misses QC same-day**, and any **resource overload** (e.g., QC demand > day shift capacity) should be called out plainly so we know where we’re taking risk.
@@ -1987,11 +1987,11 @@ Makes sense. Two follow-ups to make sure we’re not missing a showstopper: (1) 
 ### Expert
 1) **Grinder changeovers:** For a pilot, the *family-based* rule is mostly good, but it’s not the whole story. In practice we have **two levels**:
 
-- **Within same bearing family:** usually **15–30 minutes** (your **20 min** is a fair planning number). That’s typically gauge swap + minor offset + first-piece check.
+- **Within same bearing family:** usually **15–30 minutes** (your **20 min** is a fair planning number). That’s typically gauge swap + minor offset + first-piece check.  
 - **Cross-family:** often **90–150 minutes** depending on what changes; your **120 min** is a good default.
 
 Where it breaks down is a handful of “specials” inside a family that force a real setup (fixture and wheel spec). Roughly **10–15% of lots** behave like cross-family even though the family label matches. So I’d suggest for the pilot we keep the simple rule, but add either:
-- a **per-lot “setup class” flag** (normal vs heavy) that overrides to 120 min, or
+- a **per-lot “setup class” flag** (normal vs heavy) that overrides to 120 min, or  
 - a **small exception list** (e.g., “F3->F3 but variant V7 = 120 min”).
 
 I don’t think we need a full wheel/fixture matrix on day one unless you want to; that can come later once we’ve proven the schedule is executable.
@@ -2232,12 +2232,12 @@ A couple clarifiers so we don’t miss something important before piloting:
 2) Pausing/resuming near end of shift: for grinding ops, is it acceptable to split an op across shifts/days for some products, or should we keep the current rule ‘must finish within the shift window’ as the default for pilot?
 
 ### Expert
-1) **Changeovers:** For the pilot, keep the **from-family → to-family matrix** as the main driver (that’s how we run today). But yes, we do have **machine-specific differences** we should capture soon after:
-- **Grinder G1** is our “newer/faster” machine: changeovers tend to run about **10–15% shorter** than standard.
-- **Grinder G3** is the slowest/most finicky: changeovers run about **10–20% longer**, especially when we swap to tighter-finish families.
+1) **Changeovers:** For the pilot, keep the **from-family → to-family matrix** as the main driver (that’s how we run today). But yes, we do have **machine-specific differences** we should capture soon after:  
+- **Grinder G1** is our “newer/faster” machine: changeovers tend to run about **10–15% shorter** than standard.  
+- **Grinder G3** is the slowest/most finicky: changeovers run about **10–20% longer**, especially when we swap to tighter-finish families.  
 If you can support it, I’d like the model to be able to do: `changeover_time = matrix[from,to] * machine_factor` (even if the factor is just 0.9 / 1.0 / 1.2 for now). If that’s too much for the first pilot, start with matrix-only and we’ll validate by comparing planned vs actual setup minutes.
 
-2) **Pausing/resuming near end of shift (grinding):** Default for pilot should be **“must finish within the staffed shift window”** (no splitting). Operationally, we try hard not to park partially-ground lots because of **scrap risk, re-indicating/time to re-center, and mix-ups in staging**.
+2) **Pausing/resuming near end of shift (grinding):** Default for pilot should be **“must finish within the staffed shift window”** (no splitting). Operationally, we try hard not to park partially-ground lots because of **scrap risk, re-indicating/time to re-center, and mix-ups in staging**.  
 Exception: we *can* split for a limited set of rough-grind work (bigger lots, looser tolerances), but I’d rather treat that as a later enhancement. For pilot: assume **no preemption** for grinding, so if there isn’t enough time left in shift, it waits to start next shift/day.
 
 ---
@@ -2772,34 +2772,34 @@ If you implement exactly the above (plus making sure those changeover blocks tru
   :details
   {:maintenance-notes
    [{:maintenance-duration {:amount 15, :units "minutes"},
-	 :type "task-planned-maintenance",
-	 :trigger
-	 "every shift handover (housekeeping: swarf clean, coolant check, quick inspection)",
-	 :typical-times ["13:45–14:00" "21:45–22:00" "05:45–06:00"]}
-	{:maintenance-duration {:amount "8–12", :units "minutes"},
-	 :frequency
-	 "usually 2–4 times per 8-hour shift depending on part size/material",
-	 :type "task-planned-maintenance",
-	 :trigger
-	 "wheel dressing + in-process checks (typically every batch change; also when surface finish drifts)"}
-	{:maintenance-duration {:amount "45–60", :units "minutes"},
-	 :type "calendar-planned-maintenance",
-	 :trigger "weekly coolant system service (every Friday)"}
-	{:maintenance-duration {:amount 2, :units "hours"},
-	 :type "calendar-planned-maintenance",
-	 :trigger
-	 "monthly preventive maintenance (first Monday of the month; usually day shift)"}
-	{:maintenance-duration {:amount "6–8", :units "hours"},
-	 :type "calendar-planned-maintenance",
-	 :trigger
-	 "quarterly major service/calibration (once every 3 months; planned on a Saturday)"}],
+     :type "task-planned-maintenance",
+     :trigger
+     "every shift handover (housekeeping: swarf clean, coolant check, quick inspection)",
+     :typical-times ["13:45–14:00" "21:45–22:00" "05:45–06:00"]}
+    {:maintenance-duration {:amount "8–12", :units "minutes"},
+     :frequency
+     "usually 2–4 times per 8-hour shift depending on part size/material",
+     :type "task-planned-maintenance",
+     :trigger
+     "wheel dressing + in-process checks (typically every batch change; also when surface finish drifts)"}
+    {:maintenance-duration {:amount "45–60", :units "minutes"},
+     :type "calendar-planned-maintenance",
+     :trigger "weekly coolant system service (every Friday)"}
+    {:maintenance-duration {:amount 2, :units "hours"},
+     :type "calendar-planned-maintenance",
+     :trigger
+     "monthly preventive maintenance (first Monday of the month; usually day shift)"}
+    {:maintenance-duration {:amount "6–8", :units "hours"},
+     :type "calendar-planned-maintenance",
+     :trigger
+     "quarterly major service/calibration (once every 3 months; planned on a Saturday)"}],
    :weekend
    {:Sunday "normally off; emergency work only",
-	:Saturday "06:00–14:00 optional when backlog is high"},
+    :Saturday "06:00–14:00 optional when backlog is high"},
    :shifts
    [{:name "Day", :days "Mon–Fri", :hours "06:00–14:00"}
-	{:name "Swing", :days "Mon–Fri", :hours "14:00–22:00"}
-	{:name "Night", :days "Mon–Fri", :hours "22:00–06:00"}]}},
+    {:name "Swing", :days "Mon–Fri", :hours "14:00–22:00"}
+    {:name "Night", :days "Mon–Fri", :hours "22:00–06:00"}]}},
  :resource-type "grinding machines"}
 ```
 
