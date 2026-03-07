@@ -1,3 +1,8 @@
+---
+geometry: margin=0.5in
+fontsize: 10pt
+output: pdf_document
+---
 # refrigerator-compressors – Project Report
 
 **Project:** sur-refrigerator-compressors

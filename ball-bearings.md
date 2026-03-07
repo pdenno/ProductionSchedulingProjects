@@ -181,7 +181,7 @@ A typical customer order (one bearing type/size, one lot) flows like this:
 ## Q&A 4: Process: Scheduling Action Types
 
 ### Interviewer
-When your team builds a schedule for ball bearing production, what are the main *atomic scheduling commands* you’d want the system to issue? Please answer as 3–8 imperative sentence templates using placeholders (like $JOB, $LINE, $MACHINE, $START_TIME). 
+When your team builds a schedule for ball bearing production, what are the main *atomic scheduling commands* you’d want the system to issue? Please answer as 3–8 imperative sentence templates using placeholders (like $JOB, $LINE, $MACHINE, $START_TIME).
 
 Examples of the kind of thing we mean (not bearing-specific): “Start batch $BATCH at $TIME”, “Assign $OPERATOR to machine $MACHINE for job $JOB”, “Schedule preventive maintenance on $MACHINE at $TIME for $DURATION”.
 
@@ -212,7 +212,7 @@ To start, at the top level: what ball-bearing product(s) do you make (e.g., deep
 
 - **End-to-end production stages (raw material → packed bearings)**
   - **Incoming material receiving + inspection** (steel bar/rod/tube for rings, ball wire/ball blanks, cages, seals/shields, grease)
-  - **Ring forming** (cut/slugs → hot forging or ring rolling depending on size)  
+  - **Ring forming** (cut/slugs → hot forging or ring rolling depending on size)
   - **Turning / CNC machining of rings** (OD/ID/face, grooves, chamfers)
   - **Heat treatment** (hardening + tempering) + **wash**
   - **Grinding & superfinishing** (raceway grinding, OD/ID grinding, honing/lapping as needed)
@@ -231,19 +231,19 @@ To start, at the top level: what ball-bearing product(s) do you make (e.g., deep
 For the top-level ball-bearing production process, what durable resources (major machines/areas) should we list overall? Just a concise list—no quantities needed.
 
 ### Expert
-- Raw material receiving & incoming inspection area  
-- Steel bar/rod cutting (sawing) station  
-- Turning/CNC lathe area (rings)  
-- Heat treatment furnaces (hardening/tempering)  
-- Ring grinding & superfinishing line  
-- Ball forming (cold heading) and flashing/rough grinding area  
-- Ball grinding, lapping, and ball sorting/grading machines  
-- Cage/stamp press area (or cage molding area, depending on type)  
-- Parts washing/cleaning line  
-- Assembly & greasing stations (presses/automatic assembly)  
-- Final inspection/metrology lab (noise/vibration, dimensional checks)  
-- Packaging & labeling area  
-- Finished goods warehouse & shipping docks  
+- Raw material receiving & incoming inspection area
+- Steel bar/rod cutting (sawing) station
+- Turning/CNC lathe area (rings)
+- Heat treatment furnaces (hardening/tempering)
+- Ring grinding & superfinishing line
+- Ball forming (cold heading) and flashing/rough grinding area
+- Ball grinding, lapping, and ball sorting/grading machines
+- Cage/stamp press area (or cage molding area, depending on type)
+- Parts washing/cleaning line
+- Assembly & greasing stations (presses/automatic assembly)
+- Final inspection/metrology lab (noise/vibration, dimensional checks)
+- Packaging & labeling area
+- Finished goods warehouse & shipping docks
 - Toolroom/maintenance area (spares, fixtures, gauge calibration)
 
 ---
@@ -294,7 +294,7 @@ At this point, having run the 'process/scheduling-action-types' DS, you may have
 These sentences might, for example:
    * sequence work into the production facility (common in flow shops and job shops),
    * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or 
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
    * describe which vehicles visits which customers when (common in routing problem),
  or a variety actions necessary to get their work done.
 Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
@@ -374,14 +374,14 @@ solve minimize makespan;
 
 % Output the schedule
 output ["Ball Bearing Production Schedule (one batch):\n",
-        "(Time unit = half-day)\n\n"] ++
-       ["  " ++ show(s) ++ ": start=" ++ show(start[s]) ++
-        ", duration=" ++ show(duration[s]) ++
-        ", end=" ++ show(start[s] + duration[s]) ++ "\n" | s in Stage] ++
-       ["\nMinimum residence time: " ++ show(makespan) ++ " half-days (7.5 days)\n\n"] ++
-       ["Expert estimated 7-12 days end-to-end. This ideal 7.5-day result\n" ++
-        "assumes no queue time. Real time is longer due to furnace\n" ++
-        "batching, grinder changeovers, and shared resource contention.\n"];
+		"(Time unit = half-day)\n\n"] ++
+	   ["  " ++ show(s) ++ ": start=" ++ show(start[s]) ++
+		", duration=" ++ show(duration[s]) ++
+		", end=" ++ show(start[s] + duration[s]) ++ "\n" | s in Stage] ++
+	   ["\nMinimum residence time: " ++ show(makespan) ++ " half-days (7.5 days)\n\n"] ++
+	   ["Expert estimated 7-12 days end-to-end. This ideal 7.5-day result\n" ++
+		"assumes no queue time. Real time is longer due to furnace\n" ++
+		"batching, grinder changeovers, and shared resource contention.\n"];
 ```
 
 **Solver output:**
@@ -480,11 +480,11 @@ Here are the main resource types we use to make ball-bearings, split into people
   - Grease fill stations
   - Marking/laser etch station (part ID/traceability)
   - Inspection equipment:
-    - CMMs (dimensional)
-    - Roundness/cylindricity testers
-    - Surface roughness testers
-    - Hardness testers (Rockwell)
-    - Noise/vibration test rigs (end-of-line)
+	- CMMs (dimensional)
+	- Roundness/cylindricity testers
+	- Surface roughness testers
+	- Hardness testers (Rockwell)
+	- Noise/vibration test rigs (end-of-line)
   - Packaging stations (bagging, boxing, label printers)
   - Internal logistics: forklifts, pallet jacks, WIP carts, racks/bins
 
@@ -538,8 +538,8 @@ To be useful on the floor, it needs to tell us “what to run next on which mach
   - Only **same heat-treat recipe** in the same load (same hardness/spec).
   - **Capacity limit** (we usually plan in “baskets”; e.g., max **6 baskets per run**).
   - If we can’t make a full load, it should recommend either:
-    - “Run a partial load now (utilization 65%) to protect due dates,” or
-    - “Hold for 4 hours to fill the load” (and show the due-date risk).
+	- “Run a partial load now (utilization 65%) to protect due dates,” or
+	- “Hold for 4 hours to fill the load” (and show the due-date risk).
 
 3) **QC / inspection holds**
 - “Move this lot to QC now” vs “hold after heat treat until QC opens.”
@@ -600,7 +600,7 @@ In terms of whether it’s “fixed per switch” vs sequence-dependent: it’s 
 For the **furnaces**, we have **2 heat-treat furnaces** that can run in parallel.
 
 - **Any furnace can run any of our standard recipes** (through-hardening, tempering cycles, etc.). So recipes are **not tied to a specific furnace**.
-- The main limitation is **availability and load size**: we prefer to fill a load, so jobs may wait to batch with compatible parts, but capability-wise either furnace can do it.  
+- The main limitation is **availability and load size**: we prefer to fill a load, so jobs may wait to batch with compatible parts, but capability-wise either furnace can do it.
 - The furnaces are effectively independent resources: if Furnace A is busy, we can run the same recipe on Furnace B if it’s free.
 
 ---
@@ -746,7 +746,7 @@ array[Stage] of int: duration = [1, 2, 4, 4, 2, 1, 1];
 % Recipe class per job (for furnace batch compatibility)
 enum Recipe = {standardChrome, caseHardened};
 array[Jobs] of Recipe: job_recipe = [standardChrome, standardChrome,
-                                      caseHardened, standardChrome];
+									  caseHardened, standardChrome];
 
 % --- Decision variables ---
 array[Jobs, Stage] of var 0..80: start;
@@ -801,25 +801,25 @@ solve minimize makespan;
 
 % --- Output ---
 output ["Ball Bearing Schedule - 4 jobs, 2 grinders, 1 furnace\n",
-        "(Time unit = half-day)\n\n"] ++
-       ["Job " ++ show(j) ++ " (recipe=" ++ show(job_recipe[j]) ++ "):\n" ++
-        "  ringForming:       " ++ show(start[j,ringForming]) ++ "-" ++ show(start[j,ringForming]+duration[ringForming]) ++ "\n" ++
-        "  turningCNC:        " ++ show(start[j,turningCNC]) ++ "-" ++ show(start[j,turningCNC]+duration[turningCNC]) ++ "\n" ++
-        "  heatTreatment:     " ++ show(start[j,heatTreatment]) ++ "-" ++ show(start[j,heatTreatment]+duration[heatTreatment]) ++
-          "  [batch " ++ show(batch[j]) ++ "]\n" ++
-        "  grindingFinishing: " ++ show(start[j,grindingFinishing]) ++ "-" ++ show(start[j,grindingFinishing]+duration[grindingFinishing]) ++
-          "  [grinder " ++ show(grinder[j]) ++ "]\n" ++
-        "  assembly:          " ++ show(start[j,assembly]) ++ "-" ++ show(start[j,assembly]+duration[assembly]) ++ "\n" ++
-        "  finalInspection:   " ++ show(start[j,finalInspection]) ++ "-" ++ show(start[j,finalInspection]+duration[finalInspection]) ++ "\n" ++
-        "  packaging:         " ++ show(start[j,packaging]) ++ "-" ++ show(start[j,packaging]+duration[packaging]) ++ "\n\n"
-       | j in Jobs] ++
-       ["Makespan: " ++ show(makespan) ++ " half-days (" ++ show(makespan div 2) ++ "." ++ show((makespan mod 2)*5) ++ " days)\n\n"] ++
-       ["Scheduling Actions Generated:\n"] ++
-       ["  Assign grinding for Job " ++ show(j) ++ " to Grinder " ++ show(grinder[j]) ++
-        " at half-day " ++ show(start[j,grindingFinishing]) ++ "\n" | j in Jobs] ++
-       ["\nCompare: DPO 1 ideal = 7.5 days (1 job, no contention)\n",
-        "Now with 4 jobs sharing 2 grinders + 1 furnace, makespan grows\n",
-        "due to grinder queuing and furnace batch scheduling.\n"];
+		"(Time unit = half-day)\n\n"] ++
+	   ["Job " ++ show(j) ++ " (recipe=" ++ show(job_recipe[j]) ++ "):\n" ++
+		"  ringForming:       " ++ show(start[j,ringForming]) ++ "-" ++ show(start[j,ringForming]+duration[ringForming]) ++ "\n" ++
+		"  turningCNC:        " ++ show(start[j,turningCNC]) ++ "-" ++ show(start[j,turningCNC]+duration[turningCNC]) ++ "\n" ++
+		"  heatTreatment:     " ++ show(start[j,heatTreatment]) ++ "-" ++ show(start[j,heatTreatment]+duration[heatTreatment]) ++
+		  "  [batch " ++ show(batch[j]) ++ "]\n" ++
+		"  grindingFinishing: " ++ show(start[j,grindingFinishing]) ++ "-" ++ show(start[j,grindingFinishing]+duration[grindingFinishing]) ++
+		  "  [grinder " ++ show(grinder[j]) ++ "]\n" ++
+		"  assembly:          " ++ show(start[j,assembly]) ++ "-" ++ show(start[j,assembly]+duration[assembly]) ++ "\n" ++
+		"  finalInspection:   " ++ show(start[j,finalInspection]) ++ "-" ++ show(start[j,finalInspection]+duration[finalInspection]) ++ "\n" ++
+		"  packaging:         " ++ show(start[j,packaging]) ++ "-" ++ show(start[j,packaging]+duration[packaging]) ++ "\n\n"
+	   | j in Jobs] ++
+	   ["Makespan: " ++ show(makespan) ++ " half-days (" ++ show(makespan div 2) ++ "." ++ show((makespan mod 2)*5) ++ " days)\n\n"] ++
+	   ["Scheduling Actions Generated:\n"] ++
+	   ["  Assign grinding for Job " ++ show(j) ++ " to Grinder " ++ show(grinder[j]) ++
+		" at half-day " ++ show(start[j,grindingFinishing]) ++ "\n" | j in Jobs] ++
+	   ["\nCompare: DPO 1 ideal = 7.5 days (1 job, no contention)\n",
+		"Now with 4 jobs sharing 2 grinders + 1 furnace, makespan grows\n",
+		"due to grinder queuing and furnace batch scheduling.\n"];
 ```
 
 **Solver output:**
@@ -932,7 +932,7 @@ Jobs in progress at once: on a normal day we have roughly **25–40 production j
 ## Q&A 21: Data: Orm Modeling
 
 ### Interviewer
-To pin down the key relationships: 
+To pin down the key relationships:
 1) Does each sales order (SO#) have exactly one customer, or can an order include multiple customers/ship-tos?
 2) For line items, is a line uniquely identified by (SO#, line number)?
 3) For each line, do you always have exactly one product (SKU) and an ordered quantity (in pcs)?
@@ -991,7 +991,7 @@ Yes—DPO 2 feels like a useful stepping stone, but with a clear warning label.
 
 - **Useful:** It finally reflects two things that drive our real daily pain: **grinders as a shared bottleneck** (only one lot per grinder at a time) and **heat-treat as a batch step** (lots can ride together if they’re the same recipe family and fit capacity). Just seeing queue time emerge vs “everything flows perfectly” is already valuable for planner training and for validating the data.
 - **Risk of “wrong answer”:** If we gave this directly to planners to execute, it will **over-promise** because it’s missing the two decision rules that dominate outcomes:
-  1) **Heat-treat dispatch rules** (we don’t just batch whenever it improves overall finish time—we hold for ≥80% load unless the oldest lot is ~12 hours waiting; we may run ~50% loads for expedites).  
+  1) **Heat-treat dispatch rules** (we don’t just batch whenever it improves overall finish time—we hold for ≥80% load unless the oldest lot is ~12 hours waiting; we may run ~50% loads for expedites).
   2) **Grinder losses** (changeovers/dressing + unplanned downtime). In reality, we lose meaningful capacity each shift, and the schedule has to absorb that. Without it, the plan will look “too clean” and planners will still end up expediting manually.
 
 So: **good stepping stone for model direction and stakeholder buy-in**, but we shouldn’t call it “the schedule” yet until those dispatch and loss realities are represented at least in a simplified way.
@@ -1029,25 +1029,25 @@ Focusing on your CNC grinders: what operations do they perform and what kinds of
 ### Expert
 Our CNC grinders mainly do three operations:
 
-1) **OD grinding** (outer diameter) on inner rings and some spacers  
-2) **ID grinding** (bore grinding) on inner rings and smaller outer rings  
+1) **OD grinding** (outer diameter) on inner rings and some spacers
+2) **ID grinding** (bore grinding) on inner rings and smaller outer rings
 3) **Raceway grinding** on both inner and outer rings (deep-groove and angular-contact profiles)
 
 **Parts/products they handle**
-- **Deep-groove ball bearing rings**: inner rings roughly **Ø12–80 mm bore** range; outer rings roughly **Ø28–140 mm OD** range (depends on series).  
-- **Angular-contact rings**: mostly **15–60 mm bore** range; we do both the raceway form and face reference grinding.  
-- We do **not** grind balls on these machines (balls are purchased finished).  
+- **Deep-groove ball bearing rings**: inner rings roughly **Ø12–80 mm bore** range; outer rings roughly **Ø28–140 mm OD** range (depends on series).
+- **Angular-contact rings**: mostly **15–60 mm bore** range; we do both the raceway form and face reference grinding.
+- We do **not** grind balls on these machines (balls are purchased finished).
 - Very large bearing rings (say **> Ø160 mm OD**) we generally outsource or run on a different, non-CNC grinder setup.
 
 **Typical throughput (assuming material is pre-turned and heat-treated, and we’re in steady running)**
-- **OD/ID size grinding**: about **45–70 rings/hour** per machine for “normal” sizes (e.g., 6203–6208 equivalents).  
-- **Raceway grinding** is slower: typically **25–45 rings/hour** depending on profile and stock removal.  
+- **OD/ID size grinding**: about **45–70 rings/hour** per machine for “normal” sizes (e.g., 6203–6208 equivalents).
+- **Raceway grinding** is slower: typically **25–45 rings/hour** depending on profile and stock removal.
 - If you want a shift number: on an **8-hour shift**, one CNC grinder typically produces **~250–450 rings**, but the spread is mostly due to changeovers and in-process gauging.
 
 **Batch size / constraints**
-- Minimum practical batch is usually **100 pcs** because setup + first-off approval takes **30–60 minutes** (dressing, gauging, offsets).  
-- Typical batch sizes we run are **300–1,500 pcs** per ring type.  
-- Hard constraint: each machine has a dedicated **wheel + dresser + gauge setup** family; if we switch between families (e.g., small bore to larger bore), it adds more changeover time and we try to avoid doing that more than **1–2 times per shift**.  
+- Minimum practical batch is usually **100 pcs** because setup + first-off approval takes **30–60 minutes** (dressing, gauging, offsets).
+- Typical batch sizes we run are **300–1,500 pcs** per ring type.
+- Hard constraint: each machine has a dedicated **wheel + dresser + gauge setup** family; if we switch between families (e.g., small bore to larger bore), it adds more changeover time and we try to avoid doing that more than **1–2 times per shift**.
 - We also have a constraint that we need **a warm-up / stabilization period (~20 minutes)** after a wheel change before we trust the size capability, so tiny batches are inefficient and risky for scrap.
 
 ---
@@ -1124,14 +1124,14 @@ Options:
 Also on the schedule wording: you said you need a batch-level heat‑treat instruction sentence (furnace, recipe, start/end, included lots, load %, expedite flag). If we add that new line type to the schedule output, are you explicitly OK with us changing the output format to include it?
 
 ### Expert
-**Verdict:** **Approved as-is for this stage (with clear caveats).**  
+**Verdict:** **Approved as-is for this stage (with clear caveats).**
 It’s a meaningful step up from the earlier “perfect world” version: it captures the two big structural constraints we actually fight every day—**grinders as a shared bottleneck (no overlap)** and **heat-treat as a batch process**—and it correctly shows **queue time and lead time stretching** (your example run showing ~**9.5 days** vs ~**7.5 days** touch-time is believable).
 
 **Clear caveats before we’d use it for real decisions:**
-1) **Heat-treat batching rules aren’t realistic yet.** Right now it batches because it helps overall finish time, but our real triggers are closer to: *run when ≥80% full or when the oldest job has waited ~12 hours* (and sometimes we’ll run ~50% full only for an expedite and we want that to be visible/costly).  
+1) **Heat-treat batching rules aren’t realistic yet.** Right now it batches because it helps overall finish time, but our real triggers are closer to: *run when ≥80% full or when the oldest job has waited ~12 hours* (and sometimes we’ll run ~50% full only for an expedite and we want that to be visible/costly).
 2) **Grinder disruption is missing.** The main reason our grinder plans fall apart is **unplanned downtime + changeovers/dressing time**. Until you add at least simple **setup/changeover times** and/or **blocked downtime windows**, it’ll still look too stable versus what we live with.
 
-On the **schedule wording / output format**: **Yes, I’m explicitly OK with you changing the output to include a new batch-level heat-treat instruction line.** We need that.  
+On the **schedule wording / output format**: **Yes, I’m explicitly OK with you changing the output to include a new batch-level heat-treat instruction line.** We need that.
 As long as you **keep the existing per-job operation assignment lines** (grind/finish, etc.) and **add** a batch line (not replace everything), I’m fine with the format change. The batch line should include: **furnace ID, recipe/family, start/end, included lots/jobs, load % (or load/cap), and an expedite flag**.
 
 ---
@@ -1162,18 +1162,18 @@ We have discussed your processes, the data you use in your work, and the resourc
 ### Expert
 We want schedules that do three things, in this order:
 
-1) **Hit customer ship dates (OTIF) with less expediting.**  
+1) **Hit customer ship dates (OTIF) with less expediting.**
 Right now when we get late, we end up changing the plan mid-week and paying for overtime or premium freight. A “good” schedule for us is one where we can commit to ship dates and then actually run that plan with minimal fire-fighting.
 
-2) **Reduce changeovers and wasted time while keeping machines loaded.**  
+2) **Reduce changeovers and wasted time while keeping machines loaded.**
 On the grinding/superfinishing and assembly lines, switching sizes and cage/grease variants costs us real time (typically **30–90 minutes per changeover**, sometimes more if it’s a big jump). We want the schedule to **group similar bearing families/sizes** so we’re not bouncing around all day, and to keep our key machines running close to full shifts.
 
-3) **Keep WIP and lead time under control (not just “make everything early”).**  
+3) **Keep WIP and lead time under control (not just “make everything early”).**
 If we overproduce early, we jam up inspection, heat treat queues, and space in the aisles. Ideally the schedule releases work so we don’t build more than, say, **3–5 days of WIP** in front of bottlenecks, and finished goods aren’t sitting for weeks unless it’s intentional stock.
 
 Secondary objectives that still matter:
-- **Prioritize high-penalty / strategic customers** (we have a handful where a late delivery is a big issue).  
-- **Stabilize the weekly plan**: we’d rather keep the plan ~80–90% stable and only adjust what’s necessary, instead of re-sequencing everything daily.  
+- **Prioritize high-penalty / strategic customers** (we have a handful where a late delivery is a big issue).
+- **Stabilize the weekly plan**: we’d rather keep the plan ~80–90% stable and only adjust what’s necessary, instead of re-sequencing everything daily.
 - **Use overtime only when it avoids a late shipment**, not as the default.
 
 ---
@@ -1244,8 +1244,8 @@ array[Stage] of int: duration = [1, 2, 4, 4, 2, 1, 1];
 
 enum Recipe = {standardChrome, caseHardened};
 array[Jobs] of Recipe: job_recipe = [standardChrome, standardChrome,
-                                      caseHardened, standardChrome,
-                                      caseHardened, standardChrome];
+									  caseHardened, standardChrome,
+									  caseHardened, standardChrome];
 
 % Due dates (half-days) and priority weights
 array[Jobs] of int: due = [16, 20, 18, 24, 15, 22];
@@ -1303,24 +1303,24 @@ solve minimize bigM * weighted_tardiness + makespan;
 
 % --- Output ---
 output ["Ball Bearing Schedule - 6 jobs, due dates, OTIF\n",
-        "(Time unit = half-day)\n\n"] ++
-       ["Job " ++ show(j) ++ " (recipe=" ++ show(job_recipe[j]) ++
-        ", wt=" ++ show(priority_weight[j]) ++
-        ", due=" ++ show(due[j]) ++ "): complete=" ++
-        show(completion[j]) ++ ", tardy=" ++ show(tardy[j]) ++
-        " [grinder " ++ show(grinder[j]) ++ ", batch " ++ show(batch[j]) ++ "]\n"
-       | j in Jobs] ++
-       ["\n--- KPIs ---\n",
-        "OTIF: " ++ show(n_on_time) ++ "/" ++ show(n_jobs) ++ " on time\n",
-        "Weighted tardiness: " ++ show(weighted_tardiness) ++ "\n",
-        "Makespan: " ++ show(makespan) ++ " half-days\n\n"] ++
-       ["--- Scheduling Actions ---\n"] ++
-       ["  Assign grinding Job " ++ show(j) ++ " to Grinder " ++ show(grinder[j]) ++
-        " at t=" ++ show(start[j,grindingFinishing]) ++ "\n" | j in Jobs] ++
-       ["  Schedule heat-treat batch " ++ show(b) ++
-        " at t=" ++ show(min(j in Jobs where fix(batch[j]) = b)(start[j,heatTreatment])) ++
-        " (jobs: " ++ concat(["J" ++ show(j) ++ " " | j in Jobs where fix(batch[j]) = b]) ++ ")\n"
-       | b in 1..max_batches where exists(j in Jobs)(fix(batch[j]) = b)];
+		"(Time unit = half-day)\n\n"] ++
+	   ["Job " ++ show(j) ++ " (recipe=" ++ show(job_recipe[j]) ++
+		", wt=" ++ show(priority_weight[j]) ++
+		", due=" ++ show(due[j]) ++ "): complete=" ++
+		show(completion[j]) ++ ", tardy=" ++ show(tardy[j]) ++
+		" [grinder " ++ show(grinder[j]) ++ ", batch " ++ show(batch[j]) ++ "]\n"
+	   | j in Jobs] ++
+	   ["\n--- KPIs ---\n",
+		"OTIF: " ++ show(n_on_time) ++ "/" ++ show(n_jobs) ++ " on time\n",
+		"Weighted tardiness: " ++ show(weighted_tardiness) ++ "\n",
+		"Makespan: " ++ show(makespan) ++ " half-days\n\n"] ++
+	   ["--- Scheduling Actions ---\n"] ++
+	   ["  Assign grinding Job " ++ show(j) ++ " to Grinder " ++ show(grinder[j]) ++
+		" at t=" ++ show(start[j,grindingFinishing]) ++ "\n" | j in Jobs] ++
+	   ["  Schedule heat-treat batch " ++ show(b) ++
+		" at t=" ++ show(min(j in Jobs where fix(batch[j]) = b)(start[j,heatTreatment])) ++
+		" (jobs: " ++ concat(["J" ++ show(j) ++ " " | j in Jobs where fix(batch[j]) = b]) ++ ")\n"
+	   | b in 1..max_batches where exists(j in Jobs)(fix(batch[j]) = b)];
 ```
 
 **Solver output:**
@@ -1455,8 +1455,8 @@ That said, I’d still want some notion of **stability/practicality** in the sch
 - **Bigger re-sequencing week-over-week:** For weekly planning, we can handle changes, but if Monday morning’s plan is totally different every time we re-run it (even with the same orders), it creates confusion in staging, tooling, and inspection priorities.
 
 So my answer is: **Yes, usable with those two realism adds**, but I would also ask you to include either:
-1) a soft penalty for “too many switches per day/shift,” or  
-2) a simple “keep today’s first N jobs per grinder” preference when we re-run it mid-week,  
+1) a soft penalty for “too many switches per day/shift,” or
+2) a simple “keep today’s first N jobs per grinder” preference when we re-run it mid-week,
 so the plan is something the floor will actually execute.
 
 Also, separately (not part of your question), grinding realism alone won’t stop firefighting if heat treat batching is still “too perfect”—but for grinder dispatch specifically, these changes get you much closer to something we can run.
@@ -1558,16 +1558,16 @@ Yes—DPO 3 is heading the right way, and I approve the priority‑weighted ship
 
 It’s **not ready to deploy as-is for OTIF commitments**, though. I’d trust it today only as a “directional plan” because it’s still too optimistic on our biggest real-world losses:
 
-- **Grinder changeovers** (sequence matters by part family)  
-- **Blocked/lost capacity** on grinders (we typically lose **~60 minutes per shift per grinder**)  
+- **Grinder changeovers** (sequence matters by part family)
+- **Blocked/lost capacity** on grinders (we typically lose **~60 minutes per shift per grinder**)
 - Heat treat dispatch rules are still simplified (we push for **~80% fill**, **12‑hour max wait**, and we only run **~50% partial loads for expedites**, maybe **1–3/week**)
 
 So my verdict: **keep the OTIF objective exactly as-is**, but we need **grinder realism (sequence-dependent changeovers + 60 min/shift blocked time)** added before I’d use it to make real OTIF promises or to decide whether we can stop expediting. Heat treat batching realism should be the next item right after that (or in parallel).
 
 On the schedule text: **Yes, I’m OK with you updating it** to always include explicit sentences for:
-1) **Grinder changeover events** (what family-to-family change, duration)  
-2) **Blocked-time blocks** per grinder per shift (e.g., “Grinder 2 blocked 14:00–15:00”)  
-3) A per-shift summary: **“switch count + total setup minutes”** per grinder  
+1) **Grinder changeover events** (what family-to-family change, duration)
+2) **Blocked-time blocks** per grinder per shift (e.g., “Grinder 2 blocked 14:00–15:00”)
+3) A per-shift summary: **“switch count + total setup minutes”** per grinder
 
 That will make the schedule something my supervisors can actually sanity-check and execute on the floor.
 
@@ -1701,9 +1701,9 @@ constraint forall(j in Jobs)(
 constraint forall(j1, j2 in Jobs where j1 < j2)(
   grinder[j1] != grinder[j2] \/
   start[j1, grindingFinishing] + duration[grindingFinishing]
-    + setup[job_family[j1], job_family[j2]] <= start[j2, grindingFinishing] \/
+	+ setup[job_family[j1], job_family[j2]] <= start[j2, grindingFinishing] \/
   start[j2, grindingFinishing] + duration[grindingFinishing]
-    + setup[job_family[j2], job_family[j1]] <= start[j1, grindingFinishing]
+	+ setup[job_family[j2], job_family[j1]] <= start[j1, grindingFinishing]
 );
 
 % --- Furnace batching ---
@@ -1729,30 +1729,30 @@ solve minimize bigM * weighted_tardiness + makespan;
 
 % --- Output ---
 output ["Ball Bearing Schedule - 8 jobs, changeovers, OTIF\n",
-        "(Time unit = hours)\n\n"] ++
-       ["Job " ++ show(j) ++ " (fam=" ++ show(job_family[j]) ++
-        ", wt=" ++ show(priority_weight[j]) ++
-        ", due=" ++ show(due[j]) ++ "h):" ++
-        " grind@" ++ show(start[j,grindingFinishing]) ++
-        "h[G" ++ show(grinder[j]) ++ "]" ++
-        " done=" ++ show(completion[j]) ++
-        "h tardy=" ++ show(tardy[j]) ++ "h\n"
-       | j in Jobs] ++
-       ["\n--- KPIs ---\n",
-        "OTIF: " ++ show(n_on_time) ++ "/" ++ show(n_jobs) ++ " on time\n",
-        "Weighted tardiness: " ++ show(weighted_tardiness) ++ " hours\n",
-        "Makespan: " ++ show(makespan) ++ "h (" ++
-        show(makespan div 24) ++ " days)\n\n"] ++
-       ["--- Grinder Assignments ---\n"] ++
-       ["  Grinder " ++ show(g) ++ ": " ++
-        concat(["J" ++ show(j) ++ "(" ++ show(job_family[j]) ++ ") "
-               | j in Jobs where fix(grinder[j]) = g]) ++ "\n"
-       | g in 1..n_grinders] ++
-       ["\n--- Heat-Treat Batches ---\n"] ++
-       ["  Batch " ++ show(b) ++ " at t=" ++
-        show(min(j in Jobs where fix(batch[j]) = b)(start[j,heatTreatment])) ++
-        "h: " ++ concat(["J" ++ show(j) ++ " " | j in Jobs where fix(batch[j]) = b]) ++ "\n"
-       | b in 1..max_batches where exists(j in Jobs)(fix(batch[j]) = b)];
+		"(Time unit = hours)\n\n"] ++
+	   ["Job " ++ show(j) ++ " (fam=" ++ show(job_family[j]) ++
+		", wt=" ++ show(priority_weight[j]) ++
+		", due=" ++ show(due[j]) ++ "h):" ++
+		" grind@" ++ show(start[j,grindingFinishing]) ++
+		"h[G" ++ show(grinder[j]) ++ "]" ++
+		" done=" ++ show(completion[j]) ++
+		"h tardy=" ++ show(tardy[j]) ++ "h\n"
+	   | j in Jobs] ++
+	   ["\n--- KPIs ---\n",
+		"OTIF: " ++ show(n_on_time) ++ "/" ++ show(n_jobs) ++ " on time\n",
+		"Weighted tardiness: " ++ show(weighted_tardiness) ++ " hours\n",
+		"Makespan: " ++ show(makespan) ++ "h (" ++
+		show(makespan div 24) ++ " days)\n\n"] ++
+	   ["--- Grinder Assignments ---\n"] ++
+	   ["  Grinder " ++ show(g) ++ ": " ++
+		concat(["J" ++ show(j) ++ "(" ++ show(job_family[j]) ++ ") "
+			   | j in Jobs where fix(grinder[j]) = g]) ++ "\n"
+	   | g in 1..n_grinders] ++
+	   ["\n--- Heat-Treat Batches ---\n"] ++
+	   ["  Batch " ++ show(b) ++ " at t=" ++
+		show(min(j in Jobs where fix(batch[j]) = b)(start[j,heatTreatment])) ++
+		"h: " ++ concat(["J" ++ show(j) ++ " " | j in Jobs where fix(batch[j]) = b]) ++ "\n"
+	   | b in 1..max_batches where exists(j in Jobs)(fix(batch[j]) = b)];
 ```
 
 **Solver output:**
@@ -1946,13 +1946,13 @@ A few additional call-outs I’d want the schedule to explicitly print because t
    These are the decisions supervisors get questioned on, so having the system explain them would save a lot of back-and-forth.
 
 2) **Capacity realism warnings**
-   - A warning if the schedule relies on time we don’t actually have, like:  
-     “WARNING: G2 scheduled 8.6h of run time on Wed 2nd shift, but only 7.0h net available after 60 min shift loss + planned downtime”
+   - A warning if the schedule relies on time we don’t actually have, like:
+	 “WARNING: G2 scheduled 8.6h of run time on Wed 2nd shift, but only 7.0h net available after 60 min shift loss + planned downtime”
    - If you model downtime blocks, also print them explicitly: “G2 downtime 14:00–16:00 (wheel change/maintenance)”.
 
 3) **Operator coverage / staffing constraints (if applicable)**
-   - If we can’t staff all grinders simultaneously, I want a clear message:  
-     “COVERAGE WARNING: 3 grinders scheduled to run 10:00–14:00, but only 2 qualified operators available.”
+   - If we can’t staff all grinders simultaneously, I want a clear message:
+	 “COVERAGE WARNING: 3 grinders scheduled to run 10:00–14:00, but only 2 qualified operators available.”
    Even if you don’t enforce it yet, flagging it would prevent supervisors from getting surprised mid-shift.
 
 4) **Late orders / expediting flags**
@@ -1978,8 +1978,8 @@ So my verdict: **acceptable progress but needs work**. Once you add (1) blocked-
 
 ### Changeover logic: what I’d change / add
 1) **Different changeover times by grinder (yes):** our older Studer is slower to stabilize and inspect than the newer grinder. Practically:
-   - **Grinder G1 (newer):** 0.5 hr same-family change; 1.0 hr family change  
-   - **Grinder G2 (older):** 0.75 hr same-family change; 1.5 hr family change  
+   - **Grinder G1 (newer):** 0.5 hr same-family change; 1.0 hr family change
+   - **Grinder G2 (older):** 0.75 hr same-family change; 1.5 hr family change
    (Those are good “planning numbers” even if the real range is 30–90 minutes.)
 
 2) **Asymmetry small→large vs large→small (mild yes):** going **small → large** tends to be faster than **large → small** because small sizes are more sensitive to wheel condition and gauging.
@@ -2022,10 +2022,10 @@ Concrete, small-but-real implementation plan (keep it disciplined):
    - Introduce explicit batch entities per furnace: `batch_of_job[j]`, `furnace_of_batch[b]`, `batch_start[b]` and `load[b] = sum(qty[j] where batch_of_job[j]=b)`.
    - Define each job’s heat-treat ready time: `ready_ht[j] = start[j,turningCNC] + duration[turningCNC]` (or whatever stage precedes HT).
    - Enforce rule: for any batch b,
-     - normally require `load[b] >= 0.8 * cap[furnace_of_batch[b]]`.
-     - allow `load[b] >= 0.5 * cap[...]` only if the batch contains at least one expedite job (priority_weight high) OR if the oldest job in that batch would otherwise wait > 12h.
+	 - normally require `load[b] >= 0.8 * cap[furnace_of_batch[b]]`.
+	 - allow `load[b] >= 0.5 * cap[...]` only if the batch contains at least one expedite job (priority_weight high) OR if the oldest job in that batch would otherwise wait > 12h.
    - Implement the 12h max-wait as: for each job j assigned to batch b,
-     `batch_start[b] - ready_ht[j] <= 12` unless you deliberately choose to violate it with a large penalty.
+	 `batch_start[b] - ready_ht[j] <= 12` unless you deliberately choose to violate it with a large penalty.
 4) Keep OTIF/weighted tardiness objective dominant, but add a secondary penalty for underfill (below 80%) when it is allowed (expedite/timeout case), so the model prefers full loads unless OTIF forces otherwise.
 5) Output explicit scheduling-action sentences already aligned with process/scheduling-action-types:
    - “Schedule heat-treatment batch B in furnace F starting T for D (load L/cap C; rule=FULL|TIMEOUT|EXPEDITE)”
@@ -2108,9 +2108,9 @@ constraint forall(j in Jobs)(
 constraint forall(j1, j2 in Jobs where j1 < j2)(
   grinder[j1] != grinder[j2] \/
   start[j1, grindingFinishing] + dur[grindingFinishing] + setup[fam[j1], fam[j2]]
-    <= start[j2, grindingFinishing] \/
+	<= start[j2, grindingFinishing] \/
   start[j2, grindingFinishing] + dur[grindingFinishing] + setup[fam[j2], fam[j1]]
-    <= start[j1, grindingFinishing]
+	<= start[j1, grindingFinishing]
 );
 
 % --- Furnace batching ---
@@ -2122,7 +2122,7 @@ constraint forall(j1, j2 in Jobs where j1 < j2)(
 
 constraint forall(b in 1..max_b)(
   forall(f in 1..n_furn)(
-    sum(j in Jobs)(qty[j] * bool2int(batch[j] = b /\ furnace[j] = f)) <= fcap[f]
+	sum(j in Jobs)(qty[j] * bool2int(batch[j] = b /\ furnace[j] = f)) <= fcap[f]
   )
 );
 
@@ -2144,21 +2144,21 @@ var int: makespan = max(j in Jobs)(comp[j]);
 solve minimize bigM * wtard + makespan;
 
 output ["Schedule: 8 jobs, 6 grinders, 2 furnaces\n\n"] ++
-       ["J" ++ show(j) ++ "(fam=" ++ show(fam[j]) ++ ",qty=" ++ show(qty[j]) ++
-        ",wt=" ++ show(wt[j]) ++ ",due=" ++ show(due[j]) ++
-        "): G" ++ show(grinder[j]) ++ " F" ++ show(furnace[j]) ++
-        " b" ++ show(batch[j]) ++
-        " done=" ++ show(comp[j]) ++ " tardy=" ++ show(tardy[j]) ++ "\n"
-       | j in Jobs] ++
-       ["\nOTIF: " ++ show(sum(j in Jobs)(bool2int(tardy[j]=0))) ++ "/" ++ show(n_jobs) ++
-        " | wtard=" ++ show(wtard) ++ " | makespan=" ++ show(makespan) ++ "h (" ++
-        show(makespan div 24) ++ " days)\n\n"] ++
-       ["Furnace batches:\n"] ++
-       ["  b" ++ show(b) ++ " F" ++ show(fix(furnace[min(j in Jobs where fix(batch[j])=b)(j)])) ++
-        " t=" ++ show(min(j in Jobs where fix(batch[j])=b)(start[j,heatTreatment])) ++
-        "h load=" ++ show(sum(j in Jobs where fix(batch[j])=b)(qty[j])) ++
-        " (" ++ concat(["J" ++ show(j) ++ " " | j in Jobs where fix(batch[j])=b]) ++ ")\n"
-       | b in 1..max_b where exists(j in Jobs)(fix(batch[j])=b)];
+	   ["J" ++ show(j) ++ "(fam=" ++ show(fam[j]) ++ ",qty=" ++ show(qty[j]) ++
+		",wt=" ++ show(wt[j]) ++ ",due=" ++ show(due[j]) ++
+		"): G" ++ show(grinder[j]) ++ " F" ++ show(furnace[j]) ++
+		" b" ++ show(batch[j]) ++
+		" done=" ++ show(comp[j]) ++ " tardy=" ++ show(tardy[j]) ++ "\n"
+	   | j in Jobs] ++
+	   ["\nOTIF: " ++ show(sum(j in Jobs)(bool2int(tardy[j]=0))) ++ "/" ++ show(n_jobs) ++
+		" | wtard=" ++ show(wtard) ++ " | makespan=" ++ show(makespan) ++ "h (" ++
+		show(makespan div 24) ++ " days)\n\n"] ++
+	   ["Furnace batches:\n"] ++
+	   ["  b" ++ show(b) ++ " F" ++ show(fix(furnace[min(j in Jobs where fix(batch[j])=b)(j)])) ++
+		" t=" ++ show(min(j in Jobs where fix(batch[j])=b)(start[j,heatTreatment])) ++
+		"h load=" ++ show(sum(j in Jobs where fix(batch[j])=b)(qty[j])) ++
+		" (" ++ concat(["J" ++ show(j) ++ " " | j in Jobs where fix(batch[j])=b]) ++ ")\n"
+	   | b in 1..max_b where exists(j in Jobs)(fix(batch[j])=b)];
 ```
 
 **Solver output:**
@@ -2200,16 +2200,16 @@ Directionally, yes—those are the right “big rocks” for how we run:
 
 What jumps out as **off / missing**:
 
-1) **Furnace batch fill behavior isn’t represented (and it will make results look too good).**  
+1) **Furnace batch fill behavior isn’t represented (and it will make results look too good).**
    In reality we usually try to run the furnaces at about **~80% full or better** (so roughly **≥880 rings on F1** and **≥640 rings on F2**) unless:
    - it’s an **expedite**, or
-   - we’re about to violate that **12-hour max wait**, in which case we’ll run a light batch.  
+   - we’re about to violate that **12-hour max wait**, in which case we’ll run a light batch.
    If your model allows batches like **650/1100** or **500/800** with no downside, it’ll look better than how we actually operate (we’d normally hold those to combine, unless forced).
 
-2) **Grinders are treated like 24/7, but we lose about ~60 minutes per shift per grinder.**  
+2) **Grinders are treated like 24/7, but we lose about ~60 minutes per shift per grinder.**
    Each grinder typically has roughly **1 hour per shift** that’s effectively blocked (wheel dress, gauging, minor stops, paperwork/hand-off, etc.). If the model doesn’t subtract that, it’ll overpromise capacity and still show 100% on-time when the shop would start slipping.
 
-3) **8 jobs / ~200 hours and 100% on-time is plausible as a toy test, but I’d want realism checks.**  
+3) **8 jobs / ~200 hours and 100% on-time is plausible as a toy test, but I’d want realism checks.**
    With real orders, what usually breaks us is a mix of (a) furnace batching constraints, (b) grinder lost time, and (c) a couple hot orders colliding. So I’d want to see the same test with:
    - at least one **expedite** order,
    - some **unbalanced quantities** that force awkward furnace fills,
@@ -2230,8 +2230,8 @@ That’s helpful. On the furnace point: if we implement an 80% “target” fill
 Yes—an **80% target fill with exceptions only for (a) expedites or (b) avoiding a 12-hour max-wait violation** matches how we actually try to run the hardening furnaces. For our two furnaces that’s **F1 (1100) target ≥880 rings** and **F2 (800) target ≥640 rings**.
 
 1) **Hard floor when we run under 80%**
-- In normal operation, we treat **~50% as the hard floor**:  
-  - **F1:** don’t run below **550**  
+- In normal operation, we treat **~50% as the hard floor**:
+  - **F1:** don’t run below **550**
   - **F2:** don’t run below **400**
 - The only times we’d go below 50% are truly exceptional (customer shutdown / aircraft-on-ground type situation). In practice that’s **maybe 1–2 times per quarter**, and it’s always an expedite with management sign-off.
 
@@ -2265,7 +2265,7 @@ Yes—blocking a fixed **1 hour per shift per grinder** would be accurate enough
   - **06:00–07:00**
   - **14:00–15:00**
   - **22:00–23:00**
-  
+
 If you want it even closer to reality: make it **30 minutes at shift start + 30 minutes mid-shift** (e.g., **06:00–06:30 and 10:00–10:30**, similar pattern for other shifts). But a single fixed 1-hour block at the start of each shift will be “good enough” to pilot and will already tighten capacity materially across **6 grinders**.
 
 ---
@@ -2308,10 +2308,10 @@ Final check: based on what you’ve seen, would you say the current approach is 
 ### Expert
 I wouldn’t sign off for a real pilot *yet* without those two changes.
 
-1) **Furnace fill rule (80% normal / 50% only for expedite or max-wait): must-have before pilot.**  
+1) **Furnace fill rule (80% normal / 50% only for expedite or max-wait): must-have before pilot.**
 Right now the plan looks “too good” because it can run half-empty batches like **650/1100** or **500/800** whenever it helps the schedule. On our floor we push to about **80% full** as the default, and we only accept **~50%** if it’s an **expedite** or we’re about to break the **12-hour max-wait after turning**. If that isn’t in the model (or at least penalized), the heat-treat plan won’t match what supervisors will actually run.
 
-2) **Per-shift grinder blocked time: must-have before pilot.**  
+2) **Per-shift grinder blocked time: must-have before pilot.**
 We lose about **60 minutes per shift per grinder** to changeovers, wheel dressing, checks, and getting the next job staged. If the grinders are modeled as 24/7 continuous, your on-time performance and queueing will look better than reality. A simple fixed **1-hour blocked window per 8-hour shift per grinder** is good enough for a first pilot.
 
 If you add those two items, then **yes—we would like to pilot this solution in a production setting** (limited scope).
@@ -2470,18 +2470,18 @@ constraint makespan = max(j in 1..n_jobs)(completion[j]);
 % Grinder no-overlap with setup (grind stage)
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1, 3] + proc[j1, 3] + setup[family[j1], family[j2]] <= start[j2, 3]) \/
-    (start[j2, 3] + proc[j2, 3] + setup[family[j2], family[j1]] <= start[j1, 3])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1, 3] + proc[j1, 3] + setup[family[j1], family[j2]] <= start[j2, 3]) \/
+	(start[j2, 3] + proc[j2, 3] + setup[family[j2], family[j1]] <= start[j1, 3])
   )
 );
 
 % Finish grind no-overlap (same grinder)
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1, 5] + proc[j1, 5] <= start[j2, 5]) \/
-    (start[j2, 5] + proc[j2, 5] <= start[j1, 5])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1, 5] + proc[j1, 5] <= start[j2, 5]) \/
+	(start[j2, 5] + proc[j2, 5] <= start[j1, 5])
   )
 );
 
@@ -2498,9 +2498,9 @@ constraint forall(b in 1..max_batches)(
 % Recipe compatibility
 constraint forall(b in 1..max_batches)(
   if batch_used[b] = 1 then
-    forall(j in 1..n_jobs)(batch[j] = b -> batch_recipe[b] = recipe[j])
+	forall(j in 1..n_jobs)(batch[j] = b -> batch_recipe[b] = recipe[j])
   else
-    batch_recipe[b] = 0
+	batch_recipe[b] = 0
   endif
 );
 
@@ -2517,9 +2517,9 @@ constraint forall(b in 1..max_batches)(
 % Fill rules: 80% target, 50% hard min
 constraint forall(b in 1..max_batches)(
   if batch_used[b] = 1 then
-    underfill80[b] = max(0, (fcap[batch_furn[b]] * 4) div 5 - batch_load[b])
+	underfill80[b] = max(0, (fcap[batch_furn[b]] * 4) div 5 - batch_load[b])
   else
-    underfill80[b] = 0
+	underfill80[b] = 0
   endif
 );
 constraint forall(b in 1..max_batches)(
@@ -2564,13 +2564,13 @@ output [
 | j in 1..n_jobs ] ++
 [ "\n--- Batch Schedule ---\n" ] ++
 [ if fix(batch_used[b]) = 1 then
-    "Batch " ++ show(b) ++ ": furnace=F" ++ show(fix(batch_furn[b])) ++
-    " start=" ++ show(fix(batch_start[b])) ++ "h" ++
-    " load=" ++ show(fix(batch_load[b])) ++ "/" ++ show(fcap[fix(batch_furn[b])]) ++
-    " (" ++ show(fix(batch_load[b]) * 100 div fcap[fix(batch_furn[b])]) ++ "%)" ++
-    " recipe=" ++ show(fix(batch_recipe[b])) ++
-    " expedite=" ++ show(fix(batch_has_expedite[b])) ++
-    " underfill80=" ++ show(fix(underfill80[b])) ++ " rings\n"
+	"Batch " ++ show(b) ++ ": furnace=F" ++ show(fix(batch_furn[b])) ++
+	" start=" ++ show(fix(batch_start[b])) ++ "h" ++
+	" load=" ++ show(fix(batch_load[b])) ++ "/" ++ show(fcap[fix(batch_furn[b])]) ++
+	" (" ++ show(fix(batch_load[b]) * 100 div fcap[fix(batch_furn[b])]) ++ "%)" ++
+	" recipe=" ++ show(fix(batch_recipe[b])) ++
+	" expedite=" ++ show(fix(batch_has_expedite[b])) ++
+	" underfill80=" ++ show(fix(underfill80[b])) ++ " rings\n"
   else "" endif
 | b in 1..max_batches ] ++
 [ "\n--- OTIF Summary ---\n" ] ++
@@ -2629,7 +2629,7 @@ Mostly yes on the overall behavior:
 On the **50% (400/800) non-expedite batch**: that’s the part I’d challenge.
 
 In real life, we generally allow **~50% loads only for one of two reasons**:
-1) **EXPEDITE / hot order** (customer promise or we’re already late), or  
+1) **EXPEDITE / hot order** (customer promise or we’re already late), or
 2) **TIMEOUT** (we’re approaching the 12-hour max-wait and can’t wait for more parts to reach ~80%).
 
 If it’s truly “non-expedite” and we weren’t about to hit the 12-hour max-wait, we would **normally hold that 400 rings** and try to build it up (even if it means delaying that batch by a few hours) unless there’s a downstream constraint you’re not showing (e.g., furnace availability later, planned downtime, or a hard ship time).
@@ -2647,11 +2647,11 @@ If you can’t justify it as EXPEDITE or TIMEOUT, then I’d prefer you **disall
 ## Q&A 51: Expert Discussion
 
 ### Interviewer
-That’s helpful. Two follow-ups based on what you just said and what we saw in the output: (1) Should we make it a hard rule that sub-80% batches are only allowed when the batch includes an expedite job OR when waiting longer would break the 12-hour max-wait? Or is it better as a soft rule (still allowed but strongly discouraged)? (2) For the batch ‘reason’ label in the printed schedule: would FULL/EXPEDITE/TIMEOUT cover 99% of your real decisions, or do you need other categories (like planned furnace downtime, downstream ship cutoff, or “no more WIP coming”)? 
+That’s helpful. Two follow-ups based on what you just said and what we saw in the output: (1) Should we make it a hard rule that sub-80% batches are only allowed when the batch includes an expedite job OR when waiting longer would break the 12-hour max-wait? Or is it better as a soft rule (still allowed but strongly discouraged)? (2) For the batch ‘reason’ label in the printed schedule: would FULL/EXPEDITE/TIMEOUT cover 99% of your real decisions, or do you need other categories (like planned furnace downtime, downstream ship cutoff, or “no more WIP coming”)?
 
 ### Expert
-1) I’d make it a **hard rule** in the model: **if a heat-treat batch is <80% full, it must be because of either EXPEDITE or TIMEOUT (12-hour max-wait)**. In real life we don’t knowingly run, say, a 50–70% load just because it gives a nicer overall schedule; we only do it when (a) a hot order needs to move right now, or (b) we’re about to violate that **12-hour max-wait** from “ready for heat treat” to “in the furnace.”  
-- The only flexibility I’d keep “soft” is the **80% target itself** (penalize underfill), because sometimes you’ll end up at 78–79% just due to discrete basket sizes / part counts.  
+1) I’d make it a **hard rule** in the model: **if a heat-treat batch is <80% full, it must be because of either EXPEDITE or TIMEOUT (12-hour max-wait)**. In real life we don’t knowingly run, say, a 50–70% load just because it gives a nicer overall schedule; we only do it when (a) a hot order needs to move right now, or (b) we’re about to violate that **12-hour max-wait** from “ready for heat treat” to “in the furnace.”
+- The only flexibility I’d keep “soft” is the **80% target itself** (penalize underfill), because sometimes you’ll end up at 78–79% just due to discrete basket sizes / part counts.
 - But the *exception permission* (dropping below 80%) should be hard-gated by **EXPEDITE or TIMEOUT**, otherwise we’ll see non-expedite half-loads like Batch 3 and the plan won’t be credible to supervisors.
 
 2) **FULL/EXPEDITE/TIMEOUT** would cover most cases, but not 99% for us. I’d add **DOWN** as a reason code for **planned furnace downtime / qualification / maintenance window** (even if it’s just a 2-hour blocked window) because that’s a common real driver of “we ran now even though we weren’t full.”
@@ -2726,14 +2726,14 @@ Wording tweaks to match how we talk:
   - Replace “TIMEOUT” with **“max-wait hit (12h)”** or **“12h max-wait”**.
   - Replace “DOWN” with **“furnace downtime”** or **“maintenance window”** (we rarely say “down” in the schedule; we say “in maintenance” or “unavailable”).
   - Sentence template we’d like:
-    - **“HT Batch 3 (Recipe R2) – Furnace F1 – Start 14:20 – Load 520/1,040 pcs (50% fill; target 80%). Reason for underfill: EXPEDITE / max-wait hit (12h) / furnace downtime.”**
+	- **“HT Batch 3 (Recipe R2) – Furnace F1 – Start 14:20 – Load 520/1,040 pcs (50% fill; target 80%). Reason for underfill: EXPEDITE / max-wait hit (12h) / furnace downtime.”**
   - If it’s under 80% and not expedite, the schedule should *explicitly* say **“max-wait hit (12h)”**; otherwise supervisors will challenge it (we usually only accept ~50% when expediting or to avoid breaking the 12-hour limit).
 
 - For grinders:
   - “blocked” is fine, but name the activity the way we do:
-    - **“blocked 09:30–10:30 (dress wheel + cleanup)”** or **“blocked (planned cleanup/dress)”**
+	- **“blocked 09:30–10:30 (dress wheel + cleanup)”** or **“blocked (planned cleanup/dress)”**
   - Per-shift summary is exactly what we want, but label it like:
-    - **“Shift summary (G2, Day shift): Run 360 min | Changeover/Setup 75 min | Blocked 60 min | Idle 45 min.”**
+	- **“Shift summary (G2, Day shift): Run 360 min | Changeover/Setup 75 min | Blocked 60 min | Idle 45 min.”**
   - And please make sure the blocked time reflects our reality: **~60 minutes per shift per grinder** (it’s basically a guaranteed loss, not optional).
 
 One extra “must-say” I’d add for both areas: if the plan is forcing overtime or an off-shift start, call it out plainly, e.g., **“Requires OT: operator coverage needed 18:00–20:00.”** That’s the other thing supervisors immediately look for.
@@ -2750,13 +2750,13 @@ Final check: given what you’ve seen—good progress on 80% fill targeting and 
 
 **Top 2 changes I want first:**
 
-1) **Hard-gate half-loads with a reason code (and show it in the output).**  
+1) **Hard-gate half-loads with a reason code (and show it in the output).**
    Today it’s still allowed to run ~50% loads even when it’s *not* an expedite (like your Batch 3). In our rules, a half-load is only acceptable if:
-   - **EXPEDITE** (we’re intentionally burning capacity), or  
-   - **TIMEOUT / max-wait** (we’d violate the 12-hour max-wait if we didn’t run it).  
+   - **EXPEDITE** (we’re intentionally burning capacity), or
+   - **TIMEOUT / max-wait** (we’d violate the 12-hour max-wait if we didn’t run it).
    If neither is true, the model should *not* be allowed to run at 50%—it should wait and try to build toward ~80% (or whatever the best feasible is). I also want the schedule to print a simple label per furnace batch: **FULL | EXPEDITE | TIMEOUT** so a supervisor can understand why we’re doing something “inefficient.”
 
-2) **Add grinder shift calendars / blocked-time (lost hour per shift) so the plan matches reality.**  
+2) **Add grinder shift calendars / blocked-time (lost hour per shift) so the plan matches reality.**
    We lose about **60 minutes per grinder per shift** (wheel dress, gauging, cleanup, small stoppages). If that’s not modeled, the plan will look feasible on paper but we’ll miss due times on the floor. I’d want the schedule to respect those blocked windows (e.g., per 8-hour shift) or at least reduce available capacity accordingly, and then reflect it in the printed action plan (“Grinder G2 blocked 14:00–15:00 maintenance/adjustment”).
 
 Once those two are in, I’m comfortable doing a small pilot (like 1–2 weeks on one product family / one furnace line).
@@ -2777,12 +2777,12 @@ What the expert said is still wrong (evidence from DPO 6 reviewer-output + DPO 6
 Most valuable next development step (small MiniZinc increment, not yet addressed):
 1) Make sub-80% furnace batches legally explainable (FULL vs EXPEDITE vs TIMEOUT) using reified constraints (not just penalties).
    - Add batch-level booleans:
-     - batch_has_expedite[b]
-     - batch_is_timeout[b]
+	 - batch_has_expedite[b]
+	 - batch_is_timeout[b]
    - Define min-fill thresholds per batch: min80[b]=ceil(0.8*cap[furn[b]]), min50[b]=ceil(0.5*cap[furn[b]]).
    - Enforce:
-     - batch_used[b] -> batch_load[b] >= min50[b]
-     - batch_used[b] -> (batch_load[b] >= min80[b] \/ batch_has_expedite[b] \/ batch_is_timeout[b])
+	 - batch_used[b] -> batch_load[b] >= min50[b]
+	 - batch_used[b] -> (batch_load[b] >= min80[b] \/ batch_has_expedite[b] \/ batch_is_timeout[b])
    - Define batch_has_expedite[b] as “exists job j in batch b with expedite[j]=true”.
    - Define batch_is_timeout[b] from max-wait feasibility: for jobs assigned to b, if delaying the batch start to reach 80% would force any job to violate the existing 12h max-wait constraint, then TIMEOUT is permitted. (Implementation can be simplified: make batch_is_timeout[b] true if the batch contains any job whose ready_ht[j] is within 12h of batch_start[b] and the batch is <80%; i.e., underfilled because we’re at the wait limit.)
    - Keep the underfill penalty, but now it only applies when (EXPEDITE or TIMEOUT) allows the underfill.
@@ -2893,17 +2893,17 @@ constraint makespan = max(j in 1..n_jobs)(completion[j]);
 % Grinder no-overlap with setup (effective grind times)
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,3] + eff_grind[j1] + setup[family[j1], family[j2]] <= start[j2,3]) \/
-    (start[j2,3] + eff_grind[j2] + setup[family[j2], family[j1]] <= start[j1,3])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,3] + eff_grind[j1] + setup[family[j1], family[j2]] <= start[j2,3]) \/
+	(start[j2,3] + eff_grind[j2] + setup[family[j2], family[j1]] <= start[j1,3])
   )
 );
 
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,5] + eff_fgrind[j1] <= start[j2,5]) \/
-    (start[j2,5] + eff_fgrind[j2] <= start[j1,5])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,5] + eff_fgrind[j1] <= start[j2,5]) \/
+	(start[j2,5] + eff_fgrind[j2] <= start[j1,5])
   )
 );
 
@@ -2916,7 +2916,7 @@ constraint forall(b in 1..max_batches)(
 );
 constraint forall(b in 1..max_batches)(
   if batch_used[b] = 1 then
-    forall(j in 1..n_jobs)(batch[j] = b -> batch_recipe[b] = recipe[j])
+	forall(j in 1..n_jobs)(batch[j] = b -> batch_recipe[b] = recipe[j])
   else batch_recipe[b] = 0 endif
 );
 constraint forall(b in 1..max_batches)(
@@ -2932,23 +2932,23 @@ constraint forall(b in 1..max_batches)(
 );
 constraint forall(b in 1..max_batches)(
   batch_used[b] = 1 -> (
-    batch_load[b] >= (fcap[batch_furn[b]] * 4) div 5 \/
-    batch_has_expedite[b] \/
-    batch_is_timeout[b]
+	batch_load[b] >= (fcap[batch_furn[b]] * 4) div 5 \/
+	batch_has_expedite[b] \/
+	batch_is_timeout[b]
   )
 );
 
 % Timeout: only when a job waited >= 10h of the 12h limit
 constraint forall(b in 1..max_batches)(
   batch_is_timeout[b] -> (
-    batch_used[b] = 1 /\
-    exists(j in 1..n_jobs)(batch[j] = b /\ batch_start[b] >= ready_ht[j] + 10)
+	batch_used[b] = 1 /\
+	exists(j in 1..n_jobs)(batch[j] = b /\ batch_start[b] >= ready_ht[j] + 10)
   )
 );
 
 constraint forall(b in 1..max_batches)(
   if batch_used[b] = 1 then
-    underfill80[b] = max(0, (fcap[batch_furn[b]] * 4) div 5 - batch_load[b])
+	underfill80[b] = max(0, (fcap[batch_furn[b]] * 4) div 5 - batch_load[b])
   else underfill80[b] = 0 endif
 );
 constraint total_underfill = sum(b in 1..max_batches)(underfill80[b]);
@@ -2984,16 +2984,16 @@ output [
 | j in 1..n_jobs ] ++
 [ "\n--- Furnace Batches ---\n" ] ++
 [ if fix(batch_used[b]) = 1 then
-    "B" ++ show(b) ++ ": F" ++ show(fix(batch_furn[b])) ++
-    " t=" ++ show(fix(batch_start[b])) ++ "h" ++
-    " load=" ++ show(fix(batch_load[b])) ++ "/" ++ show(fcap[fix(batch_furn[b])]) ++
-    " (" ++ show(fix(batch_load[b]) * 100 div fcap[fix(batch_furn[b])]) ++ "%)" ++
-    " recipe=" ++ show(fix(batch_recipe[b])) ++
-    " reason=" ++
-    if fix(batch_load[b]) >= (fcap[fix(batch_furn[b])] * 4) div 5 then "FULL"
-    elseif fix(batch_has_expedite[b]) then "EXPEDITE"
-    else "TIMEOUT" endif ++
-    "\n"
+	"B" ++ show(b) ++ ": F" ++ show(fix(batch_furn[b])) ++
+	" t=" ++ show(fix(batch_start[b])) ++ "h" ++
+	" load=" ++ show(fix(batch_load[b])) ++ "/" ++ show(fcap[fix(batch_furn[b])]) ++
+	" (" ++ show(fix(batch_load[b]) * 100 div fcap[fix(batch_furn[b])]) ++ "%)" ++
+	" recipe=" ++ show(fix(batch_recipe[b])) ++
+	" reason=" ++
+	if fix(batch_load[b]) >= (fcap[fix(batch_furn[b])] * 4) div 5 then "FULL"
+	elseif fix(batch_has_expedite[b]) then "EXPEDITE"
+	else "TIMEOUT" endif ++
+	"\n"
   else "" endif
 | b in 1..max_batches ] ++
 [ "\n--- OTIF ---\n" ] ++
@@ -3048,20 +3048,20 @@ Does this match how your team actually decides when to fire a furnace batch, and
 ### Expert
 Yes—this is much closer to how we actually run.
 
-1) **80% minimum fill + documented exception**  
+1) **80% minimum fill + documented exception**
 That matches our rule of thumb. Our case-hardening furnace is **800 kg nominal**, and we generally won’t fire it under **~640 kg (80%)** unless we have a clear reason. Seeing **Batch 3 at 400/800 (50%)** is believable *only* if it’s truly because we’re about to breach the **12‑hour max-wait from “ready for heat treat” to “furnace start.”** In real life, that’s exactly the situation where a supervisor will say “run it light or we’ll miss ship.”
 
-2) **Reason codes (FULL / EXPEDITE / TIMEOUT) are usable**  
+2) **Reason codes (FULL / EXPEDITE / TIMEOUT) are usable**
 These three reason codes are the right first set and they’re auditable enough for the floor *as long as you print the supporting details next to TIMEOUT/EXPEDITE*. What we’d want in the batch printout is something like:
-- **TIMEOUT:** “Job(s) forcing timeout: J17 slack 0.3h (11.7/12h), J22 slack 0.8h …”  
+- **TIMEOUT:** “Job(s) forcing timeout: J17 slack 0.3h (11.7/12h), J22 slack 0.8h …”
 - **EXPEDITE:** “Expedite flag set by CSR, due date = Tue 10:00, customer = X”
 
 If you only print “TIMEOUT” without showing *which job* was at risk and how close it was to the 12-hour limit, it’ll still get questioned on the shop floor. With that extra line, it’s very defensible.
 
-3) **About the TIMEOUT trigger logic**  
+3) **About the TIMEOUT trigger logic**
 Your example “400/800 fired as TIMEOUT because jobs were hitting the 12-hour max-wait” matches our intent. But I want to be careful: we would only accept TIMEOUT for an underfilled batch when a job is basically at the limit—think **within the last ~30–60 minutes of the 12 hours**, not just “past 10 hours.” If your model is using a 10–12 hour band internally, that’s a little looser than how we’d justify it operationally.
 
-4) **Grinder lost time via inflated durations**  
+4) **Grinder lost time via inflated durations**
 Baking in lost time is the right direction. Modeling an “8-hour grind” as **~9.1 hours (8×8/7)** is consistent with losing **~1 hour per 8-hour shift per grinder** to dress/wheel changes, checks, small stoppages, etc. If you’re inflating all grind time to ~10 hours for an 8-hour nominal, that’s a bit conservative, but I’d rather be slightly conservative than have schedules we can’t hit.
 
 Bottom line: the **reason codes are good and usable**, and the **80% hard rule with exceptions** matches how we decide—provided TIMEOUT is tied tightly to “we’re about to violate max-wait,” and the printout shows the specific jobs/timing that forced the underfill.
@@ -3159,20 +3159,20 @@ A couple clarifications to make sure we implement this the way you expect:
 3) Changeovers: do you want the schedule to show changeovers as separate timeline items (like the examples you gave), even if they’re already baked into durations? (This is mainly about making the plan reviewable.)
 
 ### Expert
-1) **TIMEOUT evidence in the printout**  
-Please list **all jobs in the batch** with their wait time and remaining slack. In practice, when we argue about whether an underfilled furnace batch was justified, it’s never just one job—operators want to see the whole set.  
-Format I’d like per job line (keep it simple):  
-- `JobID, ready_time, batch_start, wait_hh:mm, slack_to_12h_hh:mm`  
+1) **TIMEOUT evidence in the printout**
+Please list **all jobs in the batch** with their wait time and remaining slack. In practice, when we argue about whether an underfilled furnace batch was justified, it’s never just one job—operators want to see the whole set.
+Format I’d like per job line (keep it simple):
+- `JobID, ready_time, batch_start, wait_hh:mm, slack_to_12h_hh:mm`
 Also add a **single summary line** for the batch: `most_critical_job = X, min_slack = hh:mm`. Use **hh:mm** (e.g., `11:35`)—minutes-only is harder to scan.
 
-2) **Blocked time for unstaffed hours (GR‑1/GR‑2)**  
-Treat unstaffed hours as **hard (impossible) by default**—otherwise we’ll get schedules that “hide” grinding overnight and we can’t execute them.  
-But we do occasionally approve OT/night. So I’d want an **explicit flag** like `OT_APPROVED_GR12 = true/false`.  
-- If **false**: hard blocked (no work scheduled in those windows).  
+2) **Blocked time for unstaffed hours (GR‑1/GR‑2)**
+Treat unstaffed hours as **hard (impossible) by default**—otherwise we’ll get schedules that “hide” grinding overnight and we can’t execute them.
+But we do occasionally approve OT/night. So I’d want an **explicit flag** like `OT_APPROVED_GR12 = true/false`.
+- If **false**: hard blocked (no work scheduled in those windows).
 - If **true**: allow those windows but I’d prefer you **tag any tasks placed there as “OT”** in the output so it’s obvious what we’re buying with overtime.
 
-3) **Changeovers as separate timeline items**  
-Yes—please show changeovers as **separate timeline items**, even if the time is already baked into the durations. The whole point is plan review: supervisors want to see “you’re paying 25 minutes here for a change” and challenge the sequence if needed.  
+3) **Changeovers as separate timeline items**
+Yes—please show changeovers as **separate timeline items**, even if the time is already baked into the durations. The whole point is plan review: supervisors want to see “you’re paying 25 minutes here for a change” and challenge the sequence if needed.
 Concretely: for each machine sequence, insert an item like `CHANGEOVER (from X -> to Y), duration, start-end`. If there’s no changeover (same family), show `0` or omit—either is fine, but be consistent.
 
 ---
@@ -3193,9 +3193,9 @@ As DPO 7 stands today, I’d classify it as **(1) rough planning / what‑if onl
 - But without **hard shift calendars and blocked windows**, the schedule can still “use” hours we simply don’t staff (especially overnight on GR‑1/GR‑2) or run through planned Friday downtime. In practice that means the plan can look feasible on paper but be **not executable on the floor**.
 
 If you commit to the next increment that includes:
-1) **Hard calendars** per grinder (GR‑1/GR‑2 not overnight, GR‑3 24h)  
-2) **Friday downtime blocks** enforced (not just averaged out)  
-3) Printing **blocked-time** and **changeover** lines in the action output  
+1) **Hard calendars** per grinder (GR‑1/GR‑2 not overnight, GR‑3 24h)
+2) **Friday downtime blocks** enforced (not just averaged out)
+3) Printing **blocked-time** and **changeover** lines in the action output
 4) Tightening **TIMEOUT** so it only triggers in the last ~**0.5–1.0 hour** before the **12h** cap (not a broad 10–12h band)
 
 …then yes, I’d be ready to approve **(2) a limited supervised pilot**: **2 weeks**, with **daily supervisor signoff** (end-of-shift review), and we treat it as “recommendations” not auto-release. We’d also want a simple daily check that no grinder tasks are scheduled in closed hours and that every underfilled furnace batch prints a valid reason code.
@@ -3219,9 +3219,9 @@ Concrete, small implementation plan (build directly on DPO 7; do NOT change furn
    - Choose a short planning horizon (e.g., 7 days = 168 hours) so the number of blocks is manageable.
    - For each grinder g, define a set of blocked intervals (start, duration) representing: (a) the 60 minutes/shift lost time, and (b) closed hours for 2-shift grinders (overnight).
    - Example minimal calendar (enough to demonstrate correctness):
-     - GR-01, GR-02: open 06:00–22:00 daily (closed 22:00–06:00). Add 1-hour blocked interval per shift inside open time (e.g., 13:00–14:00 and 19:00–20:00) to represent the stated ~60 min/shift loss.
-     - GR-03: open 24h (no overnight closure), but still add 1-hour blocked per shift (3 per day).
-     - GR-04..GR-06: if not specified, treat as 24h with 1-hour blocked per shift (or mirror GR-01 until per-machine detail is confirmed).
+	 - GR-01, GR-02: open 06:00–22:00 daily (closed 22:00–06:00). Add 1-hour blocked interval per shift inside open time (e.g., 13:00–14:00 and 19:00–20:00) to represent the stated ~60 min/shift loss.
+	 - GR-03: open 24h (no overnight closure), but still add 1-hour blocked per shift (3 per day).
+	 - GR-04..GR-06: if not specified, treat as 24h with 1-hour blocked per shift (or mirror GR-01 until per-machine detail is confirmed).
    - Model each blocked interval as an interval that cannot overlap any job’s grindingFinishing interval on that same grinder.
 3) Add hard constraints that each grinding interval must lie fully within open windows (if you implement “overnight closure” as blocked intervals, this is automatic).
 4) Output pilot-auditable action sentences (aligning with process/scheduling-action-types intent):
@@ -3333,36 +3333,36 @@ constraint makespan = max(j in 1..n_jobs)(completion[j]);
 
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,3] + eff_grind[j1] + setup[family[j1], family[j2]] <= start[j2,3]) \/
-    (start[j2,3] + eff_grind[j2] + setup[family[j2], family[j1]] <= start[j1,3])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,3] + eff_grind[j1] + setup[family[j1], family[j2]] <= start[j2,3]) \/
+	(start[j2,3] + eff_grind[j2] + setup[family[j2], family[j1]] <= start[j1,3])
   )
 );
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,5] + eff_fgrind[j1] <= start[j2,5]) \/
-    (start[j2,5] + eff_fgrind[j2] <= start[j1,5])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,5] + eff_fgrind[j1] <= start[j2,5]) \/
+	(start[j2,5] + eff_fgrind[j2] <= start[j1,5])
   )
 );
 
 % OVERNIGHT CLOSURES on 2-shift grinders
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures)(
-    forall(j in 1..n_jobs)(
-      grinder[j] != g \/
-      start[j,3] + eff_grind[j] <= closure_start[k] \/
-      closure_start[k] + closure_dur <= start[j,3]
-    )
+	forall(j in 1..n_jobs)(
+	  grinder[j] != g \/
+	  start[j,3] + eff_grind[j] <= closure_start[k] \/
+	  closure_start[k] + closure_dur <= start[j,3]
+	)
   )
 );
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures)(
-    forall(j in 1..n_jobs)(
-      grinder[j] != g \/
-      start[j,5] + eff_fgrind[j] <= closure_start[k] \/
-      closure_start[k] + closure_dur <= start[j,5]
-    )
+	forall(j in 1..n_jobs)(
+	  grinder[j] != g \/
+	  start[j,5] + eff_fgrind[j] <= closure_start[k] \/
+	  closure_start[k] + closure_dur <= start[j,5]
+	)
   )
 );
 
@@ -3372,7 +3372,7 @@ constraint forall(b in 1..max_batches)(
   batch_load[b] = sum(j in 1..n_jobs)(qty[j] * bool2int(batch[j] = b)));
 constraint forall(b in 1..max_batches)(
   if batch_used[b] = 1 then
-    forall(j in 1..n_jobs)(batch[j] = b -> batch_recipe[b] = recipe[j])
+	forall(j in 1..n_jobs)(batch[j] = b -> batch_recipe[b] = recipe[j])
   else batch_recipe[b] = 0 endif);
 constraint forall(b in 1..max_batches)(
   batch_has_expedite[b] = exists(j in 1..n_jobs)(batch[j] = b /\ is_expedite[j]));
@@ -3383,16 +3383,16 @@ constraint forall(b in 1..max_batches)(
   batch_used[b] = 1 -> batch_load[b] >= fcap[batch_furn[b]] div 2);
 constraint forall(b in 1..max_batches)(
   batch_used[b] = 1 -> (
-    batch_load[b] >= (fcap[batch_furn[b]] * 4) div 5 \/
-    batch_has_expedite[b] \/ batch_is_timeout[b]));
+	batch_load[b] >= (fcap[batch_furn[b]] * 4) div 5 \/
+	batch_has_expedite[b] \/ batch_is_timeout[b]));
 constraint forall(b in 1..max_batches)(
   batch_is_timeout[b] -> (
-    batch_used[b] = 1 /\
-    exists(j in 1..n_jobs)(batch[j] = b /\ batch_start[b] >= ready_ht[j] + 10)));
+	batch_used[b] = 1 /\
+	exists(j in 1..n_jobs)(batch[j] = b /\ batch_start[b] >= ready_ht[j] + 10)));
 
 constraint forall(b in 1..max_batches)(
   if batch_used[b] = 1 then
-    underfill80[b] = max(0, (fcap[batch_furn[b]] * 4) div 5 - batch_load[b])
+	underfill80[b] = max(0, (fcap[batch_furn[b]] * 4) div 5 - batch_load[b])
   else underfill80[b] = 0 endif);
 constraint total_underfill = sum(b in 1..max_batches)(underfill80[b]);
 
@@ -3427,16 +3427,16 @@ output [
 | j in 1..n_jobs ] ++
 [ "\n--- Furnace Batches ---\n" ] ++
 [ if fix(batch_used[b]) = 1 then
-    "B" ++ show(b) ++ ": F" ++ show(fix(batch_furn[b])) ++
-    " t=" ++ show(fix(batch_start[b])) ++ "h" ++
-    " load=" ++ show(fix(batch_load[b])) ++ "/" ++ show(fcap[fix(batch_furn[b])]) ++
-    " (" ++ show(fix(batch_load[b]) * 100 div fcap[fix(batch_furn[b])]) ++ "%)" ++
-    " recipe=" ++ show(fix(batch_recipe[b])) ++
-    " reason=" ++
-    if fix(batch_load[b]) >= (fcap[fix(batch_furn[b])] * 4) div 5 then "FULL"
-    elseif fix(batch_has_expedite[b]) then "EXPEDITE"
-    else "TIMEOUT" endif ++
-    "\n"
+	"B" ++ show(b) ++ ": F" ++ show(fix(batch_furn[b])) ++
+	" t=" ++ show(fix(batch_start[b])) ++ "h" ++
+	" load=" ++ show(fix(batch_load[b])) ++ "/" ++ show(fcap[fix(batch_furn[b])]) ++
+	" (" ++ show(fix(batch_load[b]) * 100 div fcap[fix(batch_furn[b])]) ++ "%)" ++
+	" recipe=" ++ show(fix(batch_recipe[b])) ++
+	" reason=" ++
+	if fix(batch_load[b]) >= (fcap[fix(batch_furn[b])] * 4) div 5 then "FULL"
+	elseif fix(batch_has_expedite[b]) then "EXPEDITE"
+	else "TIMEOUT" endif ++
+	"\n"
   else "" endif
 | b in 1..max_batches ] ++
 [ "\n--- OTIF ---\n" ] ++
@@ -3519,7 +3519,7 @@ On the “separate blocks vs generic” question:
 - For a pilot, **one generic block labeled `SHIFT_LOSS` is acceptable**, as long as it shows clearly on the plan per grinder/shift.
 - If you want a tiny bit more realism without making it complicated, I’d prefer **two blocks** totaling 60 minutes:
   - **Wheel dressing / setup:** 30 min
-  - **In‑process inspection / gauging / paperwork:** 30 min  
+  - **In‑process inspection / gauging / paperwork:** 30 min
   But I wouldn’t require that for the first pilot—**one 60‑min block is fine** as long as it’s visible and enforced.
 
 ---
@@ -3613,14 +3613,14 @@ Concrete scope (keep it small; do not change the furnace logic in DPO 8):
 2) Add explicit SHIFT_LOSS downtime intervals as fixed “blocked tasks” that cannot overlap grinder work:
    - For each grinder g and each shift s that exists for that machine type within the horizon, create exactly one 60-minute blocked interval.
    - Place them flexibly “somewhere within the shift” (expert preference) but constrained to be inside staffed/open time:
-     - For 2-shift grinders: blocks must fall within 06:00–22:00.
-     - For GR-03 (24/7): blocks must fall within each of the three shifts (06:00–14:00, 14:00–22:00, 22:00–06:00).
+	 - For 2-shift grinders: blocks must fall within 06:00–22:00.
+	 - For GR-03 (24/7): blocks must fall within each of the three shifts (06:00–14:00, 14:00–22:00, 22:00–06:00).
    - Implement using the same non-overlap pattern already used for overnight closure intervals: each blocked interval is an interval that must not overlap any job’s grind stage (stage 3) or finish-grind stage (stage 5) on that grinder.
    - Keep it “between jobs only” (do not allow preemption): enforce that blocked intervals can only occur in gaps between grinder operations (simplest: treat blocks as additional fixed tasks in the disjunctive set on each grinder).
 3) Output requirements (this is part of pilot readiness):
    - Print these blocks as first-class schedule lines per grinder, using wording the expert requested (not “SHIFT_LOSS”): e.g.,
-     - "BLOCKED: GR-01 10:00–11:00 | DRESS/QA/CLEANUP (1h) | HARD"
-     - "BLOCKED: GR-01 22:00–06:00 | OVERNIGHT CLOSED | HARD" (keep existing closure lines if you output them).
+	 - "BLOCKED: GR-01 10:00–11:00 | DRESS/QA/CLEANUP (1h) | HARD"
+	 - "BLOCKED: GR-01 22:00–06:00 | OVERNIGHT CLOSED | HARD" (keep existing closure lines if you output them).
    - Add per-shift totals per grinder: planned run minutes, changeover/setup minutes (already implied by sequencing), blocked minutes (should equal 60 per shift), and idle.
 
 Acceptance criteria tied to the expert’s pilot-readiness comments:
@@ -3699,9 +3699,9 @@ array[1..n_blk] of int: blk_g = [
 
 array[1..n_blk] of int: blk_lo = [
   if b <= n_blk_2 then
-    ((b-1) mod (n_days*2)) div 2 * 24 + ((b-1) mod (n_days*2)) mod 2 * 8
+	((b-1) mod (n_days*2)) div 2 * 24 + ((b-1) mod (n_days*2)) mod 2 * 8
   else
-    (b - n_blk_2 - 1) div 3 * 24 + (b - n_blk_2 - 1) mod 3 * 8
+	(b - n_blk_2 - 1) div 3 * 24 + (b - n_blk_2 - 1) mod 3 * 8
   endif
 | b in 1..n_blk];
 
@@ -3757,31 +3757,31 @@ constraint makespan = max(j in 1..n_jobs)(completion[j]);
 
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,3] + proc[j1,3] + setup[family[j1], family[j2]] <= start[j2,3]) \/
-    (start[j2,3] + proc[j2,3] + setup[family[j2], family[j1]] <= start[j1,3])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,3] + proc[j1,3] + setup[family[j1], family[j2]] <= start[j2,3]) \/
+	(start[j2,3] + proc[j2,3] + setup[family[j2], family[j1]] <= start[j1,3])
   )
 );
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,5] + proc[j1,5] <= start[j2,5]) \/
-    (start[j2,5] + proc[j2,5] <= start[j1,5])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,5] + proc[j1,5] <= start[j2,5]) \/
+	(start[j2,5] + proc[j2,5] <= start[j1,5])
   )
 );
 
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures, j in 1..n_jobs)(
-    grinder[j] != g \/
-    start[j,3] + proc[j,3] <= closure_start[k] \/
-    closure_start[k] + closure_dur <= start[j,3]
+	grinder[j] != g \/
+	start[j,3] + proc[j,3] <= closure_start[k] \/
+	closure_start[k] + closure_dur <= start[j,3]
   )
 );
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures, j in 1..n_jobs)(
-    grinder[j] != g \/
-    start[j,5] + proc[j,5] <= closure_start[k] \/
-    closure_start[k] + closure_dur <= start[j,5]
+	grinder[j] != g \/
+	start[j,5] + proc[j,5] <= closure_start[k] \/
+	closure_start[k] + closure_dur <= start[j,5]
   )
 );
 
@@ -3791,7 +3791,7 @@ constraint forall(bb in 1..max_batches)(
   batch_load[bb] = sum(j in 1..n_jobs)(qty[j] * bool2int(batch[j] = bb)));
 constraint forall(bb in 1..max_batches)(
   if batch_used[bb] = 1 then
-    forall(j in 1..n_jobs)(batch[j] = bb -> batch_recipe[bb] = recipe[j])
+	forall(j in 1..n_jobs)(batch[j] = bb -> batch_recipe[bb] = recipe[j])
   else batch_recipe[bb] = 0 endif);
 constraint forall(bb in 1..max_batches)(
   batch_has_expedite[bb] = exists(j in 1..n_jobs)(batch[j] = bb /\ is_expedite[j]));
@@ -3802,16 +3802,16 @@ constraint forall(bb in 1..max_batches)(
   batch_used[bb] = 1 -> batch_load[bb] >= fcap[batch_furn[bb]] div 2);
 constraint forall(bb in 1..max_batches)(
   batch_used[bb] = 1 -> (
-    batch_load[bb] >= (fcap[batch_furn[bb]] * 4) div 5 \/
-    batch_has_expedite[bb] \/ batch_is_timeout[bb]));
+	batch_load[bb] >= (fcap[batch_furn[bb]] * 4) div 5 \/
+	batch_has_expedite[bb] \/ batch_is_timeout[bb]));
 constraint forall(bb in 1..max_batches)(
   batch_is_timeout[bb] -> (
-    batch_used[bb] = 1 /\
-    exists(j in 1..n_jobs)(batch[j] = bb /\ batch_start[bb] >= ready_ht[j] + 10)));
+	batch_used[bb] = 1 /\
+	exists(j in 1..n_jobs)(batch[j] = bb /\ batch_start[bb] >= ready_ht[j] + 10)));
 
 constraint forall(bb in 1..max_batches)(
   if batch_used[bb] = 1 then
-    underfill80[bb] = max(0, (fcap[batch_furn[bb]] * 4) div 5 - batch_load[bb])
+	underfill80[bb] = max(0, (fcap[batch_furn[bb]] * 4) div 5 - batch_load[bb])
   else underfill80[bb] = 0 endif);
 constraint total_underfill = sum(bb in 1..max_batches)(underfill80[bb]);
 
@@ -3846,23 +3846,23 @@ output [
 | j in 1..n_jobs ] ++
 [ "\n--- DRESS/QA/CLEANUP Blocks (active grinders, first 5 days) ---\n" ] ++
 [ if blk_lo[b] < 120 /\ exists(j in 1..n_jobs)(fix(grinder[j]) = blk_g[b]) then
-    "BLOCKED: GR-0" ++ show(blk_g[b]) ++
-    " [" ++ show(fix(blk_pos[b])) ++ "-" ++ show(fix(blk_pos[b]) + 1) ++ "h]" ++
-    " | DRESS/QA/CLEANUP (1h) | HARD\n"
+	"BLOCKED: GR-0" ++ show(blk_g[b]) ++
+	" [" ++ show(fix(blk_pos[b])) ++ "-" ++ show(fix(blk_pos[b]) + 1) ++ "h]" ++
+	" | DRESS/QA/CLEANUP (1h) | HARD\n"
   else "" endif
 | b in 1..n_blk ] ++
 [ "\n--- Furnace Batches ---\n" ] ++
 [ if fix(batch_used[bb]) = 1 then
-    "B" ++ show(bb) ++ ": F" ++ show(fix(batch_furn[bb])) ++
-    " t=" ++ show(fix(batch_start[bb])) ++ "h" ++
-    " load=" ++ show(fix(batch_load[bb])) ++ "/" ++ show(fcap[fix(batch_furn[bb])]) ++
-    " (" ++ show(fix(batch_load[bb]) * 100 div fcap[fix(batch_furn[bb])]) ++ "%)" ++
-    " recipe=" ++ show(fix(batch_recipe[bb])) ++
-    " reason=" ++
-    if fix(batch_load[bb]) >= (fcap[fix(batch_furn[bb])] * 4) div 5 then "FULL"
-    elseif fix(batch_has_expedite[bb]) then "EXPEDITE"
-    else "TIMEOUT" endif ++
-    "\n"
+	"B" ++ show(bb) ++ ": F" ++ show(fix(batch_furn[bb])) ++
+	" t=" ++ show(fix(batch_start[bb])) ++ "h" ++
+	" load=" ++ show(fix(batch_load[bb])) ++ "/" ++ show(fcap[fix(batch_furn[bb])]) ++
+	" (" ++ show(fix(batch_load[bb]) * 100 div fcap[fix(batch_furn[bb])]) ++ "%)" ++
+	" recipe=" ++ show(fix(batch_recipe[bb])) ++
+	" reason=" ++
+	if fix(batch_load[bb]) >= (fcap[fix(batch_furn[bb])] * 4) div 5 then "FULL"
+	elseif fix(batch_has_expedite[bb]) then "EXPEDITE"
+	else "TIMEOUT" endif ++
+	"\n"
   else "" endif
 | bb in 1..max_batches ] ++
 [ "\n--- OTIF ---\n" ] ++
@@ -3993,7 +3993,7 @@ Helpful. Two targeted follow-ups:
 2) For heat treat TIMEOUT: if we print, per batch, the oldest-wait hours at fire time (max over jobs of batch_start - ready_for_HT), plus the min/max allowed wait, would that be enough for you to trust the reason code? Any other proof you’d want on the batch line?
 
 ### Expert
-1) Grinder 1‑hour DRESS/QA/CLEANUP  
+1) Grinder 1‑hour DRESS/QA/CLEANUP
 I’d prefer **splitting into two 30‑minute blocks**, because that’s closer to what we actually do (quick dress/inspection early, then another check + cleanup later).
 
 If you want it **windowed instead**, these bands match reality for our **06:00–14:00 (1st shift)** and **14:00–22:00 (2nd shift)** grinders:
@@ -4007,12 +4007,12 @@ If you want it **windowed instead**, these bands match reality for our **06:00�
 
 That keeps it “in-shift,” lines up with how supervisors run breaks + checks, and still gives the solver flexibility.
 
-2) Heat treat TIMEOUT proof / auditability  
+2) Heat treat TIMEOUT proof / auditability
 Yes—printing, per batch, the **oldest-wait hours at fire time** (max over jobs of `batch_start - ready_for_HT`), plus the **min/max allowed wait (0 to 12 hours)** would get me most of the way to trusting the TIMEOUT reason code.
 
 One extra thing I’d want on the batch line so it’s not hand-wavy:
-- The **“tightest remaining slack”** at fire time, i.e., for the job that’s closest to the 12-hour limit:  
-  `min_slack = min over jobs (12h - (batch_start - ready_for_HT))`  
+- The **“tightest remaining slack”** at fire time, i.e., for the job that’s closest to the 12-hour limit:
+  `min_slack = min over jobs (12h - (batch_start - ready_for_HT))`
   If TIMEOUT is claimed, I want to see **min_slack around 0–1 hours** (or whatever threshold you pick), so it’s obvious we fired because we were about to violate the 12-hour rule.
 
 Optional but helpful:
@@ -4242,9 +4242,9 @@ array[1..n_blk] of int: blk_g = [
 
 array[1..n_blk] of int: blk_lo = [
   if b <= n_blk_2 then
-    ((b-1) mod (n_days*2)) div 2 * 24 + 6 + ((b-1) mod (n_days*2)) mod 2 * 8
+	((b-1) mod (n_days*2)) div 2 * 24 + 6 + ((b-1) mod (n_days*2)) mod 2 * 8
   else
-    (b - n_blk_2 - 1) div 3 * 24 + 6 + (b - n_blk_2 - 1) mod 3 * 8
+	(b - n_blk_2 - 1) div 3 * 24 + 6 + (b - n_blk_2 - 1) mod 3 * 8
   endif
 | b in 1..n_blk];
 
@@ -4300,38 +4300,38 @@ constraint makespan = max(j in 1..n_jobs)(completion[j]);
 
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,3] + proc[j1,3] + setup[family[j1], family[j2]] <= start[j2,3]) \/
-    (start[j2,3] + proc[j2,3] + setup[family[j2], family[j1]] <= start[j1,3])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,3] + proc[j1,3] + setup[family[j1], family[j2]] <= start[j2,3]) \/
+	(start[j2,3] + proc[j2,3] + setup[family[j2], family[j1]] <= start[j1,3])
   )
 );
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,5] + proc[j1,5] <= start[j2,5]) \/
-    (start[j2,5] + proc[j2,5] <= start[j1,5])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,5] + proc[j1,5] <= start[j2,5]) \/
+	(start[j2,5] + proc[j2,5] <= start[j1,5])
   )
 );
 
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures, j in 1..n_jobs)(
-    grinder[j] != g \/
-    start[j,3] + proc[j,3] <= cl_start[k] \/
-    cl_end[k] <= start[j,3]
+	grinder[j] != g \/
+	start[j,3] + proc[j,3] <= cl_start[k] \/
+	cl_end[k] <= start[j,3]
   )
 );
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures, j in 1..n_jobs)(
-    grinder[j] != g \/
-    start[j,5] + proc[j,5] <= cl_start[k] \/
-    cl_end[k] <= start[j,5]
+	grinder[j] != g \/
+	start[j,5] + proc[j,5] <= cl_start[k] \/
+	cl_end[k] <= start[j,5]
   )
 );
 
 constraint forall(b in 1..n_blk where b <= n_blk_2)(
   forall(k in 1..n_closures)(
-    blk_pos[b] + 1 <= cl_start[k] \/
-    cl_end[k] <= blk_pos[b]
+	blk_pos[b] + 1 <= cl_start[k] \/
+	cl_end[k] <= blk_pos[b]
   )
 );
 
@@ -4341,7 +4341,7 @@ constraint forall(bb in 1..max_batches)(
   batch_load[bb] = sum(j in 1..n_jobs)(qty[j] * bool2int(batch[j] = bb)));
 constraint forall(bb in 1..max_batches)(
   if batch_used[bb] = 1 then
-    forall(j in 1..n_jobs)(batch[j] = bb -> batch_recipe[bb] = recipe[j])
+	forall(j in 1..n_jobs)(batch[j] = bb -> batch_recipe[bb] = recipe[j])
   else batch_recipe[bb] = 0 endif);
 constraint forall(bb in 1..max_batches)(
   batch_has_expedite[bb] = exists(j in 1..n_jobs)(batch[j] = bb /\ is_expedite[j]));
@@ -4352,16 +4352,16 @@ constraint forall(bb in 1..max_batches)(
   batch_used[bb] = 1 -> batch_load[bb] >= fcap[batch_furn[bb]] div 2);
 constraint forall(bb in 1..max_batches)(
   batch_used[bb] = 1 -> (
-    batch_load[bb] >= (fcap[batch_furn[bb]] * 4) div 5 \/
-    batch_has_expedite[bb] \/ batch_is_timeout[bb]));
+	batch_load[bb] >= (fcap[batch_furn[bb]] * 4) div 5 \/
+	batch_has_expedite[bb] \/ batch_is_timeout[bb]));
 constraint forall(bb in 1..max_batches)(
   batch_is_timeout[bb] -> (
-    batch_used[bb] = 1 /\
-    exists(j in 1..n_jobs)(batch[j] = bb /\ batch_start[bb] >= ready_ht[j] + 10)));
+	batch_used[bb] = 1 /\
+	exists(j in 1..n_jobs)(batch[j] = bb /\ batch_start[bb] >= ready_ht[j] + 10)));
 
 constraint forall(bb in 1..max_batches)(
   if batch_used[bb] = 1 then
-    underfill80[bb] = max(0, (fcap[batch_furn[bb]] * 4) div 5 - batch_load[bb])
+	underfill80[bb] = max(0, (fcap[batch_furn[bb]] * 4) div 5 - batch_load[bb])
   else underfill80[bb] = 0 endif);
 constraint total_underfill = sum(bb in 1..max_batches)(underfill80[bb]);
 
@@ -4399,26 +4399,26 @@ output [
 | j in 1..n_jobs ] ++
 [ "\n--- DRESS/QA/CLEANUP Blocks (first 5 days) ---\n" ] ++
 [ if blk_lo[b] < 126 /\ exists(j in 1..n_jobs)(fix(grinder[j]) = blk_g[b]) then
-    "BLOCKED: GR-0" ++ show(blk_g[b]) ++
-    " Day" ++ show(fix(blk_pos[b]) div 24 + 1) ++ " " ++
-    show(fix(blk_pos[b]) mod 24) ++ ":00-" ++
-    show((fix(blk_pos[b]) + 1) mod 24) ++ ":00" ++
-    " | DRESS/QA/CLEANUP | HARD\n"
+	"BLOCKED: GR-0" ++ show(blk_g[b]) ++
+	" Day" ++ show(fix(blk_pos[b]) div 24 + 1) ++ " " ++
+	show(fix(blk_pos[b]) mod 24) ++ ":00-" ++
+	show((fix(blk_pos[b]) + 1) mod 24) ++ ":00" ++
+	" | DRESS/QA/CLEANUP | HARD\n"
   else "" endif
 | b in 1..n_blk ] ++
 [ "\n--- Furnace Batches ---\n" ] ++
 [ if fix(batch_used[bb]) = 1 then
-    "B" ++ show(bb) ++ ": F" ++ show(fix(batch_furn[bb])) ++
-    " Day" ++ show(fix(batch_start[bb]) div 24 + 1) ++ " " ++
-    show(fix(batch_start[bb]) mod 24) ++ ":00" ++
-    " load=" ++ show(fix(batch_load[bb])) ++ "/" ++ show(fcap[fix(batch_furn[bb])]) ++
-    " (" ++ show(fix(batch_load[bb]) * 100 div fcap[fix(batch_furn[bb])]) ++ "%)" ++
-    " recipe=" ++ show(fix(batch_recipe[bb])) ++
-    " reason=" ++
-    if fix(batch_load[bb]) >= (fcap[fix(batch_furn[bb])] * 4) div 5 then "FULL"
-    elseif fix(batch_has_expedite[bb]) then "EXPEDITE"
-    else "TIMEOUT" endif ++
-    "\n"
+	"B" ++ show(bb) ++ ": F" ++ show(fix(batch_furn[bb])) ++
+	" Day" ++ show(fix(batch_start[bb]) div 24 + 1) ++ " " ++
+	show(fix(batch_start[bb]) mod 24) ++ ":00" ++
+	" load=" ++ show(fix(batch_load[bb])) ++ "/" ++ show(fcap[fix(batch_furn[bb])]) ++
+	" (" ++ show(fix(batch_load[bb]) * 100 div fcap[fix(batch_furn[bb])]) ++ "%)" ++
+	" recipe=" ++ show(fix(batch_recipe[bb])) ++
+	" reason=" ++
+	if fix(batch_load[bb]) >= (fcap[fix(batch_furn[bb])] * 4) div 5 then "FULL"
+	elseif fix(batch_has_expedite[bb]) then "EXPEDITE"
+	else "TIMEOUT" endif ++
+	"\n"
   else "" endif
 | bb in 1..max_batches ] ++
 [ "\n--- OTIF ---\n" ] ++
@@ -4521,14 +4521,14 @@ Yes, I’d hand *this version* to a supervisor to try for a week, because the tw
 
 Before we do a real pilot week, I’d want two small changes so supervisors don’t end up “reinterpret‑ing” the plan mid-shift:
 
-1) **Tighten the DRESS/QA/CLEANUP timing.**  
+1) **Tighten the DRESS/QA/CLEANUP timing.**
 Right now a 1-hour block floating anywhere inside each 8-hour shift isn’t how we actually behave. We normally lose time in **two ~30-minute chunks** (tool dress + checks early, then cleanup/checks later), and they happen in pretty consistent bands. For example on a 06:00–14:00 shift I’d rather see something like **06:30–07:30 split into two 30s** (e.g., 06:30–07:00 and 10:30–11:00), and on 14:00–22:00 something like **14:30–15:00 and 18:30–19:00**. If you don’t want to hard-code exact times, at least restrict them to **tighter windows** so it’s predictable.
 
-2) **Make the TIMEOUT batch auditable in the printout.**  
-I’m ok with having a TIMEOUT reason code, but the supervisor needs to trust it. When you print a TIMEOUT batch, also print:  
-- the **oldest-wait time (hours/minutes)** at batch start,  
-- the **minutes-to-12h limit** (the tightest job), and  
-- ideally the **job id(s)** that forced it.  
+2) **Make the TIMEOUT batch auditable in the printout.**
+I’m ok with having a TIMEOUT reason code, but the supervisor needs to trust it. When you print a TIMEOUT batch, also print:
+- the **oldest-wait time (hours/minutes)** at batch start,
+- the **minutes-to-12h limit** (the tightest job), and
+- ideally the **job id(s)** that forced it.
 Otherwise it looks like “the computer chose to run a half batch,” and that’s exactly the argument we get on nights.
 
 If you can add those two items, then: **We would like to pilot this solution in a production setting.**
@@ -4575,8 +4575,8 @@ Concretely, on each heat-treat batch line I’d want to see:
 - **Job id(s) driving TIMEOUT** (e.g., “drivers: J1842, J1849”) so the supervisor can click/look up those travelers and confirm their **ready-for-HT time**.
 
 One more thing I’d add to fully trust it in the moment: print the **ready-for-heat-treat timestamp for the driver job(s)** (Day/Time), alongside the **batch start Day/Time**. That way the supervisor doesn’t have to do any digging or manual math to validate the oldest-wait/min-slack numbers. If you show:
-- Batch start = Tue 19:10  
-- Driver J1842 ready_ht = Tue 07:25  
+- Batch start = Tue 19:10
+- Driver J1842 ready_ht = Tue 07:25
 …it’s immediately credible why TIMEOUT triggered.
 
 Optional but helpful: also show **batch fill count / capacity** (e.g., “6/10 parts”) so the supervisor can see at a glance it was intentionally underfilled due to time pressure.
@@ -4595,7 +4595,7 @@ Yes—if you make those two changes, I’d consider the schedule “floor-ready�
 - Two 30‑min blocks per 8‑hour shift, with realistic time bands, plus “no start in last 10 minutes of shift” and “no back-to-back blocks,” matches how we actually run.
 - The time bands I’d want are:
   - Shift 1 (06:00–14:00): one block must start in 08:30–10:30, the other in 11:30–13:00
-  - Shift 2 (14:00–22:00): one block must start in 16:30–18:30, the other in 19:30–21:00  
+  - Shift 2 (14:00–22:00): one block must start in 16:30–18:30, the other in 19:30–21:00
 (Those bands line up with when we typically do dress/QA/cleanup and when a supervisor is around to verify.)
 
 2) Heat-treat batch audit line items
@@ -4757,9 +4757,9 @@ array[1..n_blk] of int: blk_g = [
 
 array[1..n_blk] of int: blk_pos = [
   if b <= n_blk_2 then
-    ((b-1) mod (n_days*4)) div 4 * 48 + bpos2[((b-1) mod (n_days*4)) mod 4 + 1]
+	((b-1) mod (n_days*4)) div 4 * 48 + bpos2[((b-1) mod (n_days*4)) mod 4 + 1]
   else
-    ((b - n_blk_2 - 1) div 6) * 48 + bpos3[((b - n_blk_2 - 1) mod 6) + 1]
+	((b - n_blk_2 - 1) div 6) * 48 + bpos3[((b - n_blk_2 - 1) mod 6) + 1]
   endif
 | b in 1..n_blk];
 
@@ -4809,32 +4809,32 @@ constraint makespan = max(j in 1..n_jobs)(completion[j]);
 
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,3] + proc[j1,3] + setup[family[j1], family[j2]] <= start[j2,3]) \/
-    (start[j2,3] + proc[j2,3] + setup[family[j2], family[j1]] <= start[j1,3])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,3] + proc[j1,3] + setup[family[j1], family[j2]] <= start[j2,3]) \/
+	(start[j2,3] + proc[j2,3] + setup[family[j2], family[j1]] <= start[j1,3])
   )
 );
 
 constraint forall(g in 1..n_grinders)(
   forall(j1, j2 in 1..n_jobs where j1 < j2)(
-    (grinder[j1] != g \/ grinder[j2] != g) \/
-    (start[j1,5] + proc[j1,5] <= start[j2,5]) \/
-    (start[j2,5] + proc[j2,5] <= start[j1,5])
+	(grinder[j1] != g \/ grinder[j2] != g) \/
+	(start[j1,5] + proc[j1,5] <= start[j2,5]) \/
+	(start[j2,5] + proc[j2,5] <= start[j1,5])
   )
 );
 
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures, j in 1..n_jobs)(
-    grinder[j] != g \/
-    start[j,3] + proc[j,3] <= cl_start[k] \/
-    cl_end[k] <= start[j,3]
+	grinder[j] != g \/
+	start[j,3] + proc[j,3] <= cl_start[k] \/
+	cl_end[k] <= start[j,3]
   )
 );
 constraint forall(g in 1..n_grinders where shift_type[g] = 1)(
   forall(k in 1..n_closures, j in 1..n_jobs)(
-    grinder[j] != g \/
-    start[j,5] + proc[j,5] <= cl_start[k] \/
-    cl_end[k] <= start[j,5]
+	grinder[j] != g \/
+	start[j,5] + proc[j,5] <= cl_start[k] \/
+	cl_end[k] <= start[j,5]
   )
 );
 
@@ -4844,7 +4844,7 @@ constraint forall(bb in 1..max_batches)(
   batch_load[bb] = sum(j in 1..n_jobs)(qty[j] * bool2int(batch[j] = bb)));
 constraint forall(bb in 1..max_batches)(
   if batch_used[bb] = 1 then
-    forall(j in 1..n_jobs)(batch[j] = bb -> batch_recipe[bb] = recipe[j])
+	forall(j in 1..n_jobs)(batch[j] = bb -> batch_recipe[bb] = recipe[j])
   else batch_recipe[bb] = 0 endif);
 constraint forall(bb in 1..max_batches)(
   batch_has_expedite[bb] = exists(j in 1..n_jobs)(batch[j] = bb /\ is_expedite[j]));
@@ -4855,16 +4855,16 @@ constraint forall(bb in 1..max_batches)(
   batch_used[bb] = 1 -> batch_load[bb] >= fcap[batch_furn[bb]] div 2);
 constraint forall(bb in 1..max_batches)(
   batch_used[bb] = 1 -> (
-    batch_load[bb] >= (fcap[batch_furn[bb]] * 4) div 5 \/
-    batch_has_expedite[bb] \/ batch_is_timeout[bb]));
+	batch_load[bb] >= (fcap[batch_furn[bb]] * 4) div 5 \/
+	batch_has_expedite[bb] \/ batch_is_timeout[bb]));
 constraint forall(bb in 1..max_batches)(
   batch_is_timeout[bb] -> (
-    batch_used[bb] = 1 /\
-    exists(j in 1..n_jobs)(batch[j] = bb /\ batch_start[bb] >= ready_ht[j] + timeout_thr)));
+	batch_used[bb] = 1 /\
+	exists(j in 1..n_jobs)(batch[j] = bb /\ batch_start[bb] >= ready_ht[j] + timeout_thr)));
 
 constraint forall(bb in 1..max_batches)(
   if batch_used[bb] = 1 then
-    underfill80[bb] = max(0, (fcap[batch_furn[bb]] * 4) div 5 - batch_load[bb])
+	underfill80[bb] = max(0, (fcap[batch_furn[bb]] * 4) div 5 - batch_load[bb])
   else underfill80[bb] = 0 endif);
 constraint total_underfill = sum(bb in 1..max_batches)(underfill80[bb]);
 
@@ -4938,7 +4938,7 @@ A couple things feel potentially unrealistic / risky as written:
 1) **The grinder downtime being fixed at those exact times every day**
 - Dressing is often *near* shift start, yes, but not always exactly 06:00 and 20:30, and it can move if we’re chasing a hot order or if a wheel is still good.
 - QA/cleanup isn’t always neatly at 07:00 and 21:30 either; inspection tends to happen when parts come off, and cleanup can get fragmented.
-- So the “big clean window” **07:30–20:30 uninterrupted** looks optimistic. In reality we usually have small interruptions mid‑shift (gauging, wheel touch‑ups, minor changeovers).  
+- So the “big clean window” **07:30–20:30 uninterrupted** looks optimistic. In reality we usually have small interruptions mid‑shift (gauging, wheel touch‑ups, minor changeovers).
 **Ask:** can those 30‑minute blocks be *configurable by grinder / shift / day* (even if still fixed inputs), so we can match actual practice without changing the model?
 
 2) **Heat treat TIMEOUT rule: 10 hours vs the actual 12‑hour hard limit**
@@ -5059,8 +5059,8 @@ Conditions / scope for the pilot:
 4) **How we’ll judge success (measures)**
 We’ll track before/after against the prior 2 weeks:
 - **Schedule adherence:** % of operations started within **±30 minutes** of the schedule (target **≥75%** on the pilot grinders).
-- **Furnace outcomes:**  
-  - % batches dispatched **≥80% full** (target **≥70%**; we know expedites will pull this down).  
+- **Furnace outcomes:**
+  - % batches dispatched **≥80% full** (target **≥70%**; we know expedites will pull this down).
   - Count of jobs exceeding **12h waiting** (target **0**).
   - Count of **underfilled batches** and the reason split (we want most to be EXPEDITE or TIMEOUT_BUFFER, not “mystery”).
 - **WIP / flow:** average time from grind-complete to heat-treat start (we want it stable and not spiky).
@@ -5171,13 +5171,13 @@ If you can support those configuration knobs without code changes (just editing 
    :outputs ["inspection-passed, marked bearings"],
    :resources
    ["noise/vibration tester"
-    "clearance/runout gauges"
-    "marking/laser engraver"],
+	"clearance/runout gauges"
+	"marking/laser engraver"],
    :process-id "final-inspection-and-marking",
    :duration
    {:value-string
-    "quality/inspection hold typically 2–8 hours; can become 1–2 days if backlog/calibration/metallurgy/shift",
-    :units "hours"}}
+	"quality/inspection hold typically 2–8 hours; can become 1–2 days if backlog/calibration/metallurgy/shift",
+	:units "hours"}}
   {:subprocesses [],
    :inputs ["hardened and tempered rings"],
    :outputs ["finished ground rings"],
@@ -5186,16 +5186,16 @@ If you can support those configuration knobs without code changes (just editing 
    :process-id "grinding-and-superfinishing",
    :duration
    {:value-string
-    "adds ~0.5–3 days depending on bottlenecks, changeovers, operator coverage, mixing sizes",
-    :units "days"}}
+	"adds ~0.5–3 days depending on bottlenecks, changeovers, operator coverage, mixing sizes",
+	:units "days"}}
   {:subprocesses [],
    :inputs
    [{:item-id "clean, inspection-passed components",
-     :from "component-cleaning-and-final-dimensional-checks"}
-    {:item-id "graded/accepted balls",
-     :from "ball-sourcing-and-incoming-sort-grade"}
-    "seals/shields"
-    "grease"],
+	 :from "component-cleaning-and-final-dimensional-checks"}
+	{:item-id "graded/accepted balls",
+	 :from "ball-sourcing-and-incoming-sort-grade"}
+	"seals/shields"
+	"grease"],
    :outputs ["assembled bearings"],
    :resources ["assembly line/fixtures" "grease fill station"],
    :process-id "assembly"}
@@ -5216,15 +5216,15 @@ If you can support those configuration knobs without code changes (just editing 
    :process-id "heat-treatment-and-wash",
    :duration
    {:value-string
-    "adds ~1–5 days of waiting due to batching and furnace availability (queue time)",
-    :units "days"}}
+	"adds ~1–5 days of waiting due to batching and furnace availability (queue time)",
+	:units "days"}}
   {:subprocesses [],
    :inputs
    ["bearing steel bar/rod/tube (rings)"
-    "balls (purchased or blanks)"
-    "cages"
-    "seals/shields"
-    "grease"],
+	"balls (purchased or blanks)"
+	"cages"
+	"seals/shields"
+	"grease"],
    :outputs ["accepted/inspected materials"],
    :resources ["receiving dock" "inspection gauges/metrology"],
    :process-id "incoming-material-receiving-and-inspection"}
@@ -5235,8 +5235,8 @@ If you can support those configuration knobs without code changes (just editing 
    :process-id "packaging-and-shipping",
    :duration
    {:value-string
-    "special packaging or plating/coating requirements can add ~0.5–2 days",
-    :units "days"}}],
+	"special packaging or plating/coating requirements can add ~0.5–2 days",
+	:units "days"}}],
  :inputs
  ["bearing steel bar/rod/tube (rings)"
   "balls (purchased or blanks)"
@@ -5673,28 +5673,28 @@ If you can support those configuration knobs without code changes (just editing 
    "BEARING-PART-has-STANDARD-SETUP-TIME-for-OPERATION-STEP-on-MACHINE-GROUP",
    :objects
    ["bearing-part"
-    "operation-step"
-    "machine-group"
-    "standard-setup-time"],
+	"operation-step"
+	"machine-group"
+	"standard-setup-time"],
    :reference-modes
    ["part-number/spec"
-    "operation-code"
-    "machine-group-code"
-    "duration"],
+	"operation-code"
+	"machine-group-code"
+	"duration"],
    :uniqueness [["key1" "key1" "key1" ""]],
    :mandatory? ["must" "must" "must" "must"]}
   {:fact-type-id
    "BEARING-PART-has-STANDARD-CYCLE-TIME-for-OPERATION-STEP-on-MACHINE-GROUP",
    :objects
    ["bearing-part"
-    "operation-step"
-    "machine-group"
-    "standard-cycle-time"],
+	"operation-step"
+	"machine-group"
+	"standard-cycle-time"],
    :reference-modes
    ["part-number/spec"
-    "operation-code"
-    "machine-group-code"
-    "duration"],
+	"operation-code"
+	"machine-group-code"
+	"duration"],
    :uniqueness [["key1" "key1" "key1" ""]],
    :mandatory? ["must" "must" "must" "must"]}
   {:fact-type-id
@@ -5812,61 +5812,61 @@ If you can support those configuration knobs without code changes (just editing 
    "Typically 10–30 minutes between jobs on GR-1/GR-2 for cleanup, wheel dress, and first-part inspection; GR-2 can be longer when switching fixture families",
    :resources
    [{:schedule
-     "Mon–Fri 06:00–22:00 (2 shifts); Sat 06:00–14:00 as needed; not scheduled overnight",
-     :planned-downtime-windows
-     ["Fri 20:00–22:00 preferred" "Sat 12:00–14:00 preferred"],
-     :id "GR-1",
-     :maintenance
-     [{:description "Wheel dress + quick cleanup",
-       :duration "10–15 min",
-       :trigger "After each job"}
-      {:description "Coolant concentration check + wipe down",
-       :duration "20 min",
-       :trigger "Daily"}
-      {:description "Coolant tank skim/filters check",
-       :duration "60–90 min",
-       :trigger "Weekly (Fri)"}
-      {:description "Alignment check + spindle runout check",
-       :duration "2–3 hours",
-       :trigger "Monthly"}]}
-    {:schedule
-     "Mon–Fri 06:00–22:00 (2 shifts); Sat 06:00–14:00 occasional; not scheduled overnight",
-     :planned-downtime-windows
-     ["Fri late shift preferred; otherwise low-load afternoons"],
-     :id "GR-2",
-     :maintenance
-     [{:description "Wheel dress + gauge verification",
-       :duration "15–25 min",
-       :trigger "After each job"}
-      {:description "Coolant + oil level checks",
-       :duration "15 min",
-       :trigger "Daily"}
-      {:description
-       "Inspect chuck/fixtures; replace worn seals as needed",
-       :duration "45–60 min",
-       :trigger "Weekly"}
-      {:description "Preventive maintenance by maintenance tech",
-       :duration "3–4 hours",
-       :trigger "Monthly"}]}
-    {:schedule
-     "Mon–Fri 24h (3 shifts 06:00–14:00, 14:00–22:00, 22:00–06:00); Sat 06:00–18:00; Sun off unless behind",
-     :planned-downtime-windows
-     ["Sat 14:00–18:00 reserved when possible"
-      "Quarterly service planned 1–2 weeks ahead"],
-     :id "GR-3",
-     :maintenance
-     [{:description "Dress/regulate wheels + clean swarf",
-       :duration "15–20 min",
-       :trigger "Each shift"}
-      {:description "Coolant/top-up + nozzle cleaning",
-       :duration "20–30 min",
-       :trigger "Daily"}
-      {:description "Replace/clean filters; check belt/drive wear",
-       :duration "1.5–2 hours",
-       :trigger "Weekly"}
-      {:description "Deeper service (usually split across a Saturday)",
-       :duration "8 hours",
-       :trigger "Quarterly"}]}]}},
+	 "Mon–Fri 06:00–22:00 (2 shifts); Sat 06:00–14:00 as needed; not scheduled overnight",
+	 :planned-downtime-windows
+	 ["Fri 20:00–22:00 preferred" "Sat 12:00–14:00 preferred"],
+	 :id "GR-1",
+	 :maintenance
+	 [{:description "Wheel dress + quick cleanup",
+	   :duration "10–15 min",
+	   :trigger "After each job"}
+	  {:description "Coolant concentration check + wipe down",
+	   :duration "20 min",
+	   :trigger "Daily"}
+	  {:description "Coolant tank skim/filters check",
+	   :duration "60–90 min",
+	   :trigger "Weekly (Fri)"}
+	  {:description "Alignment check + spindle runout check",
+	   :duration "2–3 hours",
+	   :trigger "Monthly"}]}
+	{:schedule
+	 "Mon–Fri 06:00–22:00 (2 shifts); Sat 06:00–14:00 occasional; not scheduled overnight",
+	 :planned-downtime-windows
+	 ["Fri late shift preferred; otherwise low-load afternoons"],
+	 :id "GR-2",
+	 :maintenance
+	 [{:description "Wheel dress + gauge verification",
+	   :duration "15–25 min",
+	   :trigger "After each job"}
+	  {:description "Coolant + oil level checks",
+	   :duration "15 min",
+	   :trigger "Daily"}
+	  {:description
+	   "Inspect chuck/fixtures; replace worn seals as needed",
+	   :duration "45–60 min",
+	   :trigger "Weekly"}
+	  {:description "Preventive maintenance by maintenance tech",
+	   :duration "3–4 hours",
+	   :trigger "Monthly"}]}
+	{:schedule
+	 "Mon–Fri 24h (3 shifts 06:00–14:00, 14:00–22:00, 22:00–06:00); Sat 06:00–18:00; Sun off unless behind",
+	 :planned-downtime-windows
+	 ["Sat 14:00–18:00 reserved when possible"
+	  "Quarterly service planned 1–2 weeks ahead"],
+	 :id "GR-3",
+	 :maintenance
+	 [{:description "Dress/regulate wheels + clean swarf",
+	   :duration "15–20 min",
+	   :trigger "Each shift"}
+	  {:description "Coolant/top-up + nozzle cleaning",
+	   :duration "20–30 min",
+	   :trigger "Daily"}
+	  {:description "Replace/clean filters; check belt/drive wear",
+	   :duration "1.5–2 hours",
+	   :trigger "Weekly"}
+	  {:description "Deeper service (usually split across a Saturday)",
+	   :duration "8 hours",
+	   :trigger "Quarterly"}]}]}},
  :resource-type "cnc-grinders"}
 ```
 
