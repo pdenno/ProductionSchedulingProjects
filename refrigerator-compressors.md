@@ -1,11 +1,5 @@
 ---
-geometry: margin=0.5in
-fontsize: 10pt
-output: pdf_document
----
 # refrigerator-compressors – Project Report
-
-**Project:** sur-refrigerator-compressors
 
 ---
 
@@ -276,7 +270,7 @@ At this point, having run the 'process/scheduling-action-types' DS, you may have
 These sentences might, for example:
    * sequence work into the production facility (common in flow shops and job shops),
    * prioritize equipment maintenance work orders,
-   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or 
+   * require a crew and resources be available to do a task at a certain time (common in project scheduling), or
    * describe which vehicles visits which customers when (common in routing problem),
  or a variety actions necessary to get their work done.
 Understanding these actions is crucially important to understanding their requirements, but they also might provide a teachable moment:
@@ -737,25 +731,25 @@ We run 2 shifts, Mon–Fri: **06:00–14:00** and **14:00–22:00**. After **22:
 
 Here’s how it works by step:
 
-- **Main Assembly (line work):**  
-  - **Should not start a unit/lot late** if it will run past **22:00**.  
+- **Main Assembly (line work):**
+  - **Should not start a unit/lot late** if it will run past **22:00**.
   - In practice we plan it so any “lot-level” assembly block finishes inside a shift. If something is mid-build at shift end, we can **stop and hand off** (tools down, WIP parked), but it’s not “productive time” overnight. So your model should treat this as **can pause at shift end**, not as continuous work through the night.
 
-- **Weld/Braze:**  
-  - Same rule as assembly: **don’t schedule it to run into off-shift**.  
+- **Weld/Braze:**
+  - Same rule as assembly: **don’t schedule it to run into off-shift**.
   - Also we prefer **not to start within the last ~30–60 minutes** of the shift because of prep/cleanup and because supervision/QA isn’t around after 22:00.
 
-- **Leak Test:**  
-  - **Must finish within a staffed window**. If a test is running and alarms out at 22:30, nobody’s there to disposition it.  
+- **Leak Test:**
+  - **Must finish within a staffed window**. If a test is running and alarms out at 22:30, nobody’s there to disposition it.
   - So: **do not start** a leak test unless it can **complete before 22:00** (or before weekend shutdown if it’s Friday).
 
-- **Evacuation + Oil charge:**  
-  - Same as leak: it needs an operator and often a check/signoff.  
+- **Evacuation + Oil charge:**
+  - Same as leak: it needs an operator and often a check/signoff.
   - **Don’t start if it would run past shift end.** Also we try not to start late because any issue (vacuum not pulling down, rework) needs support.
 
-- **Run Test (test stands):**  
-  - This is the biggest one: **we do NOT let a run test start if it would cross 22:00** under normal staffing.  
-  - Example: if run test is **3.5 hours**, latest start is **18:30**. If it’s **2.0 hours**, latest start is **20:00**.  
+- **Run Test (test stands):**
+  - This is the biggest one: **we do NOT let a run test start if it would cross 22:00** under normal staffing.
+  - Example: if run test is **3.5 hours**, latest start is **18:30**. If it’s **2.0 hours**, latest start is **20:00**.
   - We *can* run past 22:00 only if we explicitly schedule **overtime / weekend coverage**, which is a separate decision. Baseline plan: treat off-shift as unavailable.
 
 So overall: for realism, I’d say **all bottleneck steps you listed (assembly → weld/braze → leak → evac/oil → run test)** should respect shift windows, unless the schedule explicitly turns on overtime.
@@ -766,10 +760,10 @@ Yes—if I tell dispatch **“Order A must ship Friday”**, I expect the schedu
 
 Concrete expectation:
 - The system should be able to show: **Order A lot(s)** move earlier on **run test and leak test** especially, because those are what usually decide whether we make ship date.
-- It should also warn us if it’s impossible without an action, like:  
-  - add **Saturday overtime**,  
-  - **expedite** (jump the queue),  
-  - split lots, or  
+- It should also warn us if it’s impossible without an action, like:
+  - add **Saturday overtime**,
+  - **expedite** (jump the queue),
+  - split lots, or
   - drop/resequence a lower-priority order.
 
 But yes, due date should drive resequencing—not just keep the original queue order and report “late.”
@@ -829,13 +823,13 @@ Fit-to-purpose question: the model currently captures bottleneck queuing, but it
 ### Expert
 Top 3 day-to-day decisions we’d need it to support to actually run the plant:
 
-1) **Due-date-driven dispatching (what runs next at the bottlenecks)**  
+1) **Due-date-driven dispatching (what runs next at the bottlenecks)**
    We need to tell the schedule “Order X must ship by Friday 16:00” and have it pull that lot ahead on **run test** and **leak test** (those are usually where we lose days). Concretely: we’ll have **10–25 open orders** at a time, and typically **2–6 lots competing** for the same run-test stands, so the “who goes next” decision is the whole game.
 
-2) **Blocking downtime / holds (planned maintenance + QA/material holds)**  
+2) **Blocking downtime / holds (planned maintenance + QA/material holds)**
    We need to block capacity windows like: **Run Test Stand #2 down Tue 13:00–17:00** for calibration, or **Leak test bench down every day 11:30–12:00** for checks, or a **QA hold of 4–24 hours** before we can proceed to evac/oil on a batch. If the schedule doesn’t respect those blocks, it will look feasible on paper and then collapse in execution.
 
-3) **Expediting a hot order (and showing what it will disrupt)**  
+3) **Expediting a hot order (and showing what it will disrupt)**
    Sales will come with “customer escalation” where we need to expedite **1 order** (sometimes **2**) and deliver **24–48 hours earlier** than the current plan. The schedule needs to let us flag that order as “hot,” re-sequence it through the bottlenecks, and show which other orders slip (and by how much).
 
 Secondary (nice-to-have after those): **grouping by model family to reduce changeovers**, especially on weld/braze and some test setups. But if I had to choose, due dates + downtime + expedite are the minimum for daily use.
@@ -1302,18 +1296,18 @@ Also, there are a couple scheduler ‘statements’ we may want it to produce. I
 If those are the kinds of recommendations you want, tell me and we’ll align the system’s outputs accordingly.
 
 ### Expert
-1) Optional parallelism upstream  
-- **Assembly:** Yes—please model it as **1 guaranteed assembly position** plus an **optional 2nd temporary position** that we can “turn on” for specific days/shifts. When it’s on, assume it runs at **~60% efficiency** (that’s the middle of our 50–70% range). In practical terms, if a normal lot takes **8.0 hours** on the main position, the temporary position would take **~13.3 hours** for the same work. We typically only open that extra position **2–3 days/week**, usually when we’re trying to protect a ship date.  
+1) Optional parallelism upstream
+- **Assembly:** Yes—please model it as **1 guaranteed assembly position** plus an **optional 2nd temporary position** that we can “turn on” for specific days/shifts. When it’s on, assume it runs at **~60% efficiency** (that’s the middle of our 50–70% range). In practical terms, if a normal lot takes **8.0 hours** on the main position, the temporary position would take **~13.3 hours** for the same work. We typically only open that extra position **2–3 days/week**, usually when we’re trying to protect a ship date.
 - **Braze:** Keep it **single-capacity**. A second braze cell is not a realistic lever for us; **overtime** is the lever. Most weeks we’ll add **1–2 hours OT** on braze a few days (so running to **23:00–24:00**) when we’re chasing shortages. So yes: **single braze + optional OT** is the right modeling assumption.
 
-2) Run test batching / min-fill rule  
-- We apply the **min-fill per rack**, not just area-level. Rule of thumb: **each 8-position rack should be at least 6/8 full (~75%)** before we start the cycle. (We talk about “70%”, but in real life the decision is usually “can I get it to 6 units or not.”)  
+2) Run test batching / min-fill rule
+- We apply the **min-fill per rack**, not just area-level. Rule of thumb: **each 8-position rack should be at least 6/8 full (~75%)** before we start the cycle. (We talk about “70%”, but in real life the decision is usually “can I get it to 6 units or not.”)
 - When we break it for an expedite, it’s **typically one rack underfilled** (e.g., **3/8 or 4/8**) while the other racks are full or near-full. We very rarely run the **whole area** underfilled—only in extreme cases (like a customer-down situation) because it kills throughput for the day.
 
-Scheduler “statements” / outputs  
-Yes, those are the right kinds of recommendations. I’d want them basically in the same wording, with a bit of concrete detail when possible:  
-- **“Don’t start braze or vac/oil unless it will finish before 22:00.”** Correct for normal operations (non-OT). If OT is enabled, it should explicitly say **“approved OT to 24:00”** or similar.  
-- **“Assembly can be split across shifts; plan to finish remaining hours next shift.”** Correct—assembly is the main place we can safely stop at shift end and resume next day.  
+Scheduler “statements” / outputs
+Yes, those are the right kinds of recommendations. I’d want them basically in the same wording, with a bit of concrete detail when possible:
+- **“Don’t start braze or vac/oil unless it will finish before 22:00.”** Correct for normal operations (non-OT). If OT is enabled, it should explicitly say **“approved OT to 24:00”** or similar.
+- **“Assembly can be split across shifts; plan to finish remaining hours next shift.”** Correct—assembly is the main place we can safely stop at shift end and resume next day.
 - **“Group families at run test to cut 30–60 min switches; if needed, run underfilled racks for Order X with expected impact.”** Correct, and the key is exactly that tradeoff visibility (expedite vs lost capacity). I’d prefer it name **which rack is underfilled** and by how much (e.g., “Rack 2 running 4/8 for Order X”).
 
 ---
@@ -1337,10 +1331,10 @@ The DPO 3 version is definitely moving in the right direction (the 2-in-parallel
 
 Top 2 required changes for the next iteration:
 
-1) **Model run test as racks/batches with minimum fill (or give us an explicit override for expedites).**  
+1) **Model run test as racks/batches with minimum fill (or give us an explicit override for expedites).**
 Right now “2 parallel machines for 12 hours per lot” won’t reproduce our real headache: waiting to fill racks vs choosing to run underfilled to protect a ship date. We need something closer to: 4 racks × 8 positions, ~3-hour cycles, load/unload time, and a ~70% minimum fill rule—plus a way to break that rule intentionally when we flag an expedite.
 
-2) **Fix the calendar to reflect our actual clock and which steps can/can’t cross shift end.**  
+2) **Fix the calendar to reflect our actual clock and which steps can/can’t cross shift end.**
 A generic “fit inside 16 hours” rule is too simplified. We need 06:00–22:00 working windows (and ideally Mon–Fri vs weekend), and per-step behavior: assembly/weld can stop at 22:00 and resume next day, but key test/bottleneck steps (leak/evac/run test) should not start if they would run past 22:00.
 
 If those two are addressed, I’d be comfortable trying this in a controlled pilot; until then it’ll look good in the solver but be hard for supervisors to execute.
@@ -1357,8 +1351,8 @@ On the vacuum/oil charge station: when we hit a quality hold, it effectively blo
 
 If we can improve only ONE of the three constrained stations, the biggest bang for the buck would be **adding a second vacuum/oil charging station**.
 
-- **Why vacuum/oil over brazing or assembly:** it’s the most “fragile” step because it gets hit by both **family changeovers (30–45 minutes)** and those **quality holds**, and when it stops it immediately backs up everything upstream and starves test downstream.  
-- **Brazing:** a second brazing cell would help, but brazing is more predictable day-to-day; we don’t typically lose an hour unexpectedly the way we do on vacuum/oil when there’s a hold.  
+- **Why vacuum/oil over brazing or assembly:** it’s the most “fragile” step because it gets hit by both **family changeovers (30–45 minutes)** and those **quality holds**, and when it stops it immediately backs up everything upstream and starves test downstream.
+- **Brazing:** a second brazing cell would help, but brazing is more predictable day-to-day; we don’t typically lose an hour unexpectedly the way we do on vacuum/oil when there’s a hold.
 - **Splitting assembly:** helps volume, but assembly still tends to be “steady work” that we can cover with staffing and small overtime; the vacuum/oil step is where we get stuck even when we throw people at the problem.
 
 So if you’re looking for one capacity investment that most improves **on-time delivery** and reduces **overtime fire drills**, I’d pick **second vacuum/oil** first.
@@ -1836,10 +1830,10 @@ But “0 tardy + ~8 working days and then no improvement from faster Assembly/Br
 
 Two specific reality checks I’d want you to show in your output:
 
-1) **Does work actually stop overnight/weekends for the pauseable steps?**  
+1) **Does work actually stop overnight/weekends for the pauseable steps?**
    Example: if Main Assembly starts at **20:00** and has **6 hours** remaining, in real life it works **20:00–22:00**, then sits, then resumes **06:00–10:00** next day. If your time axis is “working slots only” and you removed the shift-boundary rule, the solver might be letting it run straight through as if the night doesn’t exist. That would make everything look much better than it is.
 
-2) **Evac/Oil being the gate is believable, but only if the shift rule is enforced tightly.**  
+2) **Evac/Oil being the gate is believable, but only if the shift rule is enforced tightly.**
    A ~9-hour non-interruptible step means it can’t start late in the shift. On a 16-hour day (06:00–22:00), it basically has to start by ~13:00 to finish by 22:00 (and earlier if there’s setup). That *can* become the bottleneck. But in our actual line, we also get “lost time” from staffing, minor stops, and waiting for upstream/downstream availability, so I’d expect *some* tardiness unless demand is light.
 
 Also, I’m not ready to conclude “assembly/braze improvements don’t help” from this run, because if the model is inadvertently letting Assembly/Weld flow continuously across day boundaries, it will understate how often those areas block Evac/Oil from getting fed early enough in the day.
@@ -1913,17 +1907,17 @@ Understood. Two follow-ups to make sure we capture your rules correctly:
 Once I have your numbers, I can reflect them back as plain-language scheduling rules and you can tell me if we got them right.
 
 ### Expert
-1) **Run Test racks (size, min-fill, and expedite penalty)**  
-- **Typical rack size:** 12 compressors per rack (we load 12 positions).  
-- **Normal practical minimum fill:** we generally won’t start a rack unless we have **at least 10/12** loaded (≈80% full). If we’re steady-state on a family, we try to run **full 12/12**.  
-- **Expedite underfilled rack:** we’ll sometimes run **as low as 6/12** for an expedite, but we try not to go below that unless it’s a true hot order.  
-- **Real penalty of underfilling:**  
-  - The big penalty is **lost throughput for the day/shift** because the rack still ties up the tester for essentially the same cycle time.  
-  - Example: if we run **6/12**, we’re effectively giving up **6 unit-slots** that could have been tested in that rack’s time. If we do that **twice in a shift**, that’s roughly **12 units of capacity** we don’t get back.  
+1) **Run Test racks (size, min-fill, and expedite penalty)**
+- **Typical rack size:** 12 compressors per rack (we load 12 positions).
+- **Normal practical minimum fill:** we generally won’t start a rack unless we have **at least 10/12** loaded (≈80% full). If we’re steady-state on a family, we try to run **full 12/12**.
+- **Expedite underfilled rack:** we’ll sometimes run **as low as 6/12** for an expedite, but we try not to go below that unless it’s a true hot order.
+- **Real penalty of underfilling:**
+  - The big penalty is **lost throughput for the day/shift** because the rack still ties up the tester for essentially the same cycle time.
+  - Example: if we run **6/12**, we’re effectively giving up **6 unit-slots** that could have been tested in that rack’s time. If we do that **twice in a shift**, that’s roughly **12 units of capacity** we don’t get back.
   - There’s also extra handling / administrative friction, but it’s not huge—call it **~10 minutes** of extra “messing around” per underfilled rack (tracking, moving units, priority coordination). The capacity hit is the main thing.
 
-2) **Family change losses (typical changeover times)**  
-- **Run Test family switch:** typically **30–60 minutes** downtime per change depending on how different the family is (fixtures/program/limits). If it’s a “close” family it’s nearer **30 min**; if it’s a bigger jump it’s closer to **60 min**.  
+2) **Family change losses (typical changeover times)**
+- **Run Test family switch:** typically **30–60 minutes** downtime per change depending on how different the family is (fixtures/program/limits). If it’s a “close” family it’s nearer **30 min**; if it’s a bigger jump it’s closer to **60 min**.
 - **Leak test family switch:** typically **10–20 minutes** per change (usually hose/fixture tweaks and setup verification).
 
 If you reflect these back as rules, I’d expect something like: “Run Test prefers full racks, won’t run below 10/12 unless expedite; underfilled racks consume a full rack-cycle but produce fewer units; and add a small fixed handling penalty; plus family-change downtime is ~45 min avg at Run Test and ~15 min avg at Leak.” That would match how we operate.
@@ -1956,15 +1950,15 @@ A–D is basically how we run, yes. A couple small clarifications:
 ### Final verdict on DPO 5 claim
 **Needs revision before we would act on it.** The “handoff” rule change is a real improvement and closer to reality, but I don’t trust the conclusion **“handoff alone gets 100% on-time and assembly/braze improvements don’t matter”** yet, because:
 
-1) **Calendar gap appears not fully enforced for pauseable steps.**  
+1) **Calendar gap appears not fully enforced for pauseable steps.**
 If the model treats time as continuous “working slots” and removes the shift-boundary rule for Assembly/Weld without explicitly modeling the **22:00–06:00 downtime**, it will overstate capacity. That can easily create a false 100% on-time result.
 
    - The specific proof I’d want to see: **If Main Assembly starts at 20:00 and needs 6 hours**, does the schedule **work only 20:00–22:00 (2h), pause overnight, then resume 06:00–10:00 (4h)**? If it instead finishes at 02:00, that’s not acceptable.
 
-2) **Run Test batching/min-fill isn’t represented enough to make investment decisions.**  
+2) **Run Test batching/min-fill isn’t represented enough to make investment decisions.**
 Our biggest day-to-day pain is the test area behavior: **rack fill rules + expedites underfilling racks**. If the model can’t show “we ran a rack at 6/12 and lost throughput” (and quantify the hit), it’s missing a major driver of lateness.
 
-3) **Changeovers are being charged in the wrong places (or not at all where it matters most).**  
+3) **Changeovers are being charged in the wrong places (or not at all where it matters most).**
 If sequencing isn’t modeled at **Run Test** and **Leak**, you can’t correctly apply **30–60 min** and **10–20 min** family-switch downtime there. That will again make “everything on time” look easier than it is.
 
 So: **I approve the direction (the interruptibility distinction), but I would not approve the DPO 5 what-if conclusion as decision-grade** until the calendar/off-shift gaps and the Run Test batching + changeover logic are modeled realistically. Once those are in, then I’m willing to re-check whether assembly/braze improvements truly don’t move the needle.
@@ -2179,15 +2173,15 @@ The shift-handoff behavior you’re showing (hard stop at 22:00, restart at 06:0
 
 A couple specific reactions to your other changes:
 
-1) **Lot-level pauseability everywhere:**  
+1) **Lot-level pauseability everywhere:**
 It’s directionally OK, but it’s a little *too permissive* for a few steps. We can pause *between units* in a lot, but we usually avoid pausing **mid-lot** on things like **Evac/Oil** and **Run Test** unless we have to, because it creates tracking risk and sometimes re-check / rework (at minimum: extra verification at restart). Operationally: if we start a lot on Evac/Oil at 19:00 and it won’t finish cleanly by 22:00, we often choose to *not start it* and instead run something shorter. So I’m fine with it for an early model, but it might make the schedule look slightly “too smooth” compared to real dispatching decisions.
 
-2) **Changeovers baked into Leak (+0.5h) and Run Test (+1h):**  
+2) **Changeovers baked into Leak (+0.5h) and Run Test (+1h):**
 Those numbers are in the right ballpark as *averages*, so I don’t object. Leak bench swaps, paperwork, fittings, moving product around—30 minutes disappears easily. Run Test does have real overhead (loading/unloading, hookups, paperwork), and an hour is plausible.
 
    The caution is: **Run Test isn’t really “per-lot with average overhead” on our floor**. The big day-to-day decision is batching/racks: we usually try to fill racks to a minimum (e.g., we don’t like running a rack 6/12 full unless it’s an expedite). That batching behavior is what causes the real waiting/queueing. If the model doesn’t represent “wait to fill vs run underfilled,” it may still hit due dates but for the *wrong reason*.
 
-3) **Result and sensitivity claims (makespan Day 8; braze setup reduction doesn’t matter):**  
+3) **Result and sensitivity claims (makespan Day 8; braze setup reduction doesn’t matter):**
 It’s plausible that once shift semantics are correct, the dominant lever is “what can span shifts / how we handle end-of-shift starts,” and braze setup tweaks won’t move the needle much. But I’d treat your conclusion as **suggestive, not final** until Run Test batching/min-fill and any Evac/Oil “quality hold / restart checks” effects are represented more explicitly—those are what typically blow up our daily plan, not braze setup minutes.
 
 Net: **Yes, the shift handoff / pausing-resuming behavior now feels much more realistic**, and I’m comfortable using this version for early what-if discussions. But I don’t want us to over-trust the “Run Test is handled” part yet; that’s still the main gap versus how we actually schedule and why we miss/meet dates.
@@ -2316,13 +2310,13 @@ Why I’m comfortable piloting it (in a limited way):
 - Even with the simplified Run Test model, this can already help us with **early-stage sequencing** (what to start on braze/weld/assembly to avoid starving test later), as long as we treat test as “approximate capacity” during the pilot.
 
 What still blocks a true floor pilot:
-1) **Run Test is our real daily decision point.**  
+1) **Run Test is our real daily decision point.**
    In reality we’re deciding things like “do we wait 30–90 minutes to fill racks to 10/12” vs “run 7/12 because Sales is screaming.” Modeling it as a fixed duration with cap=2 and baked-in overhead won’t reproduce:
    - rack formation delays,
    - the benefit of waiting to fill,
    - or the explicit “underfill only if expedite” policy.
 
-2) **Evac/Oil spanning is too free right now.**  
+2) **Evac/Oil spanning is too free right now.**
    In practice if we stop Evac/Oil and resume next shift, we can pay in:
    - extra restart time (often **20–40 minutes** depending on where it stopped),
    - risk of **holds/rechecks** (which can wipe out the “nice” schedule),
@@ -2557,16 +2551,16 @@ This is getting close to something we could pilot, mainly because it’s now giv
 
 That said, a couple things immediately look “off” / need proof before we treat it as production-ready:
 
-1) **Run Test “min fill 10/12 (6/12 expedite)” looks like a printed message, not a hard rule.**  
+1) **Run Test “min fill 10/12 (6/12 expedite)” looks like a printed message, not a hard rule.**
 On the floor, we don’t just *report* fill—we need the schedule to **prevent starting an underfilled rack** unless it’s an approved expedite situation. If the solver can still start Rack 1 with, say, 4/12 filled just because it fits the timeline, that would be unrealistic and would create waste / extra handling.
 
-2) **I want to see a forced trade-off case at Run Test.**  
+2) **I want to see a forced trade-off case at Run Test.**
 To trust it as a decision tool, please demo a scenario where the solver must choose between:
 - **Waiting** 2–6 hours to hit minimum fill (10/12), vs
 - **Running underfilled** because Lot 2 or 3 is expedite (and showing the impact, like extra rack cycles / later makespan / overtime).
 If the schedule and KPIs don’t change meaningfully between those cases, then the “min fill / expedite underfill” logic probably isn’t actually driving decisions yet.
 
-3) **Bench changeover being tracked per bench is good, but the rack sequencing/setup logic needs to be unambiguous.**  
+3) **Bench changeover being tracked per bench is good, but the rack sequencing/setup logic needs to be unambiguous.**
 If two lots share the same rack, we need a clear “A then B” ordering so the **setup time isn’t accidentally double-counted or skipped**. Otherwise the start times can look valid on paper but be impossible to execute.
 
 On the specific demo outcome (4 lots on time, makespan Day 8, rush lots done Day 5–6), nothing screams unsafe. The overnight restart check callout is a plus. The main “pilot/no pilot” blocker for me is whether the **Run Test fill rule is truly enforced**, not just printed.
@@ -2664,14 +2658,14 @@ Also, on the printed supervisor instructions: do you want the system to output a
 ### Expert
 Yes—those Phase 1 items are exactly what I’d want to avoid surprises.
 
-- **Phase 1 (pilot start): enforce true rack batching + min-fill/expedite floor + supervisor-approval flag**  
+- **Phase 1 (pilot start): enforce true rack batching + min-fill/expedite floor + supervisor-approval flag**
   I would accept the pilot only if the rack-fill rule is **actually enforced in the model**, not just printed text. For Run Test we operate like this on the floor:
   - Each rack has **12 positions**.
   - Normal lots: **do not start** unless we have **≥10/12 filled**.
   - Expedite lots: we can run underfilled down to **≥6/12**, but it should require a **supervisor approval** callout in the instructions.
   If you implement real rack “batches” (start time, rack assignment, which lots are in the batch, positions used), that’s good enough to pilot.
 
-- **Phase 1 add-ons (move/stage times + max-wait windows + QA holds)**  
+- **Phase 1 add-ons (move/stage times + max-wait windows + QA holds)**
   Yes, these are helpful and realistic for us:
   - Simple move/stage times: even a fixed **5–10 minutes** between steps is fine for a first cut (e.g., moving WIP to test, staging at benches).
   - Max-wait windows: important so we don’t leave units sitting too long between certain steps; we can start with something simple like **“must start next step within 4 hours”** after a critical step and refine later.
@@ -2681,13 +2675,13 @@ Yes—those Phase 1 items are exactly what I’d want to avoid surprises.
 I want it explicit, because supervisors won’t trust a “penalty in the background” unless the schedule tells them what action to take.
 
 1) **Underfill / expedite approval**
-- Yes, print an explicit line like:  
-  **“Supervisor approval required: Run Test starting underfilled (7/12) due to Expedite lot(s): LOT123, LOT124.”**  
+- Yes, print an explicit line like:
+  **“Supervisor approval required: Run Test starting underfilled (7/12) due to Expedite lot(s): LOT123, LOT124.”**
   If approval is not given, the system should either (a) delay the batch to reach min-fill, or (b) show an alternate schedule.
 
 2) **Overnight restart avoidance for Evac/Oil**
-- I prefer an explicit instruction, not just a flag. Something like:  
-  **“Do not start Evac/Oil after 12:00 (risk of overnight restart penalty). If started after 12:00, add +45 min restart time.”**  
+- I prefer an explicit instruction, not just a flag. Something like:
+  **“Do not start Evac/Oil after 12:00 (risk of overnight restart penalty). If started after 12:00, add +45 min restart time.”**
   The exact cutoff time can be tuned to your shift/end-of-day logic, but the operator needs a clear “don’t start after X” if that’s the intent.
 
 If you can show a demo where the solver is forced to choose between **waiting to hit 10/12** vs **running 6–9/12 because an expedite is present (with approval required)** and the schedule/KPIs change accordingly, that would give me confidence we’re ready for the pilot.
@@ -2710,7 +2704,7 @@ And if it’s “needs work,” is the main blocker specifically the Run Test ba
 **Verdict: Needs work (pilot after adding true rack batching/min-fill enforcement + the Phase 1 add-ons).**
 
 As-is, DPO 7 is a big step forward and it’s *close*—the supervisor-friendly “start X at time Y” actions are the right direction, and you finally modeled two things that matter on our floor:
-- **Run Test constrained by racks** (not just “2 machines” in the abstract), and  
+- **Run Test constrained by racks** (not just “2 machines” in the abstract), and
 - **Evac/Oil overnight restart hit** when work spans overnight.
 
 But I can’t sign off to pilot *as-is* because one of the core “real” rules is still not actually enforced by the solver:
@@ -3005,8 +2999,8 @@ What still feels off vs how we really run Run Test is that Run Test is not a *pe
 - We load **12 positions per rack**.
 - Normal rule is **don’t start unless we have at least 10/12 filled**.
 - Expedite override is **down to 6/12**, but it’s a supervisor decision and we document it.
-- The key thing a supervisor needs to execute is:  
-  “Start Rack 1 at 14:00 with Lots A/B/C… (fill = 10/12)” or  
+- The key thing a supervisor needs to execute is:
+  “Start Rack 1 at 14:00 with Lots A/B/C… (fill = 10/12)” or
   “Start Rack 2 at 16:00 with Lots X/Y… (fill = 6/12, expedite override, approval required).”
 
 With the current approach (2-hour wait vs 3-hour longer run), you’re capturing the *tradeoff*, but you’re not actually enforcing the **min-fill at the moment a rack cycle starts**, and you can’t print a dispatch instruction that names which lots are in the rack cycle. That’s the main gap for day-to-day use.
@@ -3030,7 +3024,7 @@ So: good progress, and I’m encouraged by the scenario results you described (e
 Understood. Two follow-ups based on that: (1) If we keep the current proxy for a short pilot, what’s the minimum acceptable “floor-style” output you’d need (even if we can’t yet name the exact lots in each rack cycle)? (2) For the next increment with true rack batching: are the rules exactly 12 positions, min 10/12 normally, expedite override to min 6/12 with supervisor approval—any other constraints like mixing restrictions, max lots per rack, or priority rules for what gets loaded together?
 
 ### Expert
-(1) **Minimum acceptable “floor-style” output for a short pilot (with the proxy model)**  
+(1) **Minimum acceptable “floor-style” output for a short pilot (with the proxy model)**
 Even if you can’t list the exact lots inside each rack cycle yet, I still need an output a supervisor can execute without interpreting solver internals. Minimum for us would be:
 
 - **A time-ordered dispatch list per resource** (at least: Assembly line(s), Vacuum/Charge, Run Test, Final Test/Pack), with:
@@ -3051,11 +3045,11 @@ If you show it like a supervisor instruction list (what to start next, when, and
 
 ---
 
-(2) **Rules for next increment with true rack batching (and other constraints)**  
+(2) **Rules for next increment with true rack batching (and other constraints)**
 Yes, the core rule is exactly as you stated for our run-test racks:
 
-- **Rack capacity:** 12 positions per rack cycle  
-- **Normal minimum fill:** **10/12** positions before starting  
+- **Rack capacity:** 12 positions per rack cycle
+- **Normal minimum fill:** **10/12** positions before starting
 - **Expedite override:** can start at **min 6/12**, but **only with supervisor approval** (we want that approval called out in the schedule output)
 
 Other constraints we need you to capture once you model actual rack batches:
@@ -3066,8 +3060,8 @@ Other constraints we need you to capture once you model actual rack batches:
 - **Max lots per rack cycle:**
   - Practically, we prefer **no more than 4 lots** in one rack cycle, even if positions allow more, because it increases scanning/handling mistakes. (So you can fill 12 positions, but from at most ~4 distinct lot IDs.)
 - **Priority / loading rule of thumb (how we do it on the floor):**
-  1) **Expedites first**, to protect ship dates  
-  2) Then **closest ship date**  
+  1) **Expedites first**, to protect ship dates
+  2) Then **closest ship date**
   3) Then “don’t strand partials”: if a lot is already partially staged for run test, we try to finish filling that batch before starting a fresh one.
 - **Approval logic:**
   - If we’re starting a rack at **<10/12**, the output must explicitly say **“Supervisor approval required”** and identify **which expedite lot(s)** justify it.
@@ -3091,7 +3085,7 @@ Concretely, I’m OK if the model outputs something like:
 …and then the supervisor still builds the rack manually in the moment based on what’s physically ready.
 
 The risks are manageable for this limited scope, but I’d want two guardrails before we use it daily even for expedites:
-1) **Hard rule:** non-expedite can never trigger underfill in the recommendations (no “oops, underfill” unless it’s flagged expedite).  
+1) **Hard rule:** non-expedite can never trigger underfill in the recommendations (no “oops, underfill” unless it’s flagged expedite).
 2) The output needs to be supervisor-usable: a clear **yes/no “underfill approval” flag**, the **suggested start time**, and what it’s trading off (e.g., “+2 hours waiting to hit 10/12” vs “+3 hours cycle penalty underfill”).
 
 Where it would become too risky is if we tried to use it to drive *all* Run Test dispatching or promise a full rack plan, because without explicit batching it can’t guarantee we’ll actually have 6/12 or 10/12 ready at that time.
