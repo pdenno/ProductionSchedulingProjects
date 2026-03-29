@@ -1,6 +1,5 @@
----
-# refrigerator-compressors – Project Report
 
+# refrigerator-compressors – Project Report
 ---
 
 ## Project Info
